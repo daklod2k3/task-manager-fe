@@ -1,5 +1,10 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Reference
+
+UI: [https://ui.shadcn.com/](https://ui.shadcn.com/)
+Icon: [https://lucide.dev/icons/](https://lucide.dev/icons/), [https://www.radix-ui.com/icons](https://www.radix-ui.com/icons)
+
 ## Getting Started
 
 First, run the development server:
