@@ -5,7 +5,7 @@ import { getUser } from "./action/User";
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("accessToken")?.value;
-  const user = token ? await getUser(token) : null;
+  const user = token ? await getUser() : null;
   // console.log(user);
 
   if (!token || !user) {

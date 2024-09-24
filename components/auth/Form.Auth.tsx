@@ -17,6 +17,7 @@ import { login } from "@/action/Auth";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckIcon } from "@radix-ui/react-icons";
+import { createBrowserClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { Card } from "../ui/card";
@@ -128,6 +129,7 @@ export function AuthForm({ isLogin = true }) {
 
       return;
     }
+
     toast({
       title: "Đăng nhập thất bại",
       variant: "destructive",

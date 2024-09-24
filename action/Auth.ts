@@ -18,12 +18,9 @@ export async function login(form: any) {
     ).json();
 
     if (!res.accessToken) return;
-    cookies().set("accessToken", res.accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      path: "/",
-    });
+    console.log(res);
+
+    cookies().set("access_token", res.accessToken);
     // return NextResponse.json(res, {});
     return res;
   } catch (e) {
