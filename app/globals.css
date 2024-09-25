@@ -35,7 +35,9 @@ body {
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
     /* --primary: 0 0% 9%; */
-    --primary: 215 100% 54%;
+    /* --primary: 215 100% 54%; */
+    /* --primary: 341 85% 59% */
+    --primary: 346 73% 55%
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
@@ -91,3 +93,6 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* #FFC4D9,#E0365E,#20A271,#EF3E75 */
+/* #FFC4D9,#FF81AA,#20A271,#EF3E75 */

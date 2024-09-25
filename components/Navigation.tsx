@@ -16,17 +16,17 @@ import { Button } from "./ui/button";
 export default function Navigation({}) {
   const path = usePathname();
   return (
-    <div className="px-1 flex flex-col gap-3 py-5 items-center justify-start text-accent">
+    <div className="px-3 flex flex-col gap-3 py-2 items-center justify-start text-primary *:text-xs">
       <Image
         alt="logo"
-        src={"/image/logo.png"}
-        className=" object-fit drop-shadow mb-5"
-        width={50}
-        height={50}
+        src={"/image/logo-border.png"}
+        className=" object-fit drop-shadow-lg mb-5"
+        width={60}
+        height={60}
       />
       <Button
         variant={path === "/" ? "secondary" : "ghost"}
-        className={cn("flex flex-col w-full h-fit gap-1 font-bold")}
+        className={cn("flex flex-col aspect-square w-16 h-fit gap-1 font-bold")}
         asChild
       >
         <Link href={"/"}>
@@ -36,7 +36,7 @@ export default function Navigation({}) {
       </Button>
       <Button
         variant={path.startsWith("/task") ? "secondary" : "ghost"}
-        className="flex flex-col w-full h-fit gap-2 drop-shadow font-bold"
+        className="flex flex-col aspect-square w-16 h-fit gap-1 drop-shadow font-bold "
         asChild
       >
         <Link href={"/task"}>
@@ -46,17 +46,17 @@ export default function Navigation({}) {
       </Button>
       <Button
         variant={path.startsWith("/department") ? "secondary" : "ghost"}
-        className="flex flex-col w-full h-fit gap-2 drop-shadow font-bold p-1"
+        className="flex flex-col aspect-square w-16 h-fit gap-1 drop-shadow font-bold "
         asChild
       >
         <Link href={"/department"}>
           <Building />
-          Department
+          Team
         </Link>
       </Button>
       <Button
         variant={path.startsWith("/channel") ? "secondary" : "ghost"}
-        className="flex flex-col w-full h-fit gap-2 drop-shadow font-bold"
+        className="flex flex-col w-16 h-fit gap-1 drop-shadow font-bold"
         asChild
       >
         <Link href={"/channel"}>
@@ -66,7 +66,7 @@ export default function Navigation({}) {
       </Button>
       <Button
         variant={path.startsWith("/activity") ? "secondary" : "ghost"}
-        className="flex flex-col w-full h-fit gap-2 drop-shadow font-bold"
+        className="flex flex-col w-16 h-fit gap-1 drop-shadow font-bold"
         asChild
       >
         <Link href={"/activity"}>

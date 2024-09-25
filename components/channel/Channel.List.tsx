@@ -37,12 +37,7 @@ export default function ChannelList({
   ];
 
   return (
-    <div
-      className={cn(
-        className,
-        "w-64 bg-gray-100 flex flex-col border-r shadow"
-      )}
-    >
+    <div className={cn(className, "w-64 flex flex-col border-r")}>
       <ScrollArea className="flex-grow">
         <div className="p-4">
           <h2 className="text-lg font-semibold mb-2">Channels</h2>

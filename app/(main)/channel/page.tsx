@@ -103,7 +103,7 @@ export default async function ChatPage() {
 
   return (
     <div className="h-full flex flex-col">
-      <header className="bg-gray-100 p-4 border-b shadow">
+      <header className=" p-4 border-b shadow">
         <h1 className="text-xl font-semibold">#{defaultChannel.name}</h1>
       </header>
       <ChatArea channelId={defaultChannel.id} />
