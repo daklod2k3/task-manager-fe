@@ -1,6 +1,14 @@
+import { cn } from "@/lib/utils";
 import { Draggable } from "@hello-pangea/dnd";
+import {
+  ChevronDown,
+  ChevronsDown,
+  ChevronsUp,
+  ChevronUp,
+  Equal,
+} from "lucide-react";
 import React from "react";
-import { Card, CardFooter, CardHeader, CardTitle } from "../ui/card";
+
 // import CustomAvatar from '../TableComponents/CustomAvatar'
 // import { ReactComponent as RedArrow } from '../../assets/icons/High.svg'
 // import { ReactComponent as YellowArrow } from '../../assets/icons/Medium.svg'
@@ -41,6 +49,34 @@ import { Card, CardFooter, CardHeader, CardTitle } from "../ui/card";
 //   /* } */
 // `;
 
+const dueDateRender = (date: Date) => {
+  const dayDiff = Math.floor(
+    (date.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+  );
+  console.log(dayDiff);
+
+  let color = "";
+  if (dayDiff < 0) color = "red-500";
+  else if (dayDiff > 2) color = "green-500";
+  else color = "orange-500";
+  return (
+    <span className={cn("text-" + color)}>
+      {dayDiff < 0 ? "Overdue" : dayDiff + " days left"}
+    </span>
+  );
+};
+
+const priorityIcon = (priority: string) => {
+  switch (priority) {
+    case "High":
+      return <ChevronsUp className="text-red-500" />;
+    case "Medium":
+      return <Equal className="text-orange-500" />;
+    case "Low":
+      return <ChevronsDown className="text-green-500" />;
+  }
+};
+
 const TaskCard = ({ item, index }: any) => {
   return (
     <Draggable key={item.id} draggableId={item.id} index={index}>
@@ -49,22 +85,16 @@ const TaskCard = ({ item, index }: any) => {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className="rounded-sm min-h-28 flex flex-col bg-white mb-3"
+          className="rounded-sm flex flex-col bg-white mb-2 p-3 text-sm hover:bg-background/80"
         >
-          <div className="p-5 pb-0">
+          <div className="mb-3">
             <div>{item.Task}</div>
           </div>
-          <div className="p-5">
-            <div className="secondary-details">
-              <p>
-                <span>
-                  {new Date(item.Due_Date).toLocaleDateString("en-us", {
-                    month: "short",
-                    day: "2-digit",
-                  })}
-                </span>
-              </p>
-            </div>
+          <div className="flex font-bold justify-between">
+            {/* Due date */}
+            {dueDateRender(new Date(item.dueDate))}
+            {/* Left info */}
+            <div>{priorityIcon(item.Priority)}</div>
           </div>
         </div>
       )}

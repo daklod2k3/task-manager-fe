@@ -6,8 +6,8 @@ export const data = [
     // Assigned_To: 'Beltran',
     // Assignee: 'Romona',
     // Status: 'To-do',
-    // Priority: 'Low',
-    Due_Date: "25-May-2020",
+    Priority: "Low",
+    dueDate: "25-Nov-2025",
   },
   {
     id: "2",
@@ -15,8 +15,8 @@ export const data = [
     // Assigned_To: 'Dave',
     // Assignee: 'Romona',
     // Status: 'To-do',
-    // Priority: 'Low',
-    Due_Date: "26-May-2020",
+    Priority: "Low",
+    dueDate: "10/13/2024",
   },
   {
     id: "3",
@@ -24,8 +24,8 @@ export const data = [
     // Assigned_To: 'Roman',
     // Assignee: 'Romona',
     // Status: 'To-do',
-    // Priority: 'Low',
-    Due_Date: "27-May-2020",
+    Priority: "Low",
+    dueDate: "27-May-2020",
   },
   {
     id: "4",
@@ -33,8 +33,8 @@ export const data = [
     // Assigned_To: 'Gawen',
     // Assignee: 'Kai',
     // Status: 'Done',
-    // Priority: 'High',
-    Due_Date: "23-Aug-2020",
+    Priority: "High",
+    dueDate: "23-Aug-2020",
   },
   {
     id: "5",
@@ -42,8 +42,8 @@ export const data = [
     // Assigned_To: 'Bondon',
     // Assignee: 'Antoinette',
     // Status: 'In Progress',
-    // Priority: 'Medium',
-    Due_Date: "05-Jan-2021",
+    Priority: "Medium",
+    dueDate: "05-Jan-2021",
   },
 ];
 

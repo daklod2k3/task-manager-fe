@@ -77,18 +77,20 @@ const Kanban = () => {
     <DragDropContext
       onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
     >
-      <div className="flex w-full min-h-[80vh] m-2 gap-5">
+      <div className="flex min-h-10 h-full w-full gap-5">
         {Object.entries(columns).map(([columnId, column], index) => {
           return (
             <div
               key={columnId}
-              className="min-h-28 bg-primary/10 w-80 rounded-sm p-4"
+              className="min-h-28 bg-primary/10 w-80 rounded-sm p-2"
             >
-              <span className="text-primary mb-5">{column.title}</span>
+              <span className="text-primary inline-block m-1">
+                {column.title}
+              </span>
               <Droppable droppableId={columnId}>
                 {(provided, snapshot) => (
                   <div
-                    className="flex flex-col size-full"
+                    className="flex flex-col size-full mt-2"
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                   >
