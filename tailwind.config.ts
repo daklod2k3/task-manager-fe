@@ -62,6 +62,9 @@ const config: Config = {
     {
       pattern: /text-.+/,
     },
+    {
+      pattern: /size-.+/,
+    },
   ],
   plugins: [require("tailwindcss-animate")],
 };

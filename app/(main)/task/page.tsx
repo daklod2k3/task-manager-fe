@@ -1,7 +1,10 @@
 "use client";
 
+import MyAvatar from "@/components/Avatar";
+import HoverInfo from "@/components/HoverInfo";
 import SearchInput from "@/components/SearchInput";
 import Kanban from "@/components/task/kanban";
+import UserItem from "@/components/task/UserItem";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,38 +24,40 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { userList } from "@/entity/testData";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircle } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const items = [
-  {
-    id: "recents",
-    label: "Recents",
-  },
-  {
-    id: "home",
-    label: "Home",
-  },
-  {
-    id: "applications",
-    label: "Applications",
-  },
-  {
-    id: "desktop",
-    label: "Desktop",
-  },
-  {
-    id: "downloads",
-    label: "Downloads",
-  },
-  {
-    id: "documents",
-    label: "Documents",
-  },
-] as const;
+// const items = [
+//   {
+//     id: "recents",
+//     label: "Recents",
+//   },
+//   {
+//     id: "home",
+//     label: "Home",
+//   },
+//   {
+//     id: "applications",
+//     label: "Applications",
+//   },
+//   {
+//     id: "desktop",
+//     label: "Desktop",
+//   },
+//   {
+//     id: "downloads",
+//     label: "Downloads",
+//   },
+//   {
+//     id: "documents",
+//     label: "Documents",
+//   },
+// ] as const;
 
 const FormSchema = z.object({
   items: z.array(z.string()).refine((value) => value.some((item) => item), {
@@ -71,50 +76,64 @@ export default function Component() {
   const onUserFilter = () => {};
 
   const userSelect = () => {
+    const items = userList;
     return (
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onUserFilter)} className="space-y-8">
           <FormField
             control={form.control}
             name="items"
-            render={() => (
-              <FormItem>
-                <div className="flex flex-wrap gap-4">
-                  {items.map((item) => (
-                    <FormField
-                      key={item.id}
-                      control={form.control}
-                      name="items"
-                      render={({ field }) => {
-                        return (
-                          <FormItem key={item.id} className="flex flex-row">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value?.includes(item.id)}
-                                onCheckedChange={(checked) => {
-                                  return checked
-                                    ? field.onChange([...field.value, item.id])
-                                    : field.onChange(
-                                        field.value?.filter(
-                                          (value) => value !== item.id
-                                        )
-                                      );
-                                }}
-                              />
-                            </FormControl>
-                            <FormLabel className="font-normal">
-                              {item.label}
-                            </FormLabel>
-                          </FormItem>
-                        );
-                      }}
-                    />
-                  ))}
-                </div>
+            render={() => {
+              return (
+                <FormItem>
+                  <div className="flex flex-wrap -space-x-1">
+                    {items.map((item) => (
+                      <FormField
+                        key={item.id}
+                        control={form.control}
+                        name="items"
+                        render={({ field }) => {
+                          const checkedState = field.value?.includes(item.id);
+                          return (
+                            <FormItem
+                              key={item.id}
+                              className="flex flex-row space-y-0 space-x-0"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  hidden={true}
+                                  checked={checkedState}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([
+                                          ...field.value,
+                                          item.id,
+                                        ])
+                                      : field.onChange(
+                                          field.value?.filter(
+                                            (value) => value !== item.id
+                                          )
+                                        );
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal space-y-0">
+                                <UserItem className={cn(
+                                  "shadow ring-2 cursor-pointer hover:z-10",
+                                  checkedState ? "ring-primary z-10" : "ring-white"
+                                )} user={item}/>
+                              </FormLabel>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
 
-                <FormMessage />
-              </FormItem>
-            )}
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
         </form>
       </Form>
@@ -124,9 +143,10 @@ export default function Component() {
   return (
     <div className="p-4 w-full flex flex-col gap-5">
       <h1 className="text-2xl font-bold mb-4">Task List</h1>
-      <div className="flex">
+      <div className="flex gap-3 items-center">
         <SearchInput />
         {userSelect()}
+        <Button variant={"link"}>Clear filter</Button>
       </div>
       <Kanban />
     </div>

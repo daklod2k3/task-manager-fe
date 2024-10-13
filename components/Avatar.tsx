@@ -1,17 +1,21 @@
+import { cn } from "@/lib/utils";
 import { AvatarImage } from "@radix-ui/react-avatar";
-import React from "react";
+import React, { ComponentProps } from "react";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 
-export default function MyAvatar({
-  imgSrc,
-  name,
-}: {
-  imgSrc: string;
+interface Props extends ComponentProps<typeof Avatar> {
+  imgSrc?: string;
   name: string;
-}) {
+  size?: number
+}
+
+export default function MyAvatar({ imgSrc, name, size, className, ...props }: Props) {
+  
+  const sizeClass = size ? `size-${size}` : undefined
+  
   return (
-    <Avatar>
-      <AvatarImage src={imgSrc} />
+    <Avatar {...props} className={cn(sizeClass, className)}>
+      <AvatarImage src={imgSrc || "/image/avatar.avif"}/>
       <AvatarFallback>{name}</AvatarFallback>
     </Avatar>
   );

@@ -8,6 +8,8 @@ import {
   Equal,
 } from "lucide-react";
 import React from "react";
+import MyAvatar from "../Avatar";
+import HoverInfo from "../HoverInfo";
 
 // import CustomAvatar from '../TableComponents/CustomAvatar'
 // import { ReactComponent as RedArrow } from '../../assets/icons/High.svg'
@@ -53,7 +55,7 @@ const dueDateRender = (date: Date) => {
   const dayDiff = Math.floor(
     (date.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
   );
-  console.log(dayDiff);
+  // console.log(dayDiff);
 
   let color = "";
   if (dayDiff < 0) color = "red-500";
@@ -67,14 +69,22 @@ const dueDateRender = (date: Date) => {
 };
 
 const priorityIcon = (priority: string) => {
-  switch (priority) {
-    case "High":
-      return <ChevronsUp className="text-red-500" />;
-    case "Medium":
-      return <Equal className="text-orange-500" />;
-    case "Low":
-      return <ChevronsDown className="text-green-500" />;
-  }
+  const Icon = () => {
+    switch (priority) {
+      case "High":
+        return <ChevronsUp className="text-red-500" />;
+      case "Medium":
+        return <Equal className="text-orange-500" />;
+      case "Low":
+        return <ChevronsDown className="text-green-500" />;
+    }
+  };
+
+  return (
+    <HoverInfo label={priority + " priority"}>
+      <Icon />
+    </HoverInfo>
+  );
 };
 
 const TaskCard = ({ item, index }: any) => {
@@ -94,7 +104,17 @@ const TaskCard = ({ item, index }: any) => {
             {/* Due date */}
             {dueDateRender(new Date(item.dueDate))}
             {/* Left info */}
-            <div>{priorityIcon(item.Priority)}</div>
+            <div className="flex items-center">
+              {priorityIcon(item.Priority)}
+              <HoverInfo>
+                <MyAvatar
+                  imgSrc="/image/avatar/null-user.png"
+                  // className="bg-"
+                  size={7}
+                  name="none"
+                />
+              </HoverInfo>
+            </div>
           </div>
         </div>
       )}
