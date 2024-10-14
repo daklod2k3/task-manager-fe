@@ -4,6 +4,7 @@ import {
   Bell,
   Building,
   CalendarDays,
+  NotepadText,
   Home,
   MessageCircleMoreIcon,
 } from "lucide-react";
@@ -72,6 +73,16 @@ export default function Navigation({}) {
         <Link href={"/activity"}>
           <Bell />
           Activity
+        </Link>
+      </Button>
+      <Button
+        variant={path.startsWith("/report") ? "secondary" : "ghost"}
+        className="flex flex-col w-full h-fit gap-2 drop-shadow font-bold"
+        asChild
+      >
+        <Link href={"/report"}>
+          <NotepadText />
+          Report
         </Link>
       </Button>
     </div>
