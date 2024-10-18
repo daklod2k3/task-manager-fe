@@ -118,10 +118,15 @@ export default function Component() {
                                 />
                               </FormControl>
                               <FormLabel className="font-normal space-y-0">
-                                <UserItem className={cn(
-                                  "shadow ring-2 cursor-pointer hover:z-10",
-                                  checkedState ? "ring-primary z-10" : "ring-white"
-                                )} user={item}/>
+                                <UserItem
+                                  className={cn(
+                                    "shadow ring-2 cursor-pointer hover:z-10",
+                                    checkedState
+                                      ? "ring-primary z-10"
+                                      : "ring-white"
+                                  )}
+                                  user={item}
+                                />
                               </FormLabel>
                             </FormItem>
                           );
@@ -141,10 +146,10 @@ export default function Component() {
   };
 
   return (
-    <div className="p-4 w-full flex flex-col gap-5">
-      <h1 className="text-2xl font-bold mb-4">Task List</h1>
+    <div className="p-4 flex flex-col min-h-0 min-w-0 gap-5 max-h-full">
+      <h1 className="text-2xl font-bold text-primary">Task List</h1>
       <div className="flex gap-3 items-center">
-        <SearchInput />
+        <SearchInput className="bg-white" />
         {userSelect()}
         <Button variant={"link"}>Clear filter</Button>
       </div>

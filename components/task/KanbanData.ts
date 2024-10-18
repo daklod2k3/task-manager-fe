@@ -1,3 +1,6 @@
+import { Tables } from "@/entity/database.types";
+import { taskList } from "@/entity/testData";
+
 export const data = [
   {
     id: "1",
@@ -46,17 +49,31 @@ export const data = [
   },
 ];
 
-export const columnsFromBackend = {
-  [uuidv4()]: {
-    title: "To-do",
-    items: data,
-  },
-  [uuidv4()]: {
-    title: "In Progress",
-    items: [],
-  },
-  [uuidv4()]: {
-    title: "Done",
-    items: [],
-  },
+interface ITableColumn {
+  [key: string]: {
+    items: Tables<"tasks">[]
+    title: string
+  }
+}
+
+export const columnsFromBackend =()=> {
+  let filter = taskList
+  const titles = ["To_do", "In_Progress", "In_Preview", "In_Complete", "QA", "Done", "Archived"]
+  const result: ITableColumn = {}
+  for (const title of titles){
+    result[title] = {
+      title: title,
+      items: [] 
+    }
+    filter = filter.filter((item)=>{
+      if (item.status == title)
+        result[title].items.push(item)
+      else 
+      return item
+    })
+  }
+
+  console.log(result);
+  
+  return result
 };

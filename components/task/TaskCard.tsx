@@ -1,3 +1,4 @@
+import { Tables } from "@/entity/database.types";
 import { cn } from "@/lib/utils";
 import { Draggable } from "@hello-pangea/dnd";
 import {
@@ -10,6 +11,7 @@ import {
 import React from "react";
 import MyAvatar from "../Avatar";
 import HoverInfo from "../HoverInfo";
+import UserItem from "./UserItem";
 
 // import CustomAvatar from '../TableComponents/CustomAvatar'
 // import { ReactComponent as RedArrow } from '../../assets/icons/High.svg'
@@ -87,9 +89,9 @@ const priorityIcon = (priority: string) => {
   );
 };
 
-const TaskCard = ({ item, index }: any) => {
+const TaskCard = ({ item, index }: {item: Tables<"tasks">, index: number}) => {
   return (
-    <Draggable key={item.id} draggableId={item.id} index={index}>
+    <Draggable key={item.id} draggableId={String(item.id)} index={index}>
       {(provided: any) => (
         <div
           ref={provided.innerRef}
@@ -98,22 +100,18 @@ const TaskCard = ({ item, index }: any) => {
           className="rounded-sm flex flex-col bg-white mb-2 p-3 text-sm hover:bg-background/80"
         >
           <div className="mb-3">
-            <div>{item.Task}</div>
+            <div>{item.title}</div>
           </div>
-          <div className="flex font-bold justify-between">
+          <div className="flex font-bold justify-between items-center">
             {/* Due date */}
             {dueDateRender(new Date(item.dueDate))}
             {/* Left info */}
             <div className="flex items-center">
-              {priorityIcon(item.Priority)}
-              <HoverInfo>
-                <MyAvatar
-                  imgSrc="/image/avatar/null-user.png"
-                  // className="bg-"
-                  size={7}
-                  name="none"
-                />
-              </HoverInfo>
+              {priorityIcon(item.priority)}
+              <div>
+                {}
+              </div>
+              <UserItem user={null} size={6}/>
             </div>
           </div>
         </div>

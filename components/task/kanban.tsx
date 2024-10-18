@@ -77,20 +77,19 @@ const Kanban = () => {
     <DragDropContext
       onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
     >
-      <div className="flex min-h-10 h-full w-full gap-5">
+      <div className="grid grid-flow-col gap-5 overflow-scroll">
         {Object.entries(columns).map(([columnId, column], index) => {
           return (
-            <div
-              key={columnId}
-              className="min-h-28 bg-primary/10 w-80 rounded-sm p-2"
-            >
-              <span className="text-primary inline-block m-1">
-                {column.title}
-              </span>
+            <div className="bg-primary/10 rounded-sm p-2 grid grid-rows-[auto,1fr]" key={columnId}>
+              <div className="sticky top-0 bg-primary rounded-sm z-50">
+                <span className="text-white inline-block m-1">
+                  {column.title.replace("_", " ")}
+                </span>
+              </div>
               <Droppable droppableId={columnId}>
                 {(provided, snapshot) => (
                   <div
-                    className="flex flex-col size-full mt-2"
+                    className="flex flex-col mt-2 min-h-28 min-w-72"
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                   >
@@ -98,7 +97,7 @@ const Kanban = () => {
                     {column.title}
                   </Badge> */}
                     {column.items.map((item, index) => (
-                      <TaskCard key={item} item={item} index={index} />
+                      <TaskCard key={item.id} item={item} index={index} />
                     ))}
                     {provided.placeholder}
                   </div>

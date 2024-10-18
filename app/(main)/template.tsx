@@ -1,7 +1,5 @@
 import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
 import React from "react";
 
 const Layout = ({
@@ -10,13 +8,14 @@ const Layout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div className="h-screen flex flex-row bg-gradient-to-br from-[#FFC4D9] via-[#FF81AA] to-[#FFC4D9]">
+    <div className="max-h-screen h-screen overflow-hidden grid grid-cols-[auto,1fr] bg-gradient-to-br from-[#FFC4D9] via-[#FF81AA] to-[#FFC4D9]">
       <Navigation />
-      <div className="flex flex-col flex-1 justify-center">
+      <div className="grid grid-rows-[auto,1fr] pb-2 pr-2 min-h-0 min-w-0">
         <Header />
-        <main className="flex-1 bg-white/80 overflow-hidden rounded-lg m-2 ml-0 mt-0">
+        <main className="bg-white/80 rounded-lg min-h-0 overflow-hidden">
           {/* <main className="flex-1 flex-grow h-full">{children}</main> */}
           {children}
+          {/* <div className="h-[10000px] bg-black w-3 min-h-0"/> */}
         </main>
       </div>
     </div>
