@@ -1,16 +1,79 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonProps } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Hash, Plus, Search, Settings, Users } from "lucide-react";
-import { useState } from "react";
+import {
+  Hash,
+  Icon,
+  LucideIcon,
+  Plus,
+  Search,
+  Settings,
+  Users,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+
+interface IChannelSelect extends IChannelButton {}
+
+interface IChannelButton extends ButtonProps {
+  active?: boolean;
+  title?: string;
+  Icon?: LucideIcon;
+}
+
+const ChannelButton = ({
+  active = false,
+  Icon,
+  title,
+  className,
+  children,
+  ...props
+}: IChannelButton) => {
+  const style = active
+    ? ""
+    : "bg-transparent text-foreground hover:bg-primary/30";
+  if (Icon)
+    return (
+      <Button
+        // variant={channel == baseChannel ? "default"}
+        {...props}
+        className={cn(
+          "w-full justify-start mb-1 shadow-none ",
+          style,
+          className
+        )}
+      >
+        <Icon className="h-4 w-4 mr-2" /> {title}
+      </Button>
+    );
+  return (
+    <Button
+      // variant={channel == baseChannel ? "default"}
+      {...props}
+      className={cn("w-full mb-1 shadow-none justify-start", style, className)}
+    >
+      {children}
+    </Button>
+  );
+};
+
+const ChannelSelect = ({ ...props }: IChannelSelect) => {
+  return <ChannelButton Icon={Hash} {...props} />;
+};
+
+const ChannelHeader = ({ title }: { title: string }) => {
+  return (
+    <h2 className="text-lg text-foreground font-semibold mb-2">{title}</h2>
+  );
+};
 
 export default function ChannelList({
   className,
 }: React.HTMLAttributes<HTMLDivElement>): React.ReactNode {
-  const [activeChat, setActiveChat] = useState<string | null>(null);
+  const [activeChat, setActiveChat] = useState<string | null>("general");
+  // const [channel]
 
   const channels = [
     { id: "general", name: "General" },
@@ -36,46 +99,38 @@ export default function ChannelList({
     },
   ];
 
+  useEffect(() => {
+    // setActiveChat()
+  }, []);
+
   return (
-    <div
-      className={cn(
-        className,
-        "w-64 bg-gray-100 flex flex-col border-r shadow"
-      )}
-    >
+    <div className={cn(className, "w-64 flex flex-col border-r")}>
       <ScrollArea className="flex-grow">
         <div className="p-4">
-          <h2 className="text-lg font-semibold mb-2">Channels</h2>
+          {/* <h2 className="text-lg text-foreground font-semibold mb-2">
+            Channels
+          </h2> */}
+          <ChannelHeader title="Channel" />
           {channels.map((channel) => (
-            <Button
+            <ChannelSelect
+              active={channel.id == activeChat}
+              title={channel.name}
               key={channel.id}
-              variant="ghost"
-              className={`w-full justify-start mb-1 ${
-                activeChat === channel.id ? "bg-gray-200" : ""
-              }`}
               onClick={() => setActiveChat(channel.id)}
-            >
-              <Hash className="h-4 w-4 mr-2" />
-              {channel.name}
-            </Button>
+            />
           ))}
-          <Button
-            variant="ghost"
-            className="w-full justify-start text-gray-500"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Channel
-          </Button>
+          <ChannelButton
+            title="Add channel"
+            Icon={Plus}
+            className="bg-primary/20 shadow border border-primary w-fit"
+          />
         </div>
         <div className="p-4">
-          <h2 className="text-lg font-semibold mb-2">Direct Messages</h2>
+          <ChannelHeader title="Direct Messages" />
           {directMessages.map((dm) => (
-            <Button
+            <ChannelButton
+              active={dm.id === activeChat}
               key={dm.id}
-              variant="ghost"
-              className={`w-full justify-start mb-1 ${
-                activeChat === dm.id ? "bg-gray-200" : ""
-              }`}
               onClick={() => setActiveChat(dm.id)}
             >
               <Avatar className="h-6 w-6 mr-2">
@@ -83,15 +138,13 @@ export default function ChannelList({
                 <AvatarFallback>{dm.name.charAt(0)}</AvatarFallback>
               </Avatar>
               {dm.name}
-            </Button>
+            </ChannelButton>
           ))}
-          <Button
-            variant="ghost"
-            className="w-full justify-start text-gray-500"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Direct Message
-          </Button>
+          <ChannelButton
+            title="Add chat"
+            Icon={Plus}
+            className="bg-primary/20 shadow border border-primary w-fit"
+          />
         </div>
       </ScrollArea>
       <div className="p-4 border-t">

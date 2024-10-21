@@ -9,7 +9,9 @@ const Layout = ({
   return (
     <div className="flex flex-1 h-full">
       <ChannelList />
-      <main className="flex-1 flex-grow h-full">{children}</main>
+      <main className="flex-1 flex-grow h-full shadow-lg bg-white">
+        {children}
+      </main>
     </div>
   );
 };
