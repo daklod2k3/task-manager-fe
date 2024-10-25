@@ -1,180 +1,159 @@
 "use client";
 
+import MyAvatar from "@/components/Avatar";
+import HoverInfo from "@/components/HoverInfo";
+import SearchInput from "@/components/SearchInput";
+import Kanban from "@/components/task/kanban";
+import UserItem from "@/components/task/UserItem";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { userList } from "@/entity/testData";
+import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircle } from "lucide-react";
 import React, { useState } from "react";
-import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  DropResult,
-} from "react-beautiful-dnd";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-// Define the task and column types
-type Task = {
-  id: string;
-  content: string;
-};
+// const items = [
+//   {
+//     id: "recents",
+//     label: "Recents",
+//   },
+//   {
+//     id: "home",
+//     label: "Home",
+//   },
+//   {
+//     id: "applications",
+//     label: "Applications",
+//   },
+//   {
+//     id: "desktop",
+//     label: "Desktop",
+//   },
+//   {
+//     id: "downloads",
+//     label: "Downloads",
+//   },
+//   {
+//     id: "documents",
+//     label: "Documents",
+//   },
+// ] as const;
 
-type Column = {
-  id: string;
-  title: string;
-  tasks: Task[];
-};
-
-// Initial data
-const initialData: { [key: string]: Column } = {
-  todo: {
-    id: "todo",
-    title: "To Do",
-    tasks: [
-      { id: "task-1", content: "Create login page" },
-      { id: "task-2", content: "Design database schema" },
-    ],
-  },
-  inProgress: {
-    id: "inProgress",
-    title: "In Progress",
-    tasks: [{ id: "task-3", content: "Implement user authentication" }],
-  },
-  done: {
-    id: "done",
-    title: "Done",
-    tasks: [{ id: "task-4", content: "Project setup" }],
-  },
-};
+const FormSchema = z.object({
+  items: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one item.",
+  }),
+});
 
 export default function Component() {
-  const [columns, setColumns] = useState(initialData);
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      items: ["recents", "home"],
+    },
+  });
 
-  const onDragEnd = (result: DropResult) => {
-    const { source, destination } = result;
+  const onUserFilter = () => {};
 
-    // If dropped outside the list
-    if (!destination) return;
+  const userSelect = () => {
+    const items = userList;
+    return (
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onUserFilter)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="items"
+            render={() => {
+              return (
+                <FormItem>
+                  <div className="flex flex-wrap -space-x-1">
+                    {items.map((item) => (
+                      <FormField
+                        key={item.id}
+                        control={form.control}
+                        name="items"
+                        render={({ field }) => {
+                          const checkedState = field.value?.includes(item.id);
+                          return (
+                            <FormItem
+                              key={item.id}
+                              className="flex flex-row space-y-0 space-x-0"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  hidden={true}
+                                  checked={checkedState}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([
+                                          ...field.value,
+                                          item.id,
+                                        ])
+                                      : field.onChange(
+                                          field.value?.filter(
+                                            (value) => value !== item.id
+                                          )
+                                        );
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal space-y-0">
+                                <UserItem
+                                  className={cn(
+                                    "shadow ring-2 cursor-pointer hover:z-10",
+                                    checkedState
+                                      ? "ring-primary z-10"
+                                      : "ring-white"
+                                  )}
+                                  user={item}
+                                />
+                              </FormLabel>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
 
-    // If dropped in the same position
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    ) {
-      return;
-    }
-
-    const start = columns[source.droppableId];
-    const finish = columns[destination.droppableId];
-
-    if (start === finish) {
-      // Moving within the same list
-      const newTasks = Array.from(start.tasks);
-      const [reorderedItem] = newTasks.splice(source.index, 1);
-      newTasks.splice(destination.index, 0, reorderedItem);
-
-      const newColumn = {
-        ...start,
-        tasks: newTasks,
-      };
-
-      setColumns({
-        ...columns,
-        [newColumn.id]: newColumn,
-      });
-    } else {
-      // Moving from one list to another
-      const startTasks = Array.from(start.tasks);
-      const [movedItem] = startTasks.splice(source.index, 1);
-      const newStart = {
-        ...start,
-        tasks: startTasks,
-      };
-
-      const finishTasks = Array.from(finish.tasks);
-      finishTasks.splice(destination.index, 0, movedItem);
-      const newFinish = {
-        ...finish,
-        tasks: finishTasks,
-      };
-
-      setColumns({
-        ...columns,
-        [newStart.id]: newStart,
-        [newFinish.id]: newFinish,
-      });
-    }
-  };
-
-  const addTask = (columnId: string) => {
-    const newTaskId = `task-${Date.now()}`;
-    const newTask: Task = {
-      id: newTaskId,
-      content: `New task ${newTaskId}`,
-    };
-
-    setColumns((prevColumns) => ({
-      ...prevColumns,
-      [columnId]: {
-        ...prevColumns[columnId],
-        tasks: [...prevColumns[columnId].tasks, newTask],
-      },
-    }));
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+        </form>
+      </Form>
+    );
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Task Manager</h1>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex flex-wrap gap-4">
-          {Object.values(columns).map((column) => (
-            <div
-              key={column.id}
-              className="bg-gray-100 p-4 rounded-lg flex-1 min-w-[250px]"
-            >
-              <h2 className="text-lg font-semibold mb-2">{column.title}</h2>
-              <Droppable droppableId={column.id}>
-                {(provided) => (
-                  <div
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className="min-h-[200px]"
-                  >
-                    {column.tasks.map((task, index) => (
-                      <Draggable
-                        key={task.id}
-                        draggableId={task.id}
-                        index={index}
-                      >
-                        {(provided) => (
-                          <Card
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className="mb-2 cursor-move"
-                          >
-                            <CardContent className="p-2">
-                              {task.content}
-                            </CardContent>
-                          </Card>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full mt-2"
-                onClick={() => addTask(column.id)}
-              >
-                <PlusCircle className="w-4 h-4 mr-2" />
-                Add Task
-              </Button>
-            </div>
-          ))}
-        </div>
-      </DragDropContext>
+    <div className="p-4 flex flex-col min-h-0 min-w-0 gap-5 max-h-full">
+      <h1 className="text-2xl font-bold text-primary">Task List</h1>
+      <div className="flex gap-3 items-center">
+        <SearchInput className="bg-white" />
+        {userSelect()}
+        <Button variant={"link"}>Clear filter</Button>
+      </div>
+      <Kanban />
     </div>
   );
 }
