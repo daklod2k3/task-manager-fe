@@ -40,19 +40,19 @@ const ChannelButton = ({
         // variant={channel == baseChannel ? "default"}
         {...props}
         className={cn(
-          "w-full justify-start mb-1 shadow-none ",
+          "mb-1 w-full justify-start shadow-none",
           style,
-          className
+          className,
         )}
       >
-        <Icon className="h-4 w-4 mr-2" /> {title}
+        <Icon className="mr-2 h-4 w-4" /> {title}
       </Button>
     );
   return (
     <Button
       // variant={channel == baseChannel ? "default"}
       {...props}
-      className={cn("w-full mb-1 shadow-none justify-start", style, className)}
+      className={cn("mb-1 w-full justify-start shadow-none", style, className)}
     >
       {children}
     </Button>
@@ -65,7 +65,7 @@ const ChannelSelect = ({ ...props }: IChannelSelect) => {
 
 const ChannelHeader = ({ title }: { title: string }) => {
   return (
-    <h2 className="text-lg text-foreground font-semibold mb-2">{title}</h2>
+    <h2 className="mb-2 text-lg font-semibold text-foreground">{title}</h2>
   );
 };
 
@@ -104,7 +104,7 @@ export default function ChannelList({
   }, []);
 
   return (
-    <div className={cn(className, "w-64 flex flex-col border-r")}>
+    <div className={cn(className, "flex w-64 flex-col")}>
       <ScrollArea className="flex-grow">
         <div className="p-4">
           {/* <h2 className="text-lg text-foreground font-semibold mb-2">
@@ -122,7 +122,7 @@ export default function ChannelList({
           <ChannelButton
             title="Add channel"
             Icon={Plus}
-            className="bg-primary/20 shadow border border-primary w-fit"
+            className="w-fit border border-primary bg-primary/20 shadow"
           />
         </div>
         <div className="p-4">
@@ -133,7 +133,7 @@ export default function ChannelList({
               key={dm.id}
               onClick={() => setActiveChat(dm.id)}
             >
-              <Avatar className="h-6 w-6 mr-2">
+              <Avatar className="mr-2 h-6 w-6">
                 <AvatarImage src={dm.avatar} alt={dm.name} />
                 <AvatarFallback>{dm.name.charAt(0)}</AvatarFallback>
               </Avatar>
@@ -143,13 +143,13 @@ export default function ChannelList({
           <ChannelButton
             title="Add chat"
             Icon={Plus}
-            className="bg-primary/20 shadow border border-primary w-fit"
+            className="w-fit border border-primary bg-primary/20 shadow"
           />
         </div>
       </ScrollArea>
-      <div className="p-4 border-t">
+      <div className="border-t p-4">
         <Button variant="ghost" className="w-full justify-start">
-          <Avatar className="h-8 w-8 mr-2">
+          <Avatar className="mr-2 h-8 w-8">
             <AvatarImage
               src="/placeholder.svg?height=32&width=32"
               alt="Your Avatar"

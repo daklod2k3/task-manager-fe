@@ -10,13 +10,14 @@ import React, { ReactElement } from "react";
 interface Props {
   children?: React.ReactNode;
   label: string;
+  onClick?: React.MouseEventHandler<HTMLSpanElement>;
 }
 
 export default function HoverInfo({ children, label }: Props) {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger>{children}</TooltipTrigger>
+        <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent>
           <p>{label}</p>
         </TooltipContent>
