@@ -5,6 +5,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export class Api {
-  static baseUrl = process.env.API_URL;
-}
+const baseUrl = String(process.env.API_URL);
+
+export const Api = {
+  baseUrl: baseUrl,
+  task: baseUrl + "/task",
+};

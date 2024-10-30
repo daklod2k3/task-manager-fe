@@ -147,7 +147,7 @@ export default function ChannelList({
           />
         </div>
       </ScrollArea>
-      <div className="border-t p-4">
+      {/* <div className="border-t p-4">
         <Button variant="ghost" className="w-full justify-start">
           <Avatar className="mr-2 h-8 w-8">
             <AvatarImage
@@ -159,7 +159,7 @@ export default function ChannelList({
           <span className="flex-grow text-left">Your Name</span>
           <Settings className="h-4 w-4" />
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }

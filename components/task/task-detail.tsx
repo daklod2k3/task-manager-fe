@@ -29,6 +29,7 @@ import { DialogClose } from "../ui/dialog";
 import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
 import { Skeleton } from "../ui/skeleton";
+import CommentInput from "./comment-input";
 import { PriorityIcon } from "./utils";
 
 interface Props {
@@ -136,18 +137,14 @@ const HistoryItem = ({
 };
 
 export default function TaskDetail({ task }: Props) {
-  const { data, error } = useTask(task);
+  const { data: taskList, error, isLoading } = useTask(task);
 
   const [taskChange, setChange] = useState(task);
+  console.log(isLoading);
 
-  // useEffect(() => {
-  //   console.log(taskChange);
-  // }, [taskChange]);
-
-  // console.log(task, taskChange);
-  if (!data)
+  if (isLoading)
     return (
-      <div className="space-y-5">
+      <div className="h-fit space-y-5">
         <div className="rounded bg-primary p-1 px-3 text-white">
           <TaskTitle title={"Task detail"} />
         </div>
@@ -168,83 +165,95 @@ export default function TaskDetail({ task }: Props) {
       </div>
     );
 
-  return (
-    <div className="space-y-5">
-      <div className="rounded bg-primary p-1 px-3 text-white">
-        <TaskTitle title={"Task detail"} />
-      </div>
-      <div className="grid min-w-0 grid-cols-[2fr,1fr] gap-3">
-        <div className="space-y-2">
-          <div>
-            <FieldLabel value="Title:" />
-            <TaskTitle title={task?.title} />
-          </div>
-          <div className="grid min-w-0 grid-cols-[30%,1fr] items-center">
-            <FieldLabel value="Priority:" />
-            <Select
-              defaultValue={task.priority}
-              onValueChange={(value) => {
-                setChange({ ...taskChange, priority: value });
-              }}
-            >
-              <SelectTrigger className="w-fit">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="high">
-                  <div className="flex items-center">
-                    <PriorityIcon priority={"high"} />
-                    <span>High</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="medium">
-                  <div className="flex w-full items-center justify-between">
-                    <PriorityIcon priority={"medium"} />
-                    <span>Medium</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="low">
-                  <div className="flex items-center">
-                    <PriorityIcon priority={"low"} />
-                    <span>Low</span>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <FieldLabel className={"text-primary"} value="Description" />
-          <EditableField className="" value={task.description} />
+  const data = taskList?.at(0) as Tables<"tasks">;
+  console.log(data);
 
-          <TaskTitle title="Activity" textSize="xl" />
-          {/* Select tab */}
-          <Tabs defaultValue="account" className="w-[400px]">
-            <TabsList>
-              <TabsTrigger value="account">History</TabsTrigger>
-              <TabsTrigger value="password">Comment</TabsTrigger>
-            </TabsList>
-            <TabsContent value="account">History lists</TabsContent>
-            <TabsContent value="password">Comment list </TabsContent>
-          </Tabs>
+  if (data)
+    return (
+      <div className="h-screen w-full space-y-5">
+        <div className="rounded bg-primary p-1 px-3 text-white">
+          <TaskTitle title={"Task detail"} />
         </div>
-        {/* <Separator orientation="vertical" className=""/> */}
-        <div className="flex flex-col space-y-3">
-          <div className="space-x-2">
-            <Button disabled={task == taskChange}> Save change</Button>
-            <DialogClose>
-              <Button variant={"ghost"}> Cancel</Button>
-            </DialogClose>
+        <div className="grid min-w-0 grid-cols-[2.5fr,1fr] gap-3">
+          <div className="space-y-2">
+            <div>
+              <FieldLabel value="Title:" />
+              <TaskTitle title={data.title} />
+            </div>
+            <div className="grid min-w-0 grid-cols-[30%,1fr] items-center">
+              <FieldLabel value="Priority:" />
+              <Select
+                defaultValue={data.priority}
+                onValueChange={(value) => {
+                  setChange({ ...taskChange, priority: value });
+                }}
+              >
+                <SelectTrigger className="w-fit">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="high">
+                    <div className="flex items-center">
+                      <PriorityIcon priority={"high"} />
+                      <span>High</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="medium">
+                    <div className="flex w-full items-center justify-between">
+                      <PriorityIcon priority={"medium"} />
+                      <span>Medium</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="low">
+                    <div className="flex items-center">
+                      <PriorityIcon priority={"low"} />
+                      <span>Low</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <FieldLabel className={"text-primary"} value="Description" />
+            <EditableField
+              placeholder="add description..."
+              value={data.description}
+            />
+
+            <CommentInput className="mt-4" />
+
+            <TaskTitle title="Activity" textSize="xl" />
+            {/* Select tab */}
+            <Tabs defaultValue="account" className="w-[400px]">
+              <TabsList>
+                <TabsTrigger value="account">History</TabsTrigger>
+                <TabsTrigger value="password">Comment</TabsTrigger>
+              </TabsList>
+              <TabsContent value="account">History lists</TabsContent>
+              <TabsContent value="password">Comment list </TabsContent>
+            </Tabs>
           </div>
-          <span>Details</span>
-          <div className="grid grid-cols-[auto,auto] items-center justify-items-end gap-4 rounded border p-2">
-            <FieldLabel value="Assignee:" />
-            <MyAvatar size={7} />
-            <FieldLabel value="Created at:" />
-            <span>{new Date(task.created_at).toLocaleDateString()}</span>
-            <FieldLabel value="Created by:" />
-            <MyAvatar size={7} />
+          {/* <Separator orientation="vertical" className=""/> */}
+          <div className="flex flex-col space-y-3">
+            <div className="space-x-2">
+              <Button disabled={data == taskChange}> Save change</Button>
+              <DialogClose>
+                <Button variant={"ghost"}> Cancel</Button>
+              </DialogClose>
+            </div>
+            <span>Details</span>
+            <div className="grid grid-cols-[auto,auto] items-center justify-items-end gap-4 rounded border p-2">
+              <FieldLabel value="Assignee:" />
+              <MyAvatar size={7} />
+              <FieldLabel value="Created at:" />
+              <span>{new Date(data.created_at).toLocaleDateString()}</span>
+              <FieldLabel value="Created by:" />
+              <MyAvatar size={7} />
+              <FieldLabel value="Due date:" />
+              <span>{new Date(data.dueDate).toLocaleDateString()}</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
 }

@@ -1,4 +1,5 @@
 "use client";
+import { updateTask } from "@/action/Task";
 import {
   Dialog,
   DialogContent,
@@ -8,6 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Tables } from "@/entity/database.types";
+import useTask from "@/hooks/use-task";
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -46,51 +48,6 @@ import TaskDetail from "./task-detail";
 //   align-self: flex-start;
 // `;
 
-const onDragEnd = (
-  result: any,
-  columns: any,
-  setColumn: any,
-  setLoading: any,
-) => {
-  // console.log(result, columns, setColumn);
-
-  if (!result.destination) return;
-  const { source, destination } = result;
-  setLoading(true);
-  let data;
-  if (source.droppableId !== destination.droppableId) {
-    const sourceColumn = columns[source.droppableId];
-    const destColumn = columns[destination.droppableId];
-    const sourceItems = [...sourceColumn.items];
-    const destItems = [...destColumn.items];
-    const [removed] = sourceItems.splice(source.index, 1);
-    destItems.splice(destination.index, 0, removed);
-    setColumn({
-      ...columns,
-      [source.droppableId]: {
-        ...sourceColumn,
-        items: sourceItems,
-      },
-      [destination.droppableId]: {
-        ...destColumn,
-        items: destItems,
-      },
-    });
-  } else {
-    const column = columns[source.droppableId];
-    const copiedItems = [...column.items];
-    const [removed] = copiedItems.splice(source.index, 1);
-    copiedItems.splice(destination.index, 0, removed);
-    setColumn({
-      ...columns,
-      [source.droppableId]: {
-        ...column,
-        items: copiedItems,
-      },
-    });
-  }
-};
-
 interface Props {
   taskList: Tables<"tasks">[];
 }
@@ -127,11 +84,74 @@ const dataToColumn = (taskList: Tables<"tasks">[]) => {
         result[title].items.push(item);
       else return item;
     });
+    result[title].items = sortData(result[title].items);
   }
 
-  console.log(result);
-
   return result;
+};
+
+const sortData = (taskList: Tables<"tasks">[]) => {
+  return taskList.sort(
+    (a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime(),
+  );
+};
+
+const onDragEnd = async (
+  result: any,
+  columns: any,
+  setColumn: any,
+  setLoading: any,
+  mutate: any,
+) => {
+  console.log(result, columns, setColumn);
+
+  if (!result.destination) return;
+  const { source, destination } = result;
+  setLoading(true);
+  // updateTask()
+  // mutate(undefined, { revalidate: true });
+  if (source.droppableId !== destination.droppableId) {
+    const sourceColumn = columns[source.droppableId];
+    const destColumn = columns[destination.droppableId];
+    const sourceItems = [...sourceColumn.items];
+    const destItems = [...destColumn.items];
+    const [removed] = sourceItems.splice(source.index, 1);
+    const result = await updateTask({
+      ...removed,
+      status: destination.droppableId,
+    });
+    destItems.splice(destination.index, 0, removed);
+    setColumn({
+      ...columns,
+      [source.droppableId]: {
+        ...sourceColumn,
+        items: sourceItems,
+      },
+      [destination.droppableId]: {
+        ...destColumn,
+        items: sortData(destItems),
+      },
+    });
+  } else {
+    const column = columns[source.droppableId];
+    const copiedItems = [...column.items];
+    const [removed] = copiedItems.splice(source.index, 1);
+    copiedItems.splice(destination.index, 0, removed);
+    const result = await updateTask({
+      ...removed,
+      status: destination.droppableId,
+    });
+    if (!result) {
+      setLoading(false);
+    }
+    setColumn({
+      ...columns,
+      [source.droppableId]: {
+        ...column,
+        items: sortData(copiedItems),
+      },
+    });
+  }
 };
 
 const Kanban = ({ taskList }: Props) => {
@@ -140,6 +160,7 @@ const Kanban = ({ taskList }: Props) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
+  const { mutate } = useTask();
   // const [dialog, setDialog] = useState<{
   //   open: boolean;
   //   task: Tables<"tasks"> | undefined;
@@ -164,15 +185,18 @@ const Kanban = ({ taskList }: Props) => {
   return (
     <>
       <Dialog open={dialog !== false} onOpenChange={setDialog}>
-        <DialogContent className="h-[calc(100vh-100px)] w-[calc(100vw-100px)] max-w-full">
+        <DialogContent className="max-h-[calc(100vh-10rem)] max-w-screen-xl">
           <TaskDetail task={dialog as Tables<"tasks">} />
         </DialogContent>
       </Dialog>
       <DragDropContext
         onDragEnd={(result) => {
-          // setLoading(true);
-          onDragEnd(result, columns, setColumns, setLoading);
-          // setLoading(false);
+          if (!result.destination) return;
+          const { source, destination } = result;
+          if (source.droppableId === destination.droppableId) return;
+          setLoading(true);
+          onDragEnd(result, columns, setColumns, setLoading, mutate);
+          setLoading(false);
         }}
       >
         <LoadingDialog open={loading} />

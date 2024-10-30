@@ -11,6 +11,7 @@ interface Props extends ComponentProps<typeof Avatar> {
 
 export default function MyAvatar({ user, size, className, ...props }: Props) {
   const sizeClass = size ? `size-${size}` : undefined;
+  // const localUser = useUser
 
   return (
     <Avatar {...props} className={cn(sizeClass, className)}>

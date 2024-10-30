@@ -26,15 +26,14 @@ export default function EditableField({
 
   if (isEdit)
     return (
-      <div className="grid space-y-3 rounded">
+      <div className="flex gap-2 rounded">
         <Textarea
-          disabled
           {...inputProps}
-          placeholder="type your value here"
+          placeholder={placeholder}
           defaultValue={change}
-          className={cn(className, "text-wrap")}
+          className={cn(className, "w-full text-wrap")}
         />
-        <div className="space-x-2 justify-self-end">
+        <div className="flex flex-col">
           <Button>Save</Button>
           <Button variant="ghost" onClick={() => setIsEdit(false)}>
             Cancel
@@ -54,7 +53,11 @@ export default function EditableField({
     >
       <ScrollArea className={cn(className, "grid h-full w-full")}>
         <p className={"h-max text-wrap break-all text-left text-lg"}>
-          {value || (placeholder ?? "Click to edit value")}
+          {value || (
+            <span className="text-muted-foreground">
+              {placeholder ?? "Click to edit value"}
+            </span>
+          )}
         </p>
       </ScrollArea>
     </Button>

@@ -30,7 +30,7 @@ const TaskCard = ({
           </div>
           <div className="flex items-center justify-between font-bold">
             {/* Due date */}
-            {DueDateRender({ date: new Date(item.dueDate) })}
+            {DueDateRender({ date: new Date(item.due_date) })}
             {/* Left info */}
             <div className="flex items-center">
               {PriorityIcon({ priority: item.priority })}

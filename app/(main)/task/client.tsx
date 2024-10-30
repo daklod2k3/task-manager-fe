@@ -73,6 +73,7 @@ export default function Client(props: {
 
   const taskListBE = useTask();
   if (!taskListBE?.data) return <Loading />;
+  console.log(taskListBE.data);
 
   const onUserFilter = () => {};
 
@@ -149,8 +150,8 @@ export default function Client(props: {
   };
 
   return (
-    <div className="flex max-h-full min-h-0 min-w-0 flex-col gap-5 p-4">
-      <h1 className="text-2xl font-bold text-primary">Task List</h1>
+    <div className="flex max-h-full min-h-0 min-w-0 flex-col gap-5 p-4 text-foreground">
+      <h1 className="text-lg font-bold">Task List</h1>
       <div className="flex items-center gap-3">
         <SearchInput className="bg-white" />
         {userSelect()}

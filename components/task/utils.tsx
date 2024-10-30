@@ -19,10 +19,11 @@ export const DueDateRender = ({ date }: { date: Date }) => {
   const timeStr =
     Math.abs(dayDiff) > 1
       ? `${Math.floor(Math.abs(dayDiff))} days`
-      : `${Math.abs(dayDiff) * 24}h`;
+      : `${Math.abs(dayDiff)}h`;
+  // if ()
   return (
     <span className={cn("text-" + color)}>
-      {dayDiff < 0 ? `Overdue (${timeStr} ago)` : timeStr + " days left"}
+      {dayDiff < 0 ? `Overdue (${timeStr} ago)` : `${timeStr} days left`}
     </span>
   );
 };
