@@ -14,9 +14,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
 import useTask from "@/hooks/use-task";
 import { cn } from "@/lib/utils";
+import { Database } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import MyAvatar from "../Avatar";
@@ -25,7 +28,7 @@ import Loading from "../Loading";
 import { Button } from "../ui/button";
 import { CardTitle } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
-import { DialogClose } from "../ui/dialog";
+import { Dialog, DialogClose, DialogContent } from "../ui/dialog";
 import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
 import { Skeleton } from "../ui/skeleton";
@@ -58,7 +61,7 @@ const FieldLabel = ({
   );
 };
 
-const FilterSelectItem = ({ children }) => {
+const FilterSelectItem = ({ children = null }) => {
   return <Button />;
 };
 
@@ -136,7 +139,11 @@ const HistoryItem = ({
   );
 };
 
-export default function TaskDetail({ task }: Props) {
+export default function TaskDetail() {
+  const {
+    taskDetail: [task],
+  } = useTaskContext();
+
   const { data: taskList, error, isLoading } = useTask(task);
 
   const [taskChange, setChange] = useState(task);
@@ -152,7 +159,7 @@ export default function TaskDetail({ task }: Props) {
           <div className="space-y-2">
             <div>
               <FieldLabel value="Title:" />
-              <TaskTitle title={task?.title} />
+              <TaskTitle title={task?.title || ""} />
             </div>
           </div>
         </div>
@@ -185,7 +192,12 @@ export default function TaskDetail({ task }: Props) {
               <Select
                 defaultValue={data.priority}
                 onValueChange={(value) => {
-                  setChange({ ...taskChange, priority: value });
+                  if (value && taskChange)
+                    setChange({
+                      ...taskChange,
+                      priority:
+                        Database["public"]["Enums"]["TaskPriority"][value],
+                    });
                 }}
               >
                 <SelectTrigger className="w-fit">
@@ -250,10 +262,37 @@ export default function TaskDetail({ task }: Props) {
               <FieldLabel value="Created by:" />
               <MyAvatar size={7} />
               <FieldLabel value="Due date:" />
-              <span>{new Date(data.dueDate).toLocaleDateString()}</span>
+              <span>{new Date(data.due_date).toLocaleDateString()}</span>
             </div>
           </div>
         </div>
       </div>
     );
+}
+
+export function TaskDialog() {
+  const {
+    taskDetail: [detail, setDetail],
+    setOpen,
+  } = useTaskContext();
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const task_id = searchParams.get("task_id");
+    if (task_id) setOpen({ id: Number(task_id) } as Tables<"tasks">);
+  }, []);
+
+  return (
+    <Dialog
+      open={detail != null}
+      onOpenChange={(x) => {
+        if (!x) setOpen();
+      }}
+    >
+      <DialogContent className="max-h-[calc(100vh-10rem)] max-w-screen-xl">
+        <TaskDetail />
+      </DialogContent>
+    </Dialog>
+  );
 }

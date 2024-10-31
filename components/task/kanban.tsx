@@ -1,13 +1,7 @@
 "use client";
 import { updateTask } from "@/action/Task";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
 import useTask from "@/hooks/use-task";
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
@@ -16,7 +10,7 @@ import React, { useEffect, useState } from "react";
 import LoadingDialog from "../loading/LoadingDialog";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import TaskCard from "./task-card";
-import TaskDetail from "./task-detail";
+import TaskDetail, { TaskDialog } from "./task-detail";
 
 // const Container = styled.div`
 //   display: flex;
@@ -154,41 +148,29 @@ const onDragEnd = async (
   }
 };
 
-const Kanban = ({ taskList }: Props) => {
-  const [columns, setColumns] = useState(dataToColumn(taskList));
-  const [loading, setLoading] = useState(false);
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
-  const { mutate } = useTask();
-  // const [dialog, setDialog] = useState<{
-  //   open: boolean;
-  //   task: Tables<"tasks"> | undefined;
-  // }>({
-  //   open: false,
-  //   task: undefined,
-  // });
-  const [dialog, setDialog] = useState<Tables<"tasks"> | boolean>(false);
-  if (taskList.length == 0) return <span>No tasks found</span>;
-  const openTaskDetail = (task: Tables<"tasks">) => {
-    // setDialog({ task: task, open: true });
-    const params = new URLSearchParams(searchParams);
-    params.set("task_id", String(task.id));
-    replace(`${pathname}?${params.toString()}`);
-    setDialog(task);
-  };
+const Kanban = () => {
+  const {
+    taskFetch: { data: taskList, isLoading, mutate, error },
+  } = useTaskContext();
+  const [columns, setColumns] = useState(dataToColumn(taskList || []));
 
-  // useEffect(()=>{
+  const [loading, setLoading] = useState(isLoading);
 
-  // },[])
+  useEffect(() => {
+    setColumns(dataToColumn(taskList || []));
+  }, [taskList]);
+
+  useEffect(() => {
+    setLoading((l) => l && isLoading);
+  }, [isLoading]);
+
+  useEffect(() => {}, []);
+
+  if (taskList?.length == 0) return <span>No tasks found</span>;
 
   return (
     <>
-      <Dialog open={dialog !== false} onOpenChange={setDialog}>
-        <DialogContent className="max-h-[calc(100vh-10rem)] max-w-screen-xl">
-          <TaskDetail task={dialog as Tables<"tasks">} />
-        </DialogContent>
-      </Dialog>
+      <TaskDialog />
       <DragDropContext
         onDragEnd={(result) => {
           if (!result.destination) return;
@@ -224,12 +206,7 @@ const Kanban = ({ taskList }: Props) => {
                     {column.title}
                   </Badge> */}
                         {column.items.map((item, index) => (
-                          <TaskCard
-                            key={item.id}
-                            item={item}
-                            index={index}
-                            onClick={() => openTaskDetail(item)}
-                          />
+                          <TaskCard key={item.id} item={item} index={index} />
                         ))}
                         {provided.placeholder}
                       </div>

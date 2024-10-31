@@ -1,6 +1,11 @@
+import { TaskProvider } from "@/context/task-context";
 import React from "react";
 import Client from "./client";
 
 export default function Page() {
-  return <Client />;
+  return (
+    <TaskProvider>
+      <Client />
+    </TaskProvider>
+  );
 }

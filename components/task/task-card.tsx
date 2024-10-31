@@ -3,18 +3,23 @@ import { Draggable } from "@hello-pangea/dnd";
 
 import React from "react";
 
+import { useTaskContext } from "@/context/task-context";
 import UserItem from "./user-item";
 import { DueDateRender, PriorityIcon } from "./utils";
 
 const TaskCard = ({
   item,
   index,
-  onClick,
 }: {
   item: Tables<"tasks">;
   index: number;
-  onClick?: React.MouseEventHandler;
 }) => {
+  const { setOpen } = useTaskContext();
+
+  const onClick = () => {
+    setOpen(item);
+  };
+
   return (
     <Draggable key={item.id} draggableId={String(item.id)} index={index}>
       {(provided: any) => (

@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useTaskContext } from "@/context/task-context";
 import { taskList, userList } from "@/entity/testData";
 import useTask from "@/hooks/use-task";
 import { cn } from "@/lib/utils";
@@ -70,10 +71,6 @@ export default function Client(props: {
   });
 
   const task_id = props.searchParams?.task_id || undefined;
-
-  const taskListBE = useTask();
-  if (!taskListBE?.data) return <Loading />;
-  console.log(taskListBE.data);
 
   const onUserFilter = () => {};
 
@@ -157,7 +154,7 @@ export default function Client(props: {
         {userSelect()}
         <Button variant={"link"}>Clear filter</Button>
       </div>
-      <Kanban taskList={taskListBE.data} />
+      <Kanban />
       {/* <Kanban taskList={taskList} /> */}
     </div>
   );
