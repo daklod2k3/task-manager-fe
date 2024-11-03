@@ -154,7 +154,7 @@ const Kanban = () => {
   } = useTaskContext();
   const [columns, setColumns] = useState(dataToColumn(taskList || []));
 
-  const [loading, setLoading] = useState(isLoading);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setColumns(dataToColumn(taskList || []));
@@ -170,7 +170,6 @@ const Kanban = () => {
 
   return (
     <>
-      <TaskDialog />
       <DragDropContext
         onDragEnd={(result) => {
           if (!result.destination) return;

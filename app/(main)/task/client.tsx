@@ -3,6 +3,7 @@
 import Loading from "@/components/Loading";
 import SearchInput from "@/components/SearchInput";
 import Kanban from "@/components/task/kanban";
+import { TaskDialog } from "@/components/task/task-detail";
 import UserItem from "@/components/task/user-item";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -155,6 +156,8 @@ export default function Client(props: {
         <Button variant={"link"}>Clear filter</Button>
       </div>
       <Kanban />
+      <TaskDialog />
+
       {/* <Kanban taskList={taskList} /> */}
     </div>
   );

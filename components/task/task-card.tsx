@@ -14,10 +14,13 @@ const TaskCard = ({
   item: Tables<"tasks">;
   index: number;
 }) => {
-  const { setOpen } = useTaskContext();
+  const {
+    taskDetail: [, setDetail],
+  } = useTaskContext();
 
   const onClick = () => {
-    setOpen(item);
+    "click";
+    setDetail(item);
   };
 
   return (

@@ -6,10 +6,7 @@ const Layout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div
-      className="bg-gradient-to-r from-[#0062FF] to-[#61EFFF] w-full flex contain-center justify-center 
-     min-h-screen"
-    >
+    <div className="flex h-screen max-h-screen grid-cols-[auto,1fr] justify-center overflow-hidden bg-gradient-to-br from-[#FFC4D9] via-[#FF81AA] to-[#FFC4D9]">
       {children}
     </div>
   );

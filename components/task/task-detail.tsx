@@ -19,7 +19,7 @@ import { Tables } from "@/entity/database.types";
 import useTask from "@/hooks/use-task";
 import { cn } from "@/lib/utils";
 import { Database } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import MyAvatar from "../Avatar";
@@ -143,15 +143,26 @@ export default function TaskDetail() {
   const {
     taskDetail: [task],
   } = useTaskContext();
-
   const { data: taskList, error, isLoading } = useTask(task);
-
   const [taskChange, setChange] = useState(task);
-  console.log(isLoading);
+  const searchParams = useSearchParams();
+  const { replace } = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!taskList?.at(0).id) return;
+    const params = new URLSearchParams(searchParams);
+    if (task?.id) {
+      params.set("task_id", String(task.id));
+    } else {
+      params.delete("task_id");
+    }
+    replace(`${pathname}?${params.toString()}`);
+  }, [taskList]);
 
   if (isLoading)
     return (
-      <div className="h-fit space-y-5">
+      <div className="h-fit flex-grow-0 space-y-5">
         <div className="rounded bg-primary p-1 px-3 text-white">
           <TaskTitle title={"Task detail"} />
         </div>
@@ -173,11 +184,11 @@ export default function TaskDetail() {
     );
 
   const data = taskList?.at(0) as Tables<"tasks">;
-  console.log(data);
+  // console.log(data);
 
   if (data)
     return (
-      <div className="h-screen w-full space-y-5">
+      <div className="h-full min-h-0 w-full flex-grow space-y-5">
         <div className="rounded bg-primary p-1 px-3 text-white">
           <TaskTitle title={"Task detail"} />
         </div>
@@ -273,24 +284,24 @@ export default function TaskDetail() {
 export function TaskDialog() {
   const {
     taskDetail: [detail, setDetail],
-    setOpen,
   } = useTaskContext();
 
   const searchParams = useSearchParams();
 
   useEffect(() => {
     const task_id = searchParams.get("task_id");
-    if (task_id) setOpen({ id: Number(task_id) } as Tables<"tasks">);
+    if (task_id) setDetail({ id: Number(task_id) } as Tables<"tasks">);
   }, []);
 
   return (
     <Dialog
-      open={detail != null}
+      open={detail != null && detail != undefined}
       onOpenChange={(x) => {
-        if (!x) setOpen();
+        console.log(x);
+        if (!x && detail) setDetail(undefined);
       }}
     >
-      <DialogContent className="max-h-[calc(100vh-10rem)] max-w-screen-xl">
+      <DialogContent className="flex max-h-[calc(100vh-10rem)] min-h-0 max-w-screen-xl">
         <TaskDetail />
       </DialogContent>
     </Dialog>

@@ -37,6 +37,6 @@ export async function updateTask(task: Tables<"tasks">) {
 export async function getTask(id?: number) {
   const supabase = createClient();
   let filter = supabase.from("tasks").select();
-  if (id) filter = await filter.eq("id", id);
+  if (id) filter = filter.eq("id", id);
   return filter;
 }
