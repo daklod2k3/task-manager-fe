@@ -210,11 +210,11 @@ export default function Department() {
     const onOpen = useCallback(() => setOpen(true), []);
     const onClose = useCallback(() => setOpen(false), []);
   
-    const addTeam = useCallback((name: string) => {
+    const addUser = useCallback((name: string) => {
       if (name !== "") {
-        const id = `depa${Object.keys(teams).length + 1}`;
-        setTeams((prevTeams) => ({
-          ...prevTeams,
+        const id = `name${Object.keys(users).length + 1}`;
+        setUsers((prevUsers) => ({
+          ...prevUsers,
           [id]: {
             id: id,
             name: name,
@@ -225,8 +225,8 @@ export default function Department() {
   
     const handleCreate = useCallback(() => {
       onClose();
-      addTeam(name);
-    }, [onClose, addTeam, name]); // Thêm dependencies để đảm bảo tính đúng đắn
+      addUser(name);
+    }, [onClose, addUser, name]);
   
     return (
       <>
@@ -236,24 +236,20 @@ export default function Department() {
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create a team</DialogTitle>
+              <DialogTitle>Add people</DialogTitle>
             </DialogHeader>
             <DialogDescription>
               <div className="mb-4">
-                <Label htmlFor="nameTeam">Team name</Label>
+                <Label htmlFor="nameTeam">Name</Label>
                 <Input 
                   id="nameTeam"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
-              <div className="mb-4">
-                <Label htmlFor="nameMembers">Who should be in this team</Label>
-                <Autocomplete />
-              </div>
               <div className="flex justify-end">
                 <Button onClick={onClose}>Cancel</Button>
-                <Button className="ml-2" onClick={handleCreate}>Create</Button>
+                <Button className="ml-2" onClick={handleCreate}>Add</Button>
               </div>
             </DialogDescription>
           </DialogContent>
@@ -266,7 +262,7 @@ export default function Department() {
     const classBtn = add ? "flex basis-2/6 justify-center w-full" : "hidden"
     return (
       <div
-        className="flex flex-col items-center cursor-pointer bg-white rounded shadow flex-1 basis-1/4 h-36 max-w-56 scroll-ml-1"
+        className="flex flex-col items-center cursor-pointer bg-white rounded shadow flex-1 basis-1/4 h-28 max-w-56 scroll-ml-1"
         onClick={() => 
           {if(!add) {
             handleTeam.setCurrTeamID(id)
@@ -415,31 +411,31 @@ export default function Department() {
       {/* Left column */}
       <div className="flex-1 mr-4">
         <div>
-          <h2 className="text-lg font-semibold mb-6">People and teams</h2>
+          <h2 className="font-semibold mb-6 text-primary text-2xl">People and teams</h2>
           <div className="min-w-[300px] max-w-[300px]">
             <Autocomplete/>
           </div>
         </div>
         <div>
-          <h2 className="text-base font-medium mt-6 mb-4">People</h2>
-          <div className="flex flex-wrap gap-3 w-full max-h-72 overflow-y-scroll">
+          <h2 className="text-xl font-medium mt-4 mb-2">People</h2>
+          <div className="flex flex-wrap gap-3 w-full max-h-80 overflow-y-scroll bg-primary/10 pl-3 py-2 rounded">
             {cardUser("Your teammate",true)}
             {Object.values(users).map((user) => cardUser(user.name))}
           </div>
         </div>
         <div>
-          <h2 className="text-base font-medium mt-6 mb-4">Teams</h2>
-          <div className="flex flex-wrap gap-3 w-full">
+          <h2 className="text-xl font-medium mt-4 mb-2">Teams</h2>
+          <div className="flex flex-wrap gap-3 w-full max-h-64 overflow-y-scroll bg-primary/10 pl-3 py-2 rounded">
             {cardTeam("Your new team","",true)}
-            {Object.values(dataTeams).map((team) => cardTeam(team.name, team.id))}
+            {Object.values(teams).map((team) => cardTeam(team.name, team.id))}
           </div>
         </div>
       </div>
 
       {/*Right column*/}
-      <div className={currTeam !== "" ? "flex-1" : "flex-1 hidden"}>
+      <div className={currTeam !== "" ? "flex-1" : "hidden"}>
         {editTeamName ? <Input
-                          className="text-lg font-semibold mb-6"
+                          className="text-lg font-semibold mb-4 mt-4"
                           ref={(input) => {
                             if (input) {
                               input.focus();
@@ -449,14 +445,14 @@ export default function Department() {
                           onChange={e => (handleTeam.setNameByid(currTeam,e.target.value))}
                           onBlur={() => {setEditTeamName((prev: any) => !prev)}}
                         />
-                      : <h2 className="text-lg font-semibold mb-6"
+                      : <h2 className="text-lg font-semibold mb-4 mt-4"
                           onClick={() => {
                             setEditTeamName((prev: any) => !prev)
                           }}
                         >{handleTeam.getNameByid(currTeam)}</h2>
         }
         <div className="flex gap-3">
-          <div className="flex flex-wrap p-4 rounded-lg w-full min-w-[250px] shadow bg-gray-100 justify-around">
+          <div className="flex flex-wrap p-4 rounded-lg w-full shadow bg-gray-100 justify-around">
             <div className="flex flex-1 flex-wrap">
               <div className="flex flex-1 justify-between mb-2">
                 <div>
@@ -465,12 +461,12 @@ export default function Department() {
                 </div>
                 <h2 className="text-lg font-semibold mb-2">Position</h2>
               </div>
-              <div className="flex flex-wrap w-full">
-                <div className="mb-2 w-full flex">
-                  <Autocomplete 
-                    placeholder="nhập thành viên muốn thêm" 
-                    onAdd={handleTeamUser.addMemberToTeam}/>
-                </div>
+              <div className="mb-2 w-full flex">
+                <Autocomplete 
+                  placeholder="nhập thành viên muốn thêm" 
+                  onAdd={handleTeamUser.addMemberToTeam}/>
+              </div>
+              <div className="flex flex-wrap w-full h-fit max-h-[520px] overflow-y-scroll">
                 {Object.values(handleUser.getMemberByTeamID(currTeam)).map((member) => (
                   editTable ? (
                     <div 
@@ -483,6 +479,7 @@ export default function Department() {
                           onChange={(e) => handleInput.changeMember(member.userID, 'name', e.target.value)}
                         />
                         <Input
+                          className="mx-2"
                           value={member.position}
                           onChange={(e) => handleInput.changeMember(member.id, 'position', e.target.value)}
                         />  
@@ -505,26 +502,26 @@ export default function Department() {
                     </div>
                   )
                 ))}
-                { editTable || editTeamName ?
-                 <div className="flex flex-1 justify-around mt-3">
-                    <Button 
-                      className="w-1/3 rounded"
-                      onClick={() => {
-                        setEditTable(prev => !prev)
-                        handleData.save()
-                      }}
-                      >Save
-                    </Button>
-                    <Button 
-                      className="w-1/3 rounded"
-                      onClick={() => {
-                        setEditTable(prev => !prev)
-                        handleData.reset()
-                        }}>
-                      Cancel
-                    </Button>
-                  </div>:""}
               </div>
+              { editTable || editTeamName ?
+                <div className="flex flex-1 justify-around mt-3">
+                  <Button 
+                    className="w-1/3 rounded"
+                    onClick={() => {
+                      setEditTable(prev => !prev)
+                      handleData.save()
+                    }}
+                    >Save
+                  </Button>
+                  <Button 
+                    className="w-1/3 rounded"
+                    onClick={() => {
+                      setEditTable(prev => !prev)
+                      handleData.reset()
+                      }}>
+                    Cancel
+                  </Button>
+                </div>:""}
             </div>
           </div>
         </div>
