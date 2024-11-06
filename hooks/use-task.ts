@@ -17,7 +17,6 @@ const fetcher = async (path: string) => {
   const search = new URLSearchParams(path);
   const result = await getTask(Number(search.get("id")));
   // console.log(path);
-
   if (result.error) throw new Error(result.error.message);
   return result.data;
 };
