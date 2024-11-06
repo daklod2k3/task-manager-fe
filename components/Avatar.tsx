@@ -1,22 +1,27 @@
+import { Tables } from "@/entity/database.types";
 import { cn } from "@/lib/utils";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import React, { ComponentProps } from "react";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 
 interface Props extends ComponentProps<typeof Avatar> {
-  imgSrc?: string;
-  name: string;
-  size?: number
+  size?: number;
+  user?: Tables<"profiles">;
 }
 
-export default function MyAvatar({ imgSrc, name, size, className, ...props }: Props) {
-  
-  const sizeClass = size ? `size-${size}` : undefined
-  
+export default function MyAvatar({ user, size, className, ...props }: Props) {
+  const sizeClass = size ? `size-${size}` : undefined;
+  // const localUser = useUser
+
   return (
     <Avatar {...props} className={cn(sizeClass, className)}>
-      <AvatarImage src={imgSrc || "/image/avatar.avif"}/>
-      <AvatarFallback>{name}</AvatarFallback>
+      <AvatarImage
+        src={
+          "/image/avatar/" +
+          (user ? user.avt || "avatar.avif" : "null-user.png")
+        }
+      />
+      <AvatarFallback>{user?.name || "User not found"}</AvatarFallback>
     </Avatar>
   );
 }

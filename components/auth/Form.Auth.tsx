@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { lazy, useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -125,7 +125,7 @@ export function AuthForm({ isLogin = true }) {
     const result = isLogin ? await login(data) : null;
     if (result) {
       router.push("/");
-      console.log(result);
+      // console.log(result);
 
       return;
     }
@@ -153,7 +153,7 @@ export function AuthForm({ isLogin = true }) {
   //   );
 
   return (
-    <Card className="flex bg-white self-center items-center justify-center py-5 px-10 rounded-md border-white border-[1px]">
+    <Card className="flex items-center justify-center self-center rounded-md border-[1px] border-white bg-white px-10 py-5">
       <form
         onSubmit={handleSubmit(formSubmit)}
         className="mx-auto grid w-[350px] gap-6"
@@ -265,8 +265,9 @@ export function AuthForm({ isLogin = true }) {
           )}
           <Button type="submit" className="mt-2 w-full" disabled={loading}>
             {isLogin ? "Đăng nhập" : "Đăng ký"}
+            {loading && <Loader2 className="ml-2 animate-spin" size={16} />}
           </Button>
-          {isLogin ? (
+          {/* {isLogin ? (
             <Button variant="outline" className="w-full" type="button">
               <Image
                 src="/image/logo-google.webp"
@@ -279,7 +280,7 @@ export function AuthForm({ isLogin = true }) {
             </Button>
           ) : (
             ""
-          )}
+          )} */}
         </div>
         <div className="mt-4 text-center text-sm">
           {isLogin ? (

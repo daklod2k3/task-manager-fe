@@ -44,7 +44,7 @@ function ChatMessage({
   message: { user: string; content: string; timestamp: string };
 }) {
   return (
-    <div className="flex items-start space-x-4 mb-4">
+    <div className="mb-4 flex items-start space-x-4">
       <Avatar>
         <AvatarImage
           src={`/placeholder.svg?height=40&width=40`}
@@ -67,15 +67,15 @@ function ChatMessage({
 
 function ChatArea({ channelId }: { channelId: string }) {
   return (
-    <div className="flex flex-col h-full">
-      <ScrollArea className="flex-grow p-4">
+    <div className="flex h-full flex-col">
+      <ScrollArea className="flex-grow bg-white p-4">
         <Suspense fallback={<div>Loading messages...</div>}>
           <ChatMessages channelId={channelId} />
         </Suspense>
       </ScrollArea>
-      <div className="p-4 border-t">
+      <div className="border-t p-4">
         <form className="flex space-x-2">
-          <Input className="flex-grow" placeholder="Type a message..." />
+          <Input className="bg-white" placeholder="Type a message..." />
           <Button type="submit">
             <Send className="h-4 w-4" />
             <span className="sr-only">Send message</span>
@@ -102,8 +102,8 @@ export default async function ChatPage() {
   const defaultChannel = channels[0];
 
   return (
-    <div className="h-full flex flex-col">
-      <header className="bg-gray-100 p-4 border-b shadow">
+    <div className="flex h-full flex-col">
+      <header className="border-b p-4 text-primary shadow">
         <h1 className="text-xl font-semibold">#{defaultChannel.name}</h1>
       </header>
       <ChatArea channelId={defaultChannel.id} />

@@ -1,29 +1,49 @@
 "use server";
 import { Api } from "@/lib/utils";
+import { createClient } from "@/utils/supabase/server";
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export async function login(form: any) {
   // console.log(form);
 
-  try {
-    const res = await (
-      await fetch(Api.baseUrl + "/auth/login", {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify(form),
-      })
-    ).json();
+  // const data = {
+  //   email: formData.get("email") as string,
+  //   password: formData.get("password") as string,
+  // };
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword(form);
 
-    if (!res.accessToken) return;
-    console.log(res);
-
-    cookies().set("access_token", res.accessToken);
-    // return NextResponse.json(res, {});
-    return res;
-  } catch (e) {
-    console.log(e);
+  if (error) {
+    redirect("/error");
   }
+
+  revalidatePath("/", "layout");
+  redirect("/");
 }
+// export async function login(form: any) {
+//   // console.log(form);
+
+//   try {
+//     const res = await (
+//       await fetch(Api.baseUrl + "/auth/login", {
+//         headers: {
+//           Accept: "application/json",
+//           "Content-Type": "application/json",
+//         },
+//         method: "POST",
+//         body: JSON.stringify(form),
+//       })
+//     ).json();
+
+//     console.log(res);
+//     if (!res.access_token) return;
+
+//     cookies().set("sb-ndoyladxdcpftovoalas-auth-token", res.access_token);
+//     // return NextResponse.json(res, {});
+//     return res;
+//   } catch (e) {
+//     console.log(e);
+//   }
+// }

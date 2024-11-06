@@ -5,10 +5,24 @@ import { cn } from "@/lib/utils";
 import React from "react";
 
 interface Props {
-  user: Tables<"profiles"> | null;
+  user: Tables<"profiles">;
   className?: string;
   size?: number;
-  onClick?: React.MouseEventHandler<HTMLSpanElement>
+  onClick?: React.MouseEventHandler<HTMLSpanElement>;
+}
+
+class User implements Tables<"profiles"> {
+  avt: string | null;
+  bio: string | null;
+  id: string;
+  name: string;
+
+  constructor({ id, name, bio, avt }) {
+    this.id = id;
+    this.name = name;
+    this.bio = bio;
+    this.avt = avt;
+  }
 }
 
 export default function UserItem({ user, className, size, onClick }: Props) {
@@ -17,7 +31,12 @@ export default function UserItem({ user, className, size, onClick }: Props) {
   const name = user?.name ?? "none";
   return (
     <HoverInfo label={label}>
-      <MyAvatar name={name} onClick={onClick} imgSrc={src} size={size} className={className} />
+      <MyAvatar
+        user={user}
+        onClick={onClick}
+        size={size}
+        className={className}
+      />
     </HoverInfo>
   );
 }

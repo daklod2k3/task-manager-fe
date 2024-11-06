@@ -7,11 +7,9 @@ const Layout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div className="flex flex-1 h-full">
+    <div className="flex h-full flex-1">
       <ChannelList />
-      <main className="flex-1 flex-grow h-full shadow-lg bg-white">
-        {children}
-      </main>
+      <main className="h-full flex-1 flex-grow shadow-lg">{children}</main>
     </div>
   );
 };

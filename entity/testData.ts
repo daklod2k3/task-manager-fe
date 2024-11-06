@@ -9,19 +9,19 @@ export const userList: Tables<"profiles">[] = [
   },
   {
     id: "340dbc2e-a3c3-4e1b-aed0-02b406a77b6e",
-    name: "suppellex ipsa cras",
+    name: "suppellex ipsa c",
     bio: "Totidem color degenero asperiores. Cohaero uterque laudantium bibo adfectus calco doloribus vulgaris fugiat solus. Consequuntur clementia amicitia amoveo.",
     avt: "/hatuananh-avt.jpg",
   },
   {
     id: "bc348cdc-9e74-4988-afdb-49888c8fd4e0",
-    name: "suppellex ipsa cras",
+    name: "suppellex ipsa cr",
     bio: "Totidem color degenero asperiores. Cohaero uterque laudantium bibo adfectus calco doloribus vulgaris fugiat solus. Consequuntur clementia amicitia amoveo.",
     avt: "/toanvu-avt.jpg",
   },
   {
     id: "62c3a1d4-8bab-47de-ab1f-41a66e1702e0",
-    name: "suppellex ipsa cras",
+    name: "suppellex ipsa cra",
     bio: "Totidem color degenero asperiores. Cohaero uterque laudantium bibo adfectus calco doloribus vulgaris fugiat solus. Consequuntur clementia amicitia amoveo.",
     avt: "/trungtin-avt.jpg",
   },
@@ -129,3 +129,99 @@ export const taskList: Tables<"tasks">[] = [
     priority: "exercitation ullamco in",
   },
 ];
+
+export const TeamList: Tables<"departments">[] = [
+  {
+    "id": 6052968100,
+    "created_at": "2024-10-13T03:29:27.788Z",
+    "name": "Frontend"
+  },
+  {
+    "id": 4261950923,
+    "created_at": "2024-10-13T03:29:27.788Z",
+    "name": "Backend"
+  },
+  {
+    "id": 4344989618,
+    "created_at": "2024-10-13T03:29:27.788Z",
+    "name": "QA"
+  },
+  {
+    "id": 5832859141,
+    "created_at": "2024-10-13T03:29:27.788Z",
+    "name": "Marketing"
+  },
+  {
+    "id": 8573428840,
+    "created_at": "2024-10-13T03:29:27.788Z",
+    "name": "HR"
+  },
+  {
+    "id": 8573423340,
+    "created_at": "2024-10-13T03:29:27.788Z",
+    "name": "Degisn"
+  },
+];
+
+export const TeamUserList: Tables<"department_user">[] = [
+  {
+    "id": 1234567890,
+    "created_at": "2024-10-13T03:29:27.788Z",
+    "department_id": 6052968100,
+    "user_id": "95f525d1-6c8f-42c3-93b5-423bbc21f792",
+  },
+  {
+    "id": 2345678901,
+    "created_at": "2024-10-13T03:29:27.788Z",
+    "department_id": 4261950923,
+    "user_id": "340dbc2e-a3c3-4e1b-aed0-02b406a77b6e",
+  },
+  {
+    "id": 3456789012,
+    "created_at": "2024-10-13T03:29:27.788Z",
+    "department_id": 4344989618,
+    "user_id": "bc348cdc-9e74-4988-afdb-49888c8fd4e0",
+  },
+  {
+    "id": 4567890123,
+    "created_at": "2024-10-13T03:29:27.788Z",
+    "department_id": 5832859141,
+    "user_id": "62c3a1d4-8bab-47de-ab1f-41a66e1702e0",
+  },
+  {
+    "id": 5678901234,
+    "created_at": "2024-10-13T03:29:27.788Z",
+    "department_id": 8573428840,
+    "user_id": "95f525d1-6c8f-42c3-93b5-423bbc21f792",
+  },
+  {
+    "id": 6789012345,
+    "created_at": "2024-10-13T03:29:27.788Z",
+    "department_id": 6052968100,
+    "user_id": "340dbc2e-a3c3-4e1b-aed0-02b406a77b6e",
+  },
+  {
+    "id": 7890123456,
+    "created_at": "2024-10-13T03:29:27.788Z",
+    "department_id": 4261950923,
+    "user_id": "bc348cdc-9e74-4988-afdb-49888c8fd4e0",
+  },
+  {
+    "id": 8901234567,
+    "created_at": "2024-10-13T03:29:27.788Z",
+    "department_id": 4344989618,
+    "user_id": "62c3a1d4-8bab-47de-ab1f-41a66e1702e0",
+  },
+  {
+    "id": 9012345678,
+    "created_at": "2024-10-13T03:29:27.788Z",
+    "department_id": 5832859141,
+    "user_id": "95f525d1-6c8f-42c3-93b5-423bbc21f792",
+  },
+  {
+    "id": 1012345679,
+    "created_at": "2024-10-13T03:29:27.788Z",
+    "department_id": 8573428840,
+    "user_id": "340dbc2e-a3c3-4e1b-aed0-02b406a77b6e",
+  }
+]

@@ -34,8 +34,8 @@ const NavigationButton = ({
   return (
     <Button
       className={cn(
-        "flex flex-col aspect-square w-16 h-fit gap-1 font-bold hover:bg-primary/30 shadow-none text-foreground",
-        style
+        "flex aspect-square h-fit w-16 flex-col gap-1 font-bold text-foreground shadow-none hover:bg-primary/30",
+        style,
       )}
       asChild
     >
@@ -50,11 +50,11 @@ const NavigationButton = ({
 export default function Navigation({}) {
   const path = usePathname();
   return (
-    <div className="px-3 flex flex-col gap-3 py-2 items-center justify-start text-primary *:text-xs">
+    <div className="flex flex-col items-center justify-start gap-3 px-3 py-2 text-primary *:text-xs">
       <Image
         alt="logo"
         src={"/image/logo-border.png"}
-        className=" object-fit drop-shadow-lg mb-5"
+        className="object-fit mb-5 drop-shadow-lg"
         width={60}
         height={60}
       />
@@ -77,7 +77,7 @@ export default function Navigation({}) {
         title="Team"
       />
       <NavigationButton
-        base_path="/channel"
+        base_path="/chat"
         current_path={path}
         Icon={MessageCircleMoreIcon}
         title="Chat"
