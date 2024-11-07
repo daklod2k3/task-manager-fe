@@ -47,3 +47,9 @@ export async function login(form: any) {
 //     console.log(e);
 //   }
 // }
+
+export async function getAccessToken() {
+  const supabase = createClient();
+  const token = (await supabase.auth.getSession()).data.session?.access_token;
+  return token;
+}

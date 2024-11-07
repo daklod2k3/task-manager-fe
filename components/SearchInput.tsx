@@ -8,12 +8,12 @@ export default function SearchInput({
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <div className="items-center flex relative">
-      <Search className="h-4 w-4 ml-2 absolute" />
+    <div className="relative flex items-center">
+      <Search className="absolute ml-2 h-4 w-4" />
       <Input
         type="search"
         placeholder="Search..."
-        className={cn("w-72 pl-7 bg-white/50", className)}
+        className={cn("w-72 bg-white/50 pl-7", className)}
         {...props}
       />
     </div>

@@ -114,8 +114,10 @@ const onDragEnd = async (
       ...removed,
       status: destination.droppableId,
     });
+    console.log(result);
+
     destItems.splice(destination.index, 0, removed);
-    setColumn({
+    await setColumn({
       ...columns,
       [source.droppableId]: {
         ...sourceColumn,
@@ -136,9 +138,9 @@ const onDragEnd = async (
       status: destination.droppableId,
     });
     if (!result) {
-      setLoading(false);
+      // setLoading(false);
     }
-    setColumn({
+    await setColumn({
       ...columns,
       [source.droppableId]: {
         ...column,

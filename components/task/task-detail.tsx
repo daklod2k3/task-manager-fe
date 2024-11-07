@@ -301,7 +301,7 @@ export function TaskDialog() {
         if (!x && detail) setDetail(undefined);
       }}
     >
-      <DialogContent className="flex max-h-[calc(100vh-10rem)] min-h-0 max-w-screen-xl">
+      <DialogContent className="max-h-[calc(100vh-10rem)] min-h-0 max-w-screen-xl">
         <TaskDetail />
       </DialogContent>
     </Dialog>

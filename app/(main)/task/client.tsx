@@ -1,7 +1,9 @@
 "use client";
 
 import Loading from "@/components/Loading";
+import SearchSelect, { PeopleSearchItem } from "@/components/search-select";
 import SearchInput from "@/components/SearchInput";
+import CreateTaskDialog from "@/components/task/create-task";
 import Kanban from "@/components/task/kanban";
 import { TaskDialog } from "@/components/task/task-detail";
 import UserItem from "@/components/task/user-item";
@@ -18,10 +20,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { useTaskContext } from "@/context/task-context";
 import { taskList, userList } from "@/entity/testData";
+import { peopleToSearch, usePeople } from "@/hooks/use-people";
 import useTask from "@/hooks/use-task";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusCircle } from "lucide-react";
+import { Plus, PlusCircle } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -59,11 +62,9 @@ const FormSchema = z.object({
   }),
 });
 
-export default function Client(props: {
-  searchParams?: {
-    task_id?: string;
-  };
-}) {
+export default function Client() {
+  // const { data, error, isLoading } = usePeople();
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -71,11 +72,11 @@ export default function Client(props: {
     },
   });
 
-  const task_id = props.searchParams?.task_id || undefined;
+  const { data: peoples, isLoading: peopleLoading } = usePeople();
 
   const onUserFilter = () => {};
 
-  const userSelect = () => {
+  const UserSelect = () => {
     const items = userList;
     return (
       <Form {...form}>
@@ -150,10 +151,18 @@ export default function Client(props: {
   return (
     <div className="flex max-h-full min-h-0 min-w-0 flex-col gap-5 p-4 text-foreground">
       <h1 className="text-lg font-bold">Task List</h1>
-      <div className="flex items-center gap-3">
+      <div className="flex w-full items-center gap-3">
         <SearchInput className="bg-white" />
-        {userSelect()}
-        <Button variant={"link"}>Clear filter</Button>
+        <UserSelect />
+        <Button variant={"link"} onClick={() => form.resetField("items")}>
+          Clear filter
+        </Button>
+        <CreateTaskDialog>
+          <Button>
+            <Plus className="mr-2" size={16} />
+            Add task
+          </Button>
+        </CreateTaskDialog>
       </div>
       <Kanban />
       <TaskDialog />
