@@ -1,12 +1,12 @@
 "use client";
 import { TaskDialog } from "@/components/task/task-detail";
 import { Tables } from "@/entity/database.types";
-import useTask from "@/hooks/use-task";
+import { useAllTask, useTask } from "@/hooks/use-task";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface ITaskContext {
-  taskFetch: ReturnType<typeof useTask>;
+  taskFetch: ReturnType<typeof useAllTask>;
   taskDetail: ReturnType<typeof useState<Tables<"tasks">>>;
   // setOpen: (task?: Tables<"tasks">) => void;
 }
@@ -14,13 +14,8 @@ interface ITaskContext {
 export const TaskContext = createContext<ITaskContext | undefined>(undefined);
 
 export function TaskProvider({ children }) {
-  const searchParams = useSearchParams();
-  const { replace } = useRouter();
-  const pathname = usePathname();
-  const taskFetch = useTask();
+  const taskFetch = useAllTask();
   const taskDetail = useState<Tables<"tasks">>();
-  const [detail, setDetail] = taskDetail;
-  const params = new URLSearchParams(searchParams);
 
   const value = {
     taskFetch,

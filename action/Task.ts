@@ -34,11 +34,32 @@ export async function updateTask(task: Tables<"tasks">) {
 }
 
 export async function getTask(id?: number) {
-  const supabase = createClient();
-  let filter = supabase.from("tasks").select();
-  if (id) filter = filter.eq("id", id);
-  return filter;
+  try {
+    const res = await fetch(Api.task + (id ? "/" + id : ""), {
+      headers: {
+        Authorization: `Bearer ${await getAccessToken()}`,
+      },
+    });
+
+    // return NextResponse.json(res, {});
+    return await res.json();
+  } catch (e) {
+    console.log(e);
+    return {
+      error: "Server error",
+    };
+    // throw Error()
+  }
 }
+
+// export async function getTask(id?: number) {
+//   const supabase = createClient();
+//   let filter = supabase.from("tasks").select();
+//   if (id) filter = filter.eq("id", id);
+//   console.log(filter.select);
+
+//   return filter;
+// }
 
 export async function createTask(task: Tables<"tasks">) {
   try {

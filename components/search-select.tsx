@@ -24,9 +24,9 @@ export function PeopleSearchItem<T extends Tables<"profiles">>({
   item: T;
 }) {
   return (
-    <div className="flex h-full w-full flex-wrap">
+    <div className="flex size-full min-w-0 items-center gap-2 text-foreground hover:text-primary">
       <MyAvatar user={item} />
-      {item.name}
+      <p className="break-all">{item.name}</p>
     </div>
   );
 }
@@ -43,14 +43,18 @@ interface SearchSelectProps<T> {
   isLoading?: boolean;
   ItemRender?: React.FC<{ item: T }>;
   modal?: boolean;
+  inputClassName?: string;
+  placeholder?: string;
 }
 
 export default function SearchSelect<T>({
+  inputClassName,
   items,
   isLoading = false,
   onSelectedValueChange,
   modal = false,
   ItemRender,
+  placeholder,
 }: SearchSelectProps<T>) {
   const [searchValue, setSearchValue] = React.useState("");
   const [open, setOpen] = React.useState(false);
@@ -116,7 +120,7 @@ export default function SearchSelect<T>({
               onFocus={() => setOpen(true)}
               // onBlur={onInputBlur}
             >
-              <Input />
+              <Input className={inputClassName} placeholder={placeholder} />
             </CommandPrimitive.Input>
           </PopoverAnchor>
           {!open && <CommandList aria-hidden="true" className="hidden" />}
@@ -131,9 +135,9 @@ export default function SearchSelect<T>({
                 e.preventDefault();
               }
             }}
-            className="w-[--radix-popover-trigger-width] p-0"
+            className="max-h-52 min-h-0 w-[--radix-popover-trigger-width] p-0"
           >
-            <CommandList className="max-h-52 min-h-0" asChild>
+            <CommandList asChild>
               {isLoading && (
                 <CommandPrimitive.Loading>
                   <div className="p-1">
@@ -144,8 +148,12 @@ export default function SearchSelect<T>({
               {filteredItems.length > 0 && !isLoading ? (
                 filteredItems.map((item) => (
                   <CommandItem
+                    className="cursor-pointer"
                     key={item.search}
-                    onClick={() => onSelected(item.value)}
+                    onSelect={() => {
+                      console.log("click");
+                      onSelected(item.value);
+                    }}
                   >
                     {ItemRender ? <ItemRender item={item.value} /> : item.label}
                   </CommandItem>

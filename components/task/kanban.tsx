@@ -3,10 +3,10 @@ import { updateTask } from "@/action/Task";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
-import useTask from "@/hooks/use-task";
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import Loading from "../Loading";
 import LoadingDialog from "../loading/LoadingDialog";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import TaskCard from "./task-card";
@@ -152,7 +152,7 @@ const onDragEnd = async (
 
 const Kanban = () => {
   const {
-    taskFetch: { data: taskList, isLoading, mutate, error },
+    taskFetch: { data: taskList, isLoading: taskLoading, mutate, error },
   } = useTaskContext();
   const [columns, setColumns] = useState(dataToColumn(taskList || []));
 
@@ -163,12 +163,14 @@ const Kanban = () => {
   }, [taskList]);
 
   useEffect(() => {
-    setLoading((l) => l && isLoading);
-  }, [isLoading]);
+    setLoading((l) => l && taskLoading);
+  }, [taskLoading]);
 
   useEffect(() => {}, []);
 
   if (taskList?.length == 0) return <span>No tasks found</span>;
+
+  if (taskLoading) return <Loading />;
 
   return (
     <>
@@ -191,7 +193,7 @@ const Kanban = () => {
                   className="grid grid-rows-[auto,1fr] rounded-sm bg-primary/10"
                   key={columnId}
                 >
-                  <div className="sticky top-0 z-50 rounded-sm bg-primary px-3">
+                  <div className="sticky top-0 z-50 rounded-sm bg-primary/80 px-3">
                     <span className="m-1 inline-block font-bold text-white">
                       {column.title.replace("_", " ")}
                     </span>

@@ -1,7 +1,7 @@
 "use client";
 
+import HoverInfo from "@/components/HoverInfo";
 import Loading from "@/components/Loading";
-import SearchSelect, { PeopleSearchItem } from "@/components/search-select";
 import SearchInput from "@/components/SearchInput";
 import CreateTaskDialog from "@/components/task/create-task";
 import Kanban from "@/components/task/kanban";
@@ -17,11 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useTaskContext } from "@/context/task-context";
-import { taskList, userList } from "@/entity/testData";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
-import useTask from "@/hooks/use-task";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, PlusCircle } from "lucide-react";
@@ -77,7 +73,8 @@ export default function Client() {
   const onUserFilter = () => {};
 
   const UserSelect = () => {
-    const items = userList;
+    const { data: items, isLoading } = usePeople();
+    if (isLoading) return <Loading />;
     return (
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onUserFilter)} className="space-y-8">
@@ -105,8 +102,7 @@ export default function Client() {
                                   hidden={true}
                                   checked={checkedState}
                                   onCheckedChange={(checked) => {
-                                    console.log("clcik");
-
+                                    console.log("click");
                                     return checked
                                       ? field.onChange([
                                           ...field.value,
@@ -137,7 +133,6 @@ export default function Client() {
                       />
                     ))}
                   </div>
-
                   <FormMessage />
                 </FormItem>
               );
@@ -153,6 +148,11 @@ export default function Client() {
       <h1 className="text-lg font-bold">Task List</h1>
       <div className="flex w-full items-center gap-3">
         <SearchInput className="bg-white" />
+        {/* <SearchSelect
+          ItemRender={PeopleSearchItem}
+          modal
+          items={peopleToSearch(peoples ?? [])}
+        /> */}
         <UserSelect />
         <Button variant={"link"} onClick={() => form.resetField("items")}>
           Clear filter

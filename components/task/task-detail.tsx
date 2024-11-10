@@ -16,7 +16,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
-import useTask from "@/hooks/use-task";
+import { useTask } from "@/hooks/use-task";
 import { cn } from "@/lib/utils";
 import { Database } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -143,14 +143,14 @@ export default function TaskDetail() {
   const {
     taskDetail: [task],
   } = useTaskContext();
-  const { data: taskList, error, isLoading } = useTask(task);
+  const { data: taskFetch, error, isLoading } = useTask(task?.id);
   const [taskChange, setChange] = useState(task);
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!taskList?.at(0).id) return;
+    if (!taskFetch?.id) return;
     const params = new URLSearchParams(searchParams);
     if (task?.id) {
       params.set("task_id", String(task.id));
@@ -158,7 +158,7 @@ export default function TaskDetail() {
       params.delete("task_id");
     }
     replace(`${pathname}?${params.toString()}`);
-  }, [taskList]);
+  }, [taskFetch]);
 
   if (isLoading)
     return (
@@ -183,7 +183,7 @@ export default function TaskDetail() {
       </div>
     );
 
-  const data = taskList?.at(0) as Tables<"tasks">;
+  const data = taskFetch as Tables<"tasks">;
   // console.log(data);
 
   if (data)
@@ -215,19 +215,19 @@ export default function TaskDetail() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="high">
+                  <SelectItem value="High">
                     <div className="flex items-center">
                       <PriorityIcon priority={"high"} />
                       <span>High</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="medium">
+                  <SelectItem value="Medium">
                     <div className="flex w-full items-center justify-between">
                       <PriorityIcon priority={"medium"} />
                       <span>Medium</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="low">
+                  <SelectItem value="Low">
                     <div className="flex items-center">
                       <PriorityIcon priority={"low"} />
                       <span>Low</span>

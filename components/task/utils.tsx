@@ -30,7 +30,7 @@ export const DueDateRender = ({ date }: { date: Date }) => {
 
 export const PriorityIcon = ({ priority }: { priority: string }) => {
   const Icon = () => {
-    switch (priority) {
+    switch (priority.toLocaleLowerCase()) {
       case "high":
         return <ChevronsUp className="text-red-500" />;
       case "medium":

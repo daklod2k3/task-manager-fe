@@ -33,7 +33,7 @@ const TaskCard = ({
           onClick={onClick}
           className="mb-2 flex flex-col rounded-sm bg-white p-3 text-sm hover:ring"
         >
-          <div className="mb-3">
+          <div className="mb-3 text-base font-bold">
             <div>{item.title}</div>
           </div>
           <div className="flex items-center justify-between font-bold">

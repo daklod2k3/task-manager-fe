@@ -14,21 +14,27 @@ const delay = (delayInms) => {
 };
 
 const fetcher = async (path: string) => {
-  const search = new URLSearchParams(path);
-  const result = await getTask(Number(search.get("id")));
-  // console.log(path);
-
-  if (result.error) throw new Error(result.error.message);
+  const id = path.split("/").pop();
+  const result = await getTask(Number(id));
+  console.log(result);
+  if (result.error) throw new Error(result.error);
   return result.data;
 };
 
-export default function useTask(task?: Tables<"tasks">) {
-  // console.log("load");
-  const search = new URLSearchParams();
-  if (task) search.append("id", String(task.id));
-
+export function useAllTask() {
   const { data, error, isLoading, mutate } = useSWR(
-    Api.baseUrl + "/task?" + search.toString(),
+    Api.baseUrl + "/task",
+    fetcher,
+    {
+      revalidateOnMount: true,
+    },
+  );
+  return { data, error, isLoading, mutate };
+}
+
+export function useTask(id?: number) {
+  const { data, error, isLoading, mutate } = useSWR(
+    Api.baseUrl + "/task/" + id,
     fetcher,
     {
       revalidateOnMount: true,

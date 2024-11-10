@@ -15,6 +15,6 @@ export const Api = {
 
 export interface IApiResponse<T> {
   status: number;
-  data: T[];
+  data: T;
   error: string;
 }

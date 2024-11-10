@@ -1,6 +1,11 @@
 "client";
 import { createTask } from "@/action/Task";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
@@ -10,11 +15,14 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
-import React, { useCallback, useState } from "react";
+import { Loader2, X } from "lucide-react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { date, z } from "zod";
 import { AutoComplete } from "../auto-complete";
+import MyAvatar from "../Avatar";
 import SearchSelect, { PeopleSearchItem } from "../search-select";
+import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Calendar } from "../ui/calendar";
 import {
@@ -43,6 +51,13 @@ const formSchema = z.object({
   description: z.string().optional(),
   priority: z.enum(["high", "medium", "low"]).default("medium"),
   due_date: z.date().optional(),
+  task_users: z
+    .array(
+      z.object({
+        user_id: z.string(),
+      }),
+    )
+    .optional(),
 });
 
 export default function CreateTaskDialog({ children }) {
@@ -79,12 +94,12 @@ export default function CreateTaskDialog({ children }) {
       }
       toast({
         title: "Task created",
-        description: `${result?.data[0].title} created`,
+        description: `${result?.data.title} created`,
         action: (
           <ToastAction
             altText="Show detail"
             onClick={() =>
-              setDetail({ id: result?.data[0].id } as Tables<"tasks">)
+              setDetail({ id: result?.data.id } as Tables<"tasks">)
             }
           >
             Show more
@@ -97,9 +112,34 @@ export default function CreateTaskDialog({ children }) {
     [toast],
   );
 
+  const addAssignee = (x) => {
+    if (assigneeSelect.filter((item) => item.id == x.id).length > 0) return;
+    setAssigneeSelect([...assigneeSelect, x]);
+  };
+
+  const removeAssignee = (x) => {
+    setAssigneeSelect(assigneeSelect.filter((item) => item.id !== x.id));
+  };
+
+  useEffect(() => {
+    form.setValue(
+      "task_users",
+      assigneeSelect.map((x) => ({ user_id: x.id })),
+    );
+  }, [assigneeSelect, form]);
+
+  if (peopleLoading)
+    return (
+      <div>
+        <Loader2 className="animate-spin text-primary" />
+      </div>
+    );
+
   return (
-    <Dialog defaultOpen={false} open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog defaultOpen={false} open={open}>
+      <DialogTrigger asChild onClick={() => setOpen(true)}>
+        {children}
+      </DialogTrigger>
       <DialogContent>
         <h2 className="text-xl font-bold text-foreground">Create Task</h2>
         <Form {...form}>
@@ -126,16 +166,33 @@ export default function CreateTaskDialog({ children }) {
               name="assignees"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Assignee</FormLabel>
+                  <FormLabel>Assign to</FormLabel>
                   <FormControl>
-                    <SearchSelect
-                      ItemRender={PeopleSearchItem}
-                      modal
-                      onSelectedValueChange={(x) =>
-                        setAssigneeSelect([...assigneeSelect, x])
-                      }
-                      items={peopleToSearch(peoples)}
-                    />
+                    <>
+                      <div className="flex flex-wrap gap-1">
+                        {assigneeSelect.map((x) => (
+                          <Badge key={x.id} className="flex gap-1 p-1">
+                            <MyAvatar user={x} size={7} />
+                            {x.name}
+                            <X
+                              size={18}
+                              className="cursor-pointer rounded-full hover:bg-white hover:text-primary"
+                              onClick={() => removeAssignee(x)}
+                            />
+                          </Badge>
+                        ))}
+                      </div>
+                      <SearchSelect
+                        placeholder="Type to search"
+                        ItemRender={PeopleSearchItem}
+                        modal={true}
+                        onSelectedValueChange={(x) => {
+                          console.log("click");
+                          addAssignee(x);
+                        }}
+                        items={peopleToSearch(peoples)}
+                      />
+                    </>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -242,6 +299,9 @@ export default function CreateTaskDialog({ children }) {
               )}
             />
             <div className="flex justify-end">
+              <DialogClose asChild onClick={() => setOpen(false)}>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
               <Button type="submit">Create</Button>
             </div>
           </form>
