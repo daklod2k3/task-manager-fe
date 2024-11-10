@@ -1,4 +1,5 @@
 "client";
+import { ApiRoutes } from "@/action/Api";
 import { createTask } from "@/action/Task";
 import {
   Dialog,
@@ -9,7 +10,6 @@ import {
 import { useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
-import UseTaskDetail from "@/hooks/use-task-detail";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,8 +18,8 @@ import { format } from "date-fns";
 import { Loader2, X } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { date, z } from "zod";
-import { AutoComplete } from "../auto-complete";
+import { mutate } from "swr";
+import { z } from "zod";
 import MyAvatar from "../Avatar";
 import SearchSelect, { PeopleSearchItem } from "../search-select";
 import { Badge } from "../ui/badge";
@@ -77,14 +77,13 @@ export default function CreateTaskDialog({ children }) {
   const [assigneeSelect, setAssigneeSelect] = useState<Tables<"profiles">[]>(
     [],
   );
-  const [searchValue, setSearchValue] = useState("");
 
   const formSubmit = useCallback(
     async (formData) => {
       // console.log(formData);
       const result = await createTask(formData);
       // console.log(result);
-      if (!result || result?.error) {
+      if (!result || result?.error || !result?.data) {
         toast({
           title: "Task create failed",
           description: result?.error || "Unknown server error",
@@ -92,6 +91,7 @@ export default function CreateTaskDialog({ children }) {
         });
         return;
       }
+      mutate(ApiRoutes.Task);
       toast({
         title: "Task created",
         description: `${result?.data.title} created`,

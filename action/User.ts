@@ -1,19 +1,11 @@
-import { Api } from "@/lib/utils";
-import { cookies } from "next/headers";
+"use server";
+
+import { ApiAuth, ApiRoutes } from "./Api";
 
 export async function getUser() {
-  const token = cookies().get("accessToken")?.value;
-  try {
-    const res = await (
-      await fetch(Api.baseUrl + "/user", {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-    ).json();
+  const api = new ApiAuth(ApiRoutes.User);
+  const res = await api.get();
+  // console.log(res);
 
-    return res;
-  } catch {
-    return null;
-  }
+  return await res.json();
 }

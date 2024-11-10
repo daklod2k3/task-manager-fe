@@ -1,7 +1,7 @@
 "use client";
+import { ApiRoutes } from "@/action/Api";
 import { getTask } from "@/action/Task";
 import { Tables } from "@/entity/database.types";
-import { Api } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/client";
 import React, { useEffect, useState } from "react";
 import useSWR from "swr";
@@ -22,19 +22,15 @@ const fetcher = async (path: string) => {
 };
 
 export function useAllTask() {
-  const { data, error, isLoading, mutate } = useSWR(
-    Api.baseUrl + "/task",
-    fetcher,
-    {
-      revalidateOnMount: true,
-    },
-  );
+  const { data, error, isLoading, mutate } = useSWR(ApiRoutes.Task, fetcher, {
+    revalidateOnMount: true,
+  });
   return { data, error, isLoading, mutate };
 }
 
 export function useTask(id?: number) {
   const { data, error, isLoading, mutate } = useSWR(
-    Api.baseUrl + "/task/" + id,
+    ApiRoutes.Task + "/" + id,
     fetcher,
     {
       revalidateOnMount: true,

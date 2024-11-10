@@ -1,9 +1,6 @@
 "use client";
-import { getTask } from "@/action/Task";
-import { Tables } from "@/entity/database.types";
-import { Api } from "@/lib/utils";
-import { createClient } from "@/utils/supabase/client";
-import React, { useEffect, useState } from "react";
+import { ApiRoutes } from "@/action/Api";
+import { getUser } from "@/action/User";
 import useSWR from "swr";
 
 interface Props {
@@ -11,15 +8,11 @@ interface Props {
 }
 
 const fetcher = async (path: string) => {
-  const result = await getTask();
-  if (result.error) throw new Error(result.error.message);
-  return result.data;
+  const result = await getUser();
+  return result;
 };
 
-export default function useUser() {
-  const { data, error, isLoading, mutate } = useSWR(
-    Api.baseUrl + "/user",
-    fetcher,
-  );
+export function useUser() {
+  const { data, error, isLoading, mutate } = useSWR(ApiRoutes.User, fetcher);
   return { data, error, isLoading, mutate };
 }

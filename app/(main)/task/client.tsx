@@ -75,6 +75,8 @@ export default function Client() {
   const UserSelect = () => {
     const { data: items, isLoading } = usePeople();
     if (isLoading) return <Loading />;
+    console.log(items);
+
     return (
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onUserFilter)} className="space-y-8">

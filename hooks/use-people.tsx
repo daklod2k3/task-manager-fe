@@ -1,17 +1,15 @@
+import { ApiRoutes } from "@/action/Api";
 import { getPeople } from "@/action/People";
 import { ISearchItem } from "@/components/search-select";
 import { Tables } from "@/entity/database.types";
-import { Api } from "@/lib/utils";
 import useSWR from "swr";
 
 const fetcher = async () => {
-  return await getPeople()
-    .then((res) => res.data)
-    .catch((err) => err);
+  return (await getPeople()).data;
 };
 
 export function usePeople() {
-  const { data, error, mutate, isLoading } = useSWR(Api.people, fetcher);
+  const { data, error, mutate, isLoading } = useSWR(ApiRoutes.People, fetcher);
 
   return {
     data,

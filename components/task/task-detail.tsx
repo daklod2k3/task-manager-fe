@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTaskContext } from "@/context/task-context";
-import { Tables } from "@/entity/database.types";
+import { Database, Tables } from "@/entity/database.types";
 import { useTask } from "@/hooks/use-task";
+import { useUser } from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
-import { Database } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
@@ -148,6 +148,7 @@ export default function TaskDetail() {
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   const pathname = usePathname();
+  const { data: user } = useUser();
 
   useEffect(() => {
     if (!taskFetch?.id) return;
@@ -186,6 +187,10 @@ export default function TaskDetail() {
   const data = taskFetch as Tables<"tasks">;
   // console.log(data);
 
+  if (error) {
+    return <div>{error.message}</div>;
+  }
+
   if (data)
     return (
       <div className="h-full min-h-0 w-full flex-grow space-y-5">
@@ -207,7 +212,7 @@ export default function TaskDetail() {
                     setChange({
                       ...taskChange,
                       priority:
-                        Database["public"]["Enums"]["TaskPriority"][value],
+                        value as Database["public"]["Enums"]["TaskPriority"],
                     });
                 }}
               >
