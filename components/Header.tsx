@@ -2,11 +2,18 @@
 import { logout } from "@/action/Auth";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/use-user";
-import { Search, User2 } from "lucide-react";
+import { ChevronDown, Search, User2 } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 import MyAvatar from "./Avatar";
 import SearchInput from "./SearchInput";
 import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 import { Input } from "./ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
@@ -21,27 +28,28 @@ export default function Header() {
         <SearchInput />
       </div>
       {!isLoading && user && (
-        <Popover>
-          <PopoverTrigger className="flex items-center gap-2 rounded px-3 text-foreground">
-            <User2 />
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex items-center gap-2 rounded px-3 text-primary-foreground">
+            <MyAvatar user={user} size={7} />
             <p>{user.name}</p>
-          </PopoverTrigger>
-          <PopoverContent className="flex w-full flex-col">
-            <Button
+            <ChevronDown size={17} />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="flex w-full flex-col">
+            <DropdownMenuItem
               onClick={async () => {
-                const res = await logout();
-                if (res)
-                  toast({
-                    title: "Logout failed",
-                    description: res?.error || "An error occurred",
-                    variant: "destructive",
-                  });
+                // const res = await logout();
+                // if (res)
+                //   toast({
+                //     title: "Logout failed",
+                //     description: res?.error || "An error occurred",
+                //     variant: "destructive",
+                //   });
               }}
             >
-              Log out
-            </Button>
-          </PopoverContent>
-        </Popover>
+              <Link href={"/logout"}>Log out</Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
     </div>
   );

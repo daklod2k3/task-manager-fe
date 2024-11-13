@@ -151,21 +151,22 @@ export default function TaskDetail() {
   const { data: user } = useUser();
 
   useEffect(() => {
-    if (!taskFetch?.id) return;
-    const params = new URLSearchParams(searchParams);
-    if (task?.id) {
-      params.set("task_id", String(task.id));
-    } else {
-      params.delete("task_id");
-    }
-    replace(`${pathname}?${params.toString()}`);
-  }, [taskFetch]);
+    // if (!taskFetch?.id) return;
+    // const params = new URLSearchParams(searchParams);
+    // if (task?.id) {
+    //   params.set("task_id", String(task.id));
+    // } else {
+    //   params.delete("task_id");
+    // }
+    // console.log(task);
+    // replace(`${pathname}?${params.toString()}`);
+  }, [taskFetch, task]);
 
   if (isLoading)
     return (
       <div className="h-fit flex-grow-0 space-y-5">
         <div className="rounded bg-primary p-1 px-3 text-white">
-          <TaskTitle title={"Task detail"} />
+          <TaskTitle textSize="xl" title={"Task detail"} />
         </div>
         <div className="grid min-w-0 grid-cols-[2fr,1fr] gap-3">
           <div className="space-y-2">
@@ -195,7 +196,7 @@ export default function TaskDetail() {
     return (
       <div className="h-full min-h-0 w-full flex-grow space-y-5">
         <div className="rounded bg-primary p-1 px-3 text-white">
-          <TaskTitle title={"Task detail"} />
+          <TaskTitle textSize="xl" title={"Task detail"} />
         </div>
         <div className="grid min-w-0 grid-cols-[2.5fr,1fr] gap-3">
           <div className="space-y-2">

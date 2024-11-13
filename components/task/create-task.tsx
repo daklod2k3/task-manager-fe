@@ -71,6 +71,7 @@ export default function CreateTaskDialog({ children }) {
   const { toast } = useToast();
   const {
     taskDetail: [, setDetail],
+    taskFetch: { mutate },
   } = useTaskContext();
 
   const { data: peoples, isLoading: peopleLoading } = usePeople();
@@ -91,7 +92,7 @@ export default function CreateTaskDialog({ children }) {
         });
         return;
       }
-      mutate(ApiRoutes.Task);
+      mutate();
       toast({
         title: "Task created",
         description: `${result?.data.title} created`,

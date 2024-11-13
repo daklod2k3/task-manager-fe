@@ -1,6 +1,7 @@
 "use client";
 import { Tables } from "@/entity/database.types";
 import { TaskFilter, useAllTask, useTask } from "@/hooks/use-task";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface ITaskContext {
@@ -17,6 +18,22 @@ export function TaskProvider({ children }) {
   const taskFilter = useState<TaskFilter>();
 
   const taskFetch = useAllTask(taskFilter[0]);
+
+  //
+  const pathname = usePathname();
+  const { replace } = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    if (taskDetail[0]?.id) {
+      params.set("task_id", String(taskDetail[0].id));
+    } else {
+      params.delete("task_id");
+    }
+    // replace(`${pathname}?${params.toString()}`);
+    console.log("task detail", taskDetail[0]);
+  }, [taskDetail]);
 
   const value = {
     taskFetch,
