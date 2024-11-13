@@ -51,3 +51,18 @@ export async function createTask(task: Tables<"tasks">) {
     // throw Error()
   }
 }
+
+export async function updateStatus(
+  id: Tables<"tasks">["id"],
+  status: Tables<"tasks">["status"],
+) {
+  const res = await new ApiAuth(ApiRoutes.Task).patch(id, [
+    {
+      op: "replace",
+      path: "status",
+      value: status,
+    },
+  ]);
+
+  return await res.json();
+}

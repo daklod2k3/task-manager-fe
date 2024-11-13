@@ -11,6 +11,7 @@ export const enum ApiRoutes {
   User = "/user",
   Task = "/task",
   People = "/people",
+  Channel = "/channel",
 }
 
 export interface GetProps {
@@ -59,8 +60,8 @@ export class ApiAuth {
     });
   }
 
-  async patch(data: any) {
-    return fetch(this.route, {
+  async patch(id, data: any) {
+    return fetch(this.route + `/${id}`, {
       headers: {
         Authorization: `Bearer ${await this.token}`,
         Accept: "application/json",

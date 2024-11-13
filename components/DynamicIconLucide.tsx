@@ -1,17 +1,17 @@
-import { icons } from "lucide-react";
+// import { icons } from "lucide-react";
 
-const Icon = ({
-  name,
-  color,
-  size,
-}: {
-  name: typeof icons;
-  size: number;
-  color: string;
-}) => {
-  const LucideIcon = icons[name];
+// const Icon = ({
+//   name,
+//   color,
+//   size,
+// }: {
+//   name: typeof icons;
+//   size: number;
+//   color: string;
+// }) => {
+//   const LucideIcon = icons[name];
 
-  return <LucideIcon color={color} size={size} />;
-};
+//   return <LucideIcon color={color} size={size} />;
+// };
 
-export default Icon;
+// export default Icon;

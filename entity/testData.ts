@@ -34,7 +34,7 @@ export const taskList: Tables<"tasks">[] = [
     title: "cavus decumbo voluntarius",
     description:
       "Adimpleo bis antiquus timidus traho demulceo spectaculum. Quibusdam sono eos blandior aegrotatio adulatio cubitum vesica. Talio tener uberrime tersus.",
-    dueDate: "2024-10-15T04:19:39.479Z",
+    due_date: "2024-10-15T04:19:39.479Z",
     status: "To_do",
     priority: "Low",
   },
@@ -44,7 +44,7 @@ export const taskList: Tables<"tasks">[] = [
     title: "laudantium veniam capto",
     description:
       "Placeat administratio degero. Supra et desino. Demum supellex aegrus ut cubo.",
-    dueDate: "2024-10-13T00:01:05.408Z",
+    due_date: "2024-10-13T00:01:05.408Z",
     status: "To_do",
     priority: "High",
   },
@@ -54,7 +54,7 @@ export const taskList: Tables<"tasks">[] = [
     title: "aranea libero adamo",
     description:
       "Venia theatrum vorax rem capitulus sperno celer conturbo brevis cenaculum. Animi absorbeo consectetur civis debitis conduco. Pauci utor magnam libero alioqui vesper.",
-    dueDate: "2024-10-12T14:20:29.348Z",
+    due_date: "2024-10-12T14:20:29.348Z",
     status: "In_Progress",
     priority: "Medium",
   },
@@ -64,68 +64,68 @@ export const taskList: Tables<"tasks">[] = [
     title: "vito cursim aspicio",
     description:
       "Canis illo cunae basium dedico. Vilicus supplanto venustas supra campana tergo. Caste abscido natus sollicito denique.",
-    dueDate: "2024-10-13T06:08:00.197Z",
+    due_date: "2024-10-13T06:08:00.197Z",
     status: "In_Progress",
     priority: "Medium",
   },
-  {
-    id: 697355865,
-    created_at: "2024-10-13T06:25:27.417Z",
-    title: "quaerat somniculosus strues",
-    description:
-      "Audio asporto undique alo possimus tempore thesis corpus vinitor depereo. Conscendo vester coma dens amoveo. Collum calamitas comedo concedo defero aggredior vulgaris optio currus corroboro.",
-    dueDate: "2024-10-12T15:22:00.972Z",
-    status: "In_Progress",
-    priority: "Excepteur ex laboris ullamco amet",
-  },
-  {
-    id: -1442659528,
-    created_at: "2024-10-12T18:37:53.945Z",
-    title: "molestiae temeritas comparo",
-    description:
-      "Praesentium constans conservo suffoco via uter depulso cohibeo casso. Conqueror tero urbs tantum adicio claudeo. Clementia occaecati communis alveus eos.",
-    dueDate: "2024-10-13T04:55:59.046Z",
-    status: "In_Progress",
-    priority: "ullamco nisi dolore aliquip sit",
-  },
-  {
-    id: 235530320,
-    created_at: "2024-10-13T10:48:45.414Z",
-    title: "bardus succurro ullus",
-    description:
-      "Officia accendo patrocinor nulla statua. Denique temptatio somnus abduco certus ubi ciminatio artificiose. Statim accusamus dedecor.",
-    dueDate: "2024-10-12T18:26:53.903Z",
-    status: "In_Progress",
-    priority: "exercitation ullamco in",
-  },
-  {
-    id: 123123,
-    created_at: "2024-10-13T10:48:45.414Z",
-    title: "bardus succurro ullus",
-    description:
-      "Officia accendo patrocinor nulla statua. Denique temptatio somnus abduco certus ubi ciminatio artificiose. Statim accusamus dedecor.",
-    dueDate: "2024-10-12T18:26:53.903Z",
-    status: "In_Progress",
-    priority: "exercitation ullamco in",
-  },
-  {
-    id: 2432342,
-    created_at: "2024-10-13T10:48:45.414Z",
-    title: "bardus succurro ullus",
-    description:
-      "Officia accendo patrocinor nulla statua. Denique temptatio somnus abduco certus ubi ciminatio artificiose. Statim accusamus dedecor.",
-    dueDate: "2024-10-12T18:26:53.903Z",
-    status: "In_Progress",
-    priority: "exercitation ullamco in",
-  },
-  {
-    id: 56,
-    created_at: "2024-10-13T10:48:45.414Z",
-    title: "bardus succurro ullus",
-    description:
-      "Officia accendo patrocinor nulla statua. Denique temptatio somnus abduco certus ubi ciminatio artificiose. Statim accusamus dedecor.",
-    dueDate: "2024-10-12T18:26:53.903Z",
-    status: "In_Progress",
-    priority: "exercitation ullamco in",
-  },
+  // {
+  //   id: 697355865,
+  //   created_at: "2024-10-13T06:25:27.417Z",
+  //   title: "quaerat somniculosus strues",
+  //   description:
+  //     "Audio asporto undique alo possimus tempore thesis corpus vinitor depereo. Conscendo vester coma dens amoveo. Collum calamitas comedo concedo defero aggredior vulgaris optio currus corroboro.",
+  //   due_date: "2024-10-12T15:22:00.972Z",
+  //   status: "In_Progress",
+  //   priority: "Excepteur ex laboris ullamco amet",
+  // },
+  // {
+  //   id: -1442659528,
+  //   created_at: "2024-10-12T18:37:53.945Z",
+  //   title: "molestiae temeritas comparo",
+  //   description:
+  //     "Praesentium constans conservo suffoco via uter depulso cohibeo casso. Conqueror tero urbs tantum adicio claudeo. Clementia occaecati communis alveus eos.",
+  //   due_date: "2024-10-13T04:55:59.046Z",
+  //   status: "In_Progress",
+  //   priority: "ullamco nisi dolore aliquip sit",
+  // },
+  // {
+  //   id: 235530320,
+  //   created_at: "2024-10-13T10:48:45.414Z",
+  //   title: "bardus succurro ullus",
+  //   description:
+  //     "Officia accendo patrocinor nulla statua. Denique temptatio somnus abduco certus ubi ciminatio artificiose. Statim accusamus dedecor.",
+  //   due_date: "2024-10-12T18:26:53.903Z",
+  //   status: "In_Progress",
+  //   priority: "exercitation ullamco in",
+  // },
+  // {
+  //   id: 123123,
+  //   created_at: "2024-10-13T10:48:45.414Z",
+  //   title: "bardus succurro ullus",
+  //   description:
+  //     "Officia accendo patrocinor nulla statua. Denique temptatio somnus abduco certus ubi ciminatio artificiose. Statim accusamus dedecor.",
+  //   due_date: "2024-10-12T18:26:53.903Z",
+  //   status: "In_Progress",
+  //   priority: "exercitation ullamco in",
+  // },
+  // {
+  //   id: 2432342,
+  //   created_at: "2024-10-13T10:48:45.414Z",
+  //   title: "bardus succurro ullus",
+  //   description:
+  //     "Officia accendo patrocinor nulla statua. Denique temptatio somnus abduco certus ubi ciminatio artificiose. Statim accusamus dedecor.",
+  //   due_date: "2024-10-12T18:26:53.903Z",
+  //   status: "In_Progress",
+  //   priority: "exercitation ullamco in",
+  // },
+  // {
+  //   id: 56,
+  //   created_at: "2024-10-13T10:48:45.414Z",
+  //   title: "bardus succurro ullus",
+  //   description:
+  //     "Officia accendo patrocinor nulla statua. Denique temptatio somnus abduco certus ubi ciminatio artificiose. Statim accusamus dedecor.",
+  //   due_date: "2024-10-12T18:26:53.903Z",
+  //   status: "In_Progress",
+  //   priority: "exercitation ullamco in",
+  // },
 ];

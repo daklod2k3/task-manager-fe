@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import React from "react";
 
 interface Props {
-  user: Tables<"profiles">;
+  user?: Tables<"profiles">;
   className?: string;
   size?: number;
   onClick?: React.MouseEventHandler<HTMLSpanElement>;

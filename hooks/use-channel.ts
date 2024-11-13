@@ -1,3 +1,4 @@
+import { ApiRoutes } from "@/action/Api";
 import React from "react";
 import useSWR from "swr";
 
@@ -11,5 +12,5 @@ interface Props {
 }
 
 export default function useChannel({ option }: Props) {
-  const { data, error, isLoading } = useSWR(Api.baseUrl + "/channel", fetcher);
+  const { data, error, isLoading } = useSWR(ApiRoutes.Channel, fetcher);
 }

@@ -1,5 +1,5 @@
 "use client";
-import { updateTask } from "@/action/Task";
+import { updateStatus, updateTask } from "@/action/Task";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
@@ -110,11 +110,6 @@ const onDragEnd = async (
     const sourceItems = [...sourceColumn.items];
     const destItems = [...destColumn.items];
     const [removed] = sourceItems.splice(source.index, 1);
-    const result = await updateTask({
-      ...removed,
-      status: destination.droppableId,
-    });
-    console.log(result);
 
     destItems.splice(destination.index, 0, removed);
     await setColumn({
@@ -128,26 +123,36 @@ const onDragEnd = async (
         items: sortData(destItems),
       },
     });
-  } else {
-    const column = columns[source.droppableId];
-    const copiedItems = [...column.items];
-    const [removed] = copiedItems.splice(source.index, 1);
-    copiedItems.splice(destination.index, 0, removed);
-    const result = await updateTask({
-      ...removed,
-      status: destination.droppableId,
-    });
-    if (!result) {
-      // setLoading(false);
+
+    const result = await updateStatus(removed.id, destination.droppableId);
+    console.log(result);
+    if (result.status != 200) {
+      await setColumn({
+        ...columns,
+      });
     }
-    await setColumn({
-      ...columns,
-      [source.droppableId]: {
-        ...column,
-        items: sortData(copiedItems),
-      },
-    });
+    setLoading(false);
   }
+  //  else {
+  //   const column = columns[source.droppableId];
+  //   const copiedItems = [...column.items];
+  //   const [removed] = copiedItems.splice(source.index, 1);
+  //   copiedItems.splice(destination.index, 0, removed);
+  //   const result = await updateTask({
+  //     ...removed,
+  //     status: destination.droppableId,
+  //   });
+  //   if (!result) {
+  //     setLoading(false);
+  //   }
+  //   await setColumn({
+  //     ...columns,
+  //     [source.droppableId]: {
+  //       ...column,
+  //       items: sortData(copiedItems),
+  //     },
+  //   });
+  // }
 };
 
 const Kanban = () => {
@@ -181,7 +186,7 @@ const Kanban = () => {
           if (source.droppableId === destination.droppableId) return;
           setLoading(true);
           onDragEnd(result, columns, setColumns, setLoading, mutate);
-          setLoading(false);
+          // setLoading(false);
         }}
       >
         <LoadingDialog open={loading} />

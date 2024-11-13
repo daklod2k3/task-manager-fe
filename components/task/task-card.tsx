@@ -47,7 +47,7 @@ const TaskCard = ({
             <div className="flex items-center self-end">
               {PriorityIcon({ priority: item.priority })}
               <div>{}</div>
-              <UserItem user={null} size={6} />
+              <UserItem size={6} />
             </div>
           </div>
         </div>
