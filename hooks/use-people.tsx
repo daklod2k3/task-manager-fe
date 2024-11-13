@@ -5,7 +5,7 @@ import { Tables } from "@/entity/database.types";
 import useSWR from "swr";
 
 const fetcher = async () => {
-  return (await getPeople()).data;
+  return (await getPeople()).data || [];
 };
 
 export function usePeople() {

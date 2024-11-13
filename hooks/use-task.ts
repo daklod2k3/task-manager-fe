@@ -1,9 +1,7 @@
 "use client";
-import { ApiRoutes } from "@/action/Api";
+import { ApiRoutes, Filter } from "@/action/Api";
 import { getTask } from "@/action/Task";
 import { Tables } from "@/entity/database.types";
-import { createClient } from "@/utils/supabase/client";
-import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 
 interface Props {
@@ -15,16 +13,48 @@ const delay = (delayInms) => {
 
 const fetcher = async (path: string) => {
   const id = path.split("/").pop();
-  const result = await getTask(Number(id));
+  console.log(id);
+
+  const search = new URLSearchParams(path);
+  const result = await getTask({ id: Number(id), search: search.toString() });
   console.log(result);
   if (result.error) throw new Error(result.error);
   return result.data;
 };
 
-export function useAllTask() {
-  const { data, error, isLoading, mutate } = useSWR(ApiRoutes.Task, fetcher, {
-    revalidateOnMount: true,
-  });
+export interface TaskFilter {
+  peopleFilter?: Filter<Tables<"profiles">>;
+  filter?: Filter<Tables<"tasks">>;
+}
+
+export interface TaskFetchProps {
+  filter?: TaskFilter;
+}
+
+export function useAllTask(taskFilter?: TaskFilter) {
+  const search = new URLSearchParams();
+  const filter = Object.entries(taskFilter || {}).reduce<any[]>(
+    (acc, [key, value]) => {
+      if (value) acc.push(value);
+      return acc;
+    },
+    [],
+  );
+  if (filter)
+    search.append(
+      "filter",
+      JSON.stringify({
+        filters: filter,
+        logic: "and",
+      }),
+    );
+  const { data, error, isLoading, mutate } = useSWR(
+    ApiRoutes.Task + "?" + search,
+    fetcher,
+    {
+      revalidateOnMount: true,
+    },
+  );
   return { data, error, isLoading, mutate };
 }
 

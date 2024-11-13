@@ -5,6 +5,7 @@ import { Input } from "./ui/input";
 
 export default function SearchInput({
   className,
+  placeholder = "Search...",
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
@@ -12,7 +13,7 @@ export default function SearchInput({
       <Search className="absolute ml-2 h-4 w-4" />
       <Input
         type="search"
-        placeholder="Search..."
+        placeholder={placeholder}
         className={cn("w-72 bg-white/50 pl-7", className)}
         {...props}
       />

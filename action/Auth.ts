@@ -15,9 +15,10 @@ export async function login(form: any) {
   const { error } = await supabase.auth.signInWithPassword(form);
 
   if (error) {
-    redirect("/error");
-  }
+    console.log(error.message);
 
+    return { error: error.message };
+  }
   revalidatePath("/", "layout");
   redirect("/");
 }
@@ -51,4 +52,13 @@ export async function getAccessToken() {
   const supabase = createClient();
   const token = (await supabase.auth.getSession()).data.session?.access_token;
   return token;
+}
+
+export async function logout() {
+  const sp = createClient();
+  const res = await sp.auth.signOut();
+  if (res.error) {
+    return { error: res.error.message };
+  }
+  redirect("/login");
 }

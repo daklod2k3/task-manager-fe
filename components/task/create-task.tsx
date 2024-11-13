@@ -128,13 +128,6 @@ export default function CreateTaskDialog({ children }) {
     );
   }, [assigneeSelect, form]);
 
-  if (peopleLoading)
-    return (
-      <div>
-        <Loader2 className="animate-spin text-primary" />
-      </div>
-    );
-
   return (
     <Dialog defaultOpen={false} open={open}>
       <DialogTrigger asChild onClick={() => setOpen(true)}>
@@ -183,6 +176,7 @@ export default function CreateTaskDialog({ children }) {
                         ))}
                       </div>
                       <SearchSelect
+                        isLoading={peopleLoading}
                         placeholder="Type to search"
                         ItemRender={PeopleSearchItem}
                         modal={true}
@@ -190,7 +184,7 @@ export default function CreateTaskDialog({ children }) {
                           console.log("click");
                           addAssignee(x);
                         }}
-                        items={peopleToSearch(peoples)}
+                        items={peopleToSearch(peoples || [])}
                       />
                     </>
                   </FormControl>
@@ -298,7 +292,7 @@ export default function CreateTaskDialog({ children }) {
                 </FormItem>
               )}
             />
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
               <DialogClose asChild onClick={() => setOpen(false)}>
                 <Button variant="outline">Cancel</Button>
               </DialogClose>

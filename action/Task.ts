@@ -1,6 +1,6 @@
 "use server";
 import { Tables } from "@/entity/database.types";
-import { ApiAuth, ApiRoutes, IApiResponse } from "./Api";
+import { ApiAuth, ApiRoutes, GetProps, IApiResponse } from "./Api";
 
 export async function updateTask(task: Tables<"tasks">) {
   // console.log(form);
@@ -18,9 +18,9 @@ export async function updateTask(task: Tables<"tasks">) {
   }
 }
 
-export async function getTask(id?: number) {
+export async function getTask({ id, search }: GetProps) {
   try {
-    const res = await new ApiAuth(ApiRoutes.Task).get(id);
+    const res = await new ApiAuth(ApiRoutes.Task).get({ id, search });
     return await res.json();
   } catch (e) {
     console.log(e);

@@ -123,15 +123,14 @@ export function AuthForm({ isLogin = true }) {
     setLoading(true);
     // if ()
     const result = isLogin ? await login(data) : null;
-    if (result) {
-      router.push("/");
-      // console.log(result);
-
+    if (!result) {
       return;
     }
+    console.log(result);
 
     toast({
-      title: "Đăng nhập thất bại",
+      title: "Login failed",
+      description: result?.error || "An error occurred",
       variant: "destructive",
     });
     setSuccess(false);
@@ -229,15 +228,6 @@ export function AuthForm({ isLogin = true }) {
                   placeholder={"Nhập email"}
                   register={register}
                   error={errors.email}
-                />
-              </div>
-              <div className="grid gap-2">
-                <FormField
-                  label={"Tài khoản"}
-                  name="username"
-                  placeholder={"Nhập tên tài khoản"}
-                  register={register}
-                  error={errors.username}
                 />
               </div>
               <div className="grid gap-2">

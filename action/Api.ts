@@ -12,6 +12,11 @@ export const enum ApiRoutes {
   Task = "/task",
   People = "/people",
 }
+
+export interface GetProps {
+  id?: number;
+  search?: string;
+}
 export class ApiAuth {
   protected token;
   protected route;
@@ -21,9 +26,9 @@ export class ApiAuth {
     this.route = baseUrl + route;
   }
 
-  async get(id?) {
+  async get({ id, search }: GetProps) {
     const path = id ? `${this.route}/${id}` : this.route;
-    return fetch(path, {
+    return fetch(path + "?" + search, {
       headers: {
         Authorization: `Bearer ${await this.token}`,
       },
@@ -64,5 +69,44 @@ export class ApiAuth {
       method: "PATCH",
       body: JSON.stringify(data),
     });
+  }
+}
+
+export enum FilterOperators {
+  eq,
+  neq,
+  lt,
+  lte,
+  gt,
+  gte,
+  ctn,
+}
+
+export enum FilterLogic {
+  And,
+  Or,
+}
+export class Filter<T = object> {
+  public field: keyof T;
+  public operator: FilterOperators;
+  public value: T[keyof T];
+  public logic?: FilterLogic = FilterLogic.And;
+  public filters?: Filter[];
+
+  constructor({ Field, Operator, Value, Logic, Filters }) {
+    this.field = Field;
+    this.operator = Operator;
+    this.value = Value;
+    this.logic = Logic;
+    this.filters = Filters;
+  }
+}
+
+export class RootFilter {
+  filters: Filter[];
+  logic: FilterLogic = FilterLogic.And;
+  constructor({ Filters, Logic }) {
+    this.filters = Filters;
+    this.logic = Logic;
   }
 }

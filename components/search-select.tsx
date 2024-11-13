@@ -12,6 +12,8 @@ import {
 import { Command as CommandPrimitive } from "cmdk";
 
 import { Tables } from "@/entity/database.types";
+import { cn } from "@/lib/utils";
+import { Search } from "lucide-react";
 import React, { useMemo } from "react";
 import MyAvatar from "./Avatar";
 import { Input } from "./ui/input";
@@ -38,7 +40,7 @@ export interface ISearchItem<T> {
 }
 
 interface SearchSelectProps<T> {
-  items: ISearchItem<T>[];
+  items: ISearchItem<any>[];
   onSelectedValueChange: (value: T) => void;
   isLoading?: boolean;
   ItemRender?: React.FC<{ item: T }>;
@@ -111,17 +113,24 @@ export default function SearchSelect<T>({
       <Popover open={open} modal={modal} onOpenChange={setOpen}>
         <Command shouldFilter={false}>
           <PopoverAnchor asChild>
-            <CommandPrimitive.Input
-              asChild
-              value={searchValue}
-              onValueChange={setSearchValue}
-              onKeyDown={(e) => setOpen(e.key !== "Escape")}
-              onMouseDown={() => setOpen((open) => !!searchValue || !open)}
-              onFocus={() => setOpen(true)}
-              // onBlur={onInputBlur}
-            >
-              <Input className={inputClassName} placeholder={placeholder} />
-            </CommandPrimitive.Input>
+            <div className="relative flex items-center">
+              <Search className="absolute ml-2 h-4 w-4" />
+              <CommandPrimitive.Input
+                asChild
+                value={searchValue}
+                onValueChange={setSearchValue}
+                onKeyDown={(e) => setOpen(e.key !== "Escape")}
+                onMouseDown={() => setOpen((open) => !!searchValue || !open)}
+                onFocus={() => setOpen(true)}
+                // onBlur={onInputBlur}
+              >
+                <Input
+                  className={cn("bg-white/50 pl-7", inputClassName)}
+                  placeholder={placeholder}
+                  disabled={isLoading}
+                />
+              </CommandPrimitive.Input>
+            </div>
           </PopoverAnchor>
           {!open && <CommandList aria-hidden="true" className="hidden" />}
           <PopoverContent
