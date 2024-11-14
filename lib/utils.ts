@@ -10,5 +10,6 @@ const baseUrl = String(process.env.API_URL);
 export const Api = {
   baseUrl: baseUrl,
   task: baseUrl + "/task",
-  department: baseUrl + "/department"
+  department: baseUrl + "/department",
+  profile: baseUrl + "/profile"
 };
