@@ -33,17 +33,21 @@ const TaskCard = ({
           onClick={onClick}
           className="mb-2 flex flex-col rounded-sm bg-white p-3 text-sm hover:ring"
         >
-          <div className="mb-3">
+          <div className="mb-3 text-base font-bold">
             <div>{item.title}</div>
           </div>
           <div className="flex items-center justify-between font-bold">
             {/* Due date */}
-            {DueDateRender({ date: new Date(item.due_date) })}
+            {item.due_date ? (
+              DueDateRender({ date: new Date(item.due_date) })
+            ) : (
+              <span className="text-green-500">No due</span>
+            )}
             {/* Left info */}
-            <div className="flex items-center">
+            <div className="flex items-center self-end">
               {PriorityIcon({ priority: item.priority })}
               <div>{}</div>
-              <UserItem user={null} size={6} />
+              <UserItem size={6} />
             </div>
           </div>
         </div>

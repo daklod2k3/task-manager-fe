@@ -13,7 +13,7 @@ interface Props {
   onClick?: React.MouseEventHandler<HTMLSpanElement>;
 }
 
-export default function HoverInfo({ children, label }: Props) {
+export default function HoverInfo({ children, label, onClick }: Props) {
   return (
     <TooltipProvider>
       <Tooltip>

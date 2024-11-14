@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import React from "react";
 
 interface Props {
-  user: Tables<"profiles">;
+  user?: Tables<"profiles">;
   className?: string;
   size?: number;
   onClick?: React.MouseEventHandler<HTMLSpanElement>;
@@ -30,13 +30,10 @@ export default function UserItem({ user, className, size, onClick }: Props) {
   const src = "/image/avatar/" + (user?.avt ?? "null-user.png");
   const name = user?.name ?? "none";
   return (
-    <HoverInfo label={label}>
-      <MyAvatar
-        user={user}
-        onClick={onClick}
-        size={size}
-        className={className}
-      />
+    <HoverInfo onClick={onClick} label={label}>
+      <div>
+        <MyAvatar user={user} size={size} className={className} />
+      </div>
     </HoverInfo>
   );
 }

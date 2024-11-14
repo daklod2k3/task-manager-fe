@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTaskContext } from "@/context/task-context";
-import { Tables } from "@/entity/database.types";
-import useTask from "@/hooks/use-task";
+import { Database, Tables } from "@/entity/database.types";
+import { useTask } from "@/hooks/use-task";
+import { useUser } from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
-import { Database } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
@@ -143,28 +143,30 @@ export default function TaskDetail() {
   const {
     taskDetail: [task],
   } = useTaskContext();
-  const { data: taskList, error, isLoading } = useTask(task);
+  const { data: taskFetch, error, isLoading } = useTask(task?.id);
   const [taskChange, setChange] = useState(task);
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   const pathname = usePathname();
+  const { data: user } = useUser();
 
   useEffect(() => {
-    if (!taskList?.at(0).id) return;
-    const params = new URLSearchParams(searchParams);
-    if (task?.id) {
-      params.set("task_id", String(task.id));
-    } else {
-      params.delete("task_id");
-    }
-    replace(`${pathname}?${params.toString()}`);
-  }, [taskList]);
+    // if (!taskFetch?.id) return;
+    // const params = new URLSearchParams(searchParams);
+    // if (task?.id) {
+    //   params.set("task_id", String(task.id));
+    // } else {
+    //   params.delete("task_id");
+    // }
+    // console.log(task);
+    // replace(`${pathname}?${params.toString()}`);
+  }, [taskFetch, task]);
 
   if (isLoading)
     return (
       <div className="h-fit flex-grow-0 space-y-5">
         <div className="rounded bg-primary p-1 px-3 text-white">
-          <TaskTitle title={"Task detail"} />
+          <TaskTitle textSize="xl" title={"Task detail"} />
         </div>
         <div className="grid min-w-0 grid-cols-[2fr,1fr] gap-3">
           <div className="space-y-2">
@@ -183,14 +185,18 @@ export default function TaskDetail() {
       </div>
     );
 
-  const data = taskList?.at(0) as Tables<"tasks">;
+  const data = taskFetch as Tables<"tasks">;
   // console.log(data);
+
+  if (error) {
+    return <div>{error.message}</div>;
+  }
 
   if (data)
     return (
       <div className="h-full min-h-0 w-full flex-grow space-y-5">
         <div className="rounded bg-primary p-1 px-3 text-white">
-          <TaskTitle title={"Task detail"} />
+          <TaskTitle textSize="xl" title={"Task detail"} />
         </div>
         <div className="grid min-w-0 grid-cols-[2.5fr,1fr] gap-3">
           <div className="space-y-2">
@@ -207,7 +213,7 @@ export default function TaskDetail() {
                     setChange({
                       ...taskChange,
                       priority:
-                        Database["public"]["Enums"]["TaskPriority"][value],
+                        value as Database["public"]["Enums"]["TaskPriority"],
                     });
                 }}
               >
@@ -215,19 +221,19 @@ export default function TaskDetail() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="high">
+                  <SelectItem value="High">
                     <div className="flex items-center">
                       <PriorityIcon priority={"high"} />
                       <span>High</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="medium">
+                  <SelectItem value="Medium">
                     <div className="flex w-full items-center justify-between">
                       <PriorityIcon priority={"medium"} />
                       <span>Medium</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="low">
+                  <SelectItem value="Low">
                     <div className="flex items-center">
                       <PriorityIcon priority={"low"} />
                       <span>Low</span>
@@ -301,7 +307,7 @@ export function TaskDialog() {
         if (!x && detail) setDetail(undefined);
       }}
     >
-      <DialogContent className="flex max-h-[calc(100vh-10rem)] min-h-0 max-w-screen-xl">
+      <DialogContent className="max-h-[calc(100vh-10rem)] min-h-0 max-w-screen-xl">
         <TaskDetail />
       </DialogContent>
     </Dialog>

@@ -1,12 +1,12 @@
 "use client";
-import { updateTask } from "@/action/Task";
+import { updateStatus, updateTask } from "@/action/Task";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
-import useTask from "@/hooks/use-task";
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import Loading from "../Loading";
 import LoadingDialog from "../loading/LoadingDialog";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import TaskCard from "./task-card";
@@ -110,12 +110,9 @@ const onDragEnd = async (
     const sourceItems = [...sourceColumn.items];
     const destItems = [...destColumn.items];
     const [removed] = sourceItems.splice(source.index, 1);
-    const result = await updateTask({
-      ...removed,
-      status: destination.droppableId,
-    });
+
     destItems.splice(destination.index, 0, removed);
-    setColumn({
+    await setColumn({
       ...columns,
       [source.droppableId]: {
         ...sourceColumn,
@@ -126,31 +123,41 @@ const onDragEnd = async (
         items: sortData(destItems),
       },
     });
-  } else {
-    const column = columns[source.droppableId];
-    const copiedItems = [...column.items];
-    const [removed] = copiedItems.splice(source.index, 1);
-    copiedItems.splice(destination.index, 0, removed);
-    const result = await updateTask({
-      ...removed,
-      status: destination.droppableId,
-    });
-    if (!result) {
-      setLoading(false);
+
+    const result = await updateStatus(removed.id, destination.droppableId);
+    console.log(result);
+    if (result.status != 200) {
+      await setColumn({
+        ...columns,
+      });
     }
-    setColumn({
-      ...columns,
-      [source.droppableId]: {
-        ...column,
-        items: sortData(copiedItems),
-      },
-    });
+    setLoading(false);
   }
+  //  else {
+  //   const column = columns[source.droppableId];
+  //   const copiedItems = [...column.items];
+  //   const [removed] = copiedItems.splice(source.index, 1);
+  //   copiedItems.splice(destination.index, 0, removed);
+  //   const result = await updateTask({
+  //     ...removed,
+  //     status: destination.droppableId,
+  //   });
+  //   if (!result) {
+  //     setLoading(false);
+  //   }
+  //   await setColumn({
+  //     ...columns,
+  //     [source.droppableId]: {
+  //       ...column,
+  //       items: sortData(copiedItems),
+  //     },
+  //   });
+  // }
 };
 
 const Kanban = () => {
   const {
-    taskFetch: { data: taskList, isLoading, mutate, error },
+    taskFetch: { data: taskList, isLoading: taskLoading, mutate, error },
   } = useTaskContext();
   const [columns, setColumns] = useState(dataToColumn(taskList || []));
 
@@ -161,12 +168,14 @@ const Kanban = () => {
   }, [taskList]);
 
   useEffect(() => {
-    setLoading((l) => l && isLoading);
-  }, [isLoading]);
+    setLoading((l) => l && taskLoading);
+  }, [taskLoading]);
 
   useEffect(() => {}, []);
 
   if (taskList?.length == 0) return <span>No tasks found</span>;
+
+  if (taskLoading) return <Loading />;
 
   return (
     <>
@@ -177,7 +186,7 @@ const Kanban = () => {
           if (source.droppableId === destination.droppableId) return;
           setLoading(true);
           onDragEnd(result, columns, setColumns, setLoading, mutate);
-          setLoading(false);
+          // setLoading(false);
         }}
       >
         <LoadingDialog open={loading} />
@@ -189,7 +198,7 @@ const Kanban = () => {
                   className="grid grid-rows-[auto,1fr] rounded-sm bg-primary/10"
                   key={columnId}
                 >
-                  <div className="sticky top-0 z-50 rounded-sm bg-primary px-3">
+                  <div className="sticky top-0 z-50 rounded-sm bg-primary/80 px-3">
                     <span className="m-1 inline-block font-bold text-white">
                       {column.title.replace("_", " ")}
                     </span>
