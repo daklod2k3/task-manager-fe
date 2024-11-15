@@ -31,10 +31,10 @@ const TaskCard = ({
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           onClick={onClick}
-          className="mb-2 flex flex-col rounded-sm bg-white p-3 text-sm hover:ring"
+          className="mb-2 flex min-w-0 flex-col rounded-sm bg-white p-3 text-sm hover:ring"
         >
           <div className="mb-3 text-base font-bold">
-            <div>{item.title}</div>
+            <p className="break-all">{item.title}</p>
           </div>
           <div className="flex items-center justify-between font-bold">
             {/* Due date */}
@@ -47,7 +47,7 @@ const TaskCard = ({
             <div className="flex items-center self-end">
               {PriorityIcon({ priority: item.priority })}
               <div>{}</div>
-              <UserItem size={6} />
+              <UserItem currentUsers={[]} />
             </div>
           </div>
         </div>

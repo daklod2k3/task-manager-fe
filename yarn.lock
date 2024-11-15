@@ -1455,8 +1455,9 @@ client-only@0.0.1, client-only@^0.0.1:
     "@supabase/supabase-js" "^2.46.1"
     "@types/uuid" "^10.0.0"
     class-variance-authority "^0.7.0"
-    client "file:../../../../Library/Caches/Yarn/v6/npm-client-0.1.0-ccc6681a-d7a6-43c9-999a-7e05cf4759b5-1730965892033/node_modules/client"
+    client "file:../../../../Library/Caches/Yarn/v6/npm-client-0.1.0-28ef0f38-713f-4f53-b861-a6bd5012d360-1731571228644/node_modules/client"
     clsx "^2.1.1"
+    cmdk "1.0.0"
     date-fns "^4.1.0"
     lucide-react "^0.441.0"
     next "14.2.11"
@@ -3643,10 +3644,10 @@ sucrase@^3.32.0:
     pirates "^4.0.1"
     ts-interface-checker "^0.1.9"
 
-supabase@^1.204.3:
-  version "1.204.3"
-  resolved "https://registry.npmjs.org/supabase/-/supabase-1.204.3.tgz"
-  integrity sha512-uO09eyAw7TZAX/7wPeieQBWrl4QAJ0WLF+HTkFy35GWBmQULP5nkJR93LcuhSyooYiqwEUKlChEF/PGAEmTCKw==
+supabase@^1.219.2:
+  version "1.219.2"
+  resolved "https://registry.yarnpkg.com/supabase/-/supabase-1.219.2.tgz#adb594247f2361d5cd50cf57913243eaa12342c0"
+  integrity sha512-bngNxjoiU2EHbQ4Cxfrft/ZnYnYdlWfpLcye3KCyJFQhTl3ucpygKymJZiasJl0xdN+hR98TdrHp7WHTuf9ztQ==
   dependencies:
     bin-links "^5.0.0"
     https-proxy-agent "^7.0.2"

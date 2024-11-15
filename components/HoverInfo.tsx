@@ -11,13 +11,21 @@ interface Props {
   children?: React.ReactNode;
   label: string;
   onClick?: React.MouseEventHandler<HTMLSpanElement>;
+  className?: string;
 }
 
-export default function HoverInfo({ children, label, onClick }: Props) {
+export default function HoverInfo({
+  children,
+  label,
+  onClick,
+  className,
+}: Props) {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild>{children}</TooltipTrigger>
+        <TooltipTrigger className={className} asChild>
+          {children}
+        </TooltipTrigger>
         <TooltipContent>
           <p>{label}</p>
         </TooltipContent>

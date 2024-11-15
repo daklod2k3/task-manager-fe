@@ -58,11 +58,11 @@ const dataToColumn = (taskList: Tables<"tasks">[]) => {
   const titles = [
     "To_do",
     "In_Progress",
-    "In_Preview",
-    "In_Complete",
+    // "In_Preview",
+    // "In_Complete",
     "QA",
     "Done",
-    "Archived",
+    // "Archived",
   ];
   const result: ITableColumn = {};
   for (const title of titles) {
@@ -86,7 +86,9 @@ const dataToColumn = (taskList: Tables<"tasks">[]) => {
 
 const sortData = (taskList: Tables<"tasks">[]) => {
   return taskList.sort(
-    (a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime(),
+    (a, b) =>
+      new Date(a.due_date || "").getTime() -
+      new Date(b.due_date || "").getTime(),
   );
 };
 

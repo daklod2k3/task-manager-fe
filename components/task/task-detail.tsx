@@ -30,9 +30,11 @@ import { CardTitle } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
 import { Dialog, DialogClose, DialogContent } from "../ui/dialog";
 import { Label } from "../ui/label";
+import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { Skeleton } from "../ui/skeleton";
 import CommentInput from "./comment-input";
+import UserItem from "./user-item";
 import { PriorityIcon } from "./utils";
 
 interface Props {
@@ -271,16 +273,27 @@ export default function TaskDetail() {
               </DialogClose>
             </div>
             <span>Details</span>
-            <div className="grid grid-cols-[auto,auto] items-center justify-items-end gap-4 rounded border p-2">
-              <FieldLabel value="Assignee:" />
-              <MyAvatar size={7} />
-              <FieldLabel value="Created at:" />
-              <span>{new Date(data.created_at).toLocaleDateString()}</span>
-              <FieldLabel value="Created by:" />
-              <MyAvatar size={7} />
-              <FieldLabel value="Due date:" />
-              <span>{new Date(data.due_date).toLocaleDateString()}</span>
-            </div>
+            <ScrollArea className="" type="always">
+              <div className="grid h-full min-h-0 grid-cols-[auto,auto] items-center justify-items-end gap-4 rounded border p-2">
+                <FieldLabel value="Assignee:" />
+                <UserItem
+                  currentUsers={
+                    task?.taskUser?.map((item) => {
+                      id: item.user_id;
+                    }) || []
+                  }
+                />
+                <FieldLabel value="Created at:" />
+                <span>{new Date(data.created_at).toLocaleDateString()}</span>
+                <FieldLabel value="Created by:" />
+                <MyAvatar size={7} />
+                <FieldLabel value="Due date:" />
+                <span>
+                  {data.due_date &&
+                    new Date(data.due_date).toLocaleDateString()}
+                </span>
+              </div>
+            </ScrollArea>
           </div>
         </div>
       </div>

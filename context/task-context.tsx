@@ -1,12 +1,13 @@
 "use client";
 import { Tables } from "@/entity/database.types";
+import { TaskEntity } from "@/entity/Task";
 import { TaskFilter, useAllTask, useTask } from "@/hooks/use-task";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface ITaskContext {
   taskFetch: ReturnType<typeof useAllTask>;
-  taskDetail: ReturnType<typeof useState<Tables<"tasks">>>;
+  taskDetail: ReturnType<typeof useState<TaskEntity>>;
   taskFilter: ReturnType<typeof useState<TaskFilter>>;
   // setOpen: (task?: Tables<"tasks">) => void;
 }
@@ -14,7 +15,7 @@ interface ITaskContext {
 export const TaskContext = createContext<ITaskContext | undefined>(undefined);
 
 export function TaskProvider({ children }) {
-  const taskDetail = useState<Tables<"tasks">>();
+  const taskDetail = useState<TaskEntity>();
   const taskFilter = useState<TaskFilter>();
 
   const taskFetch = useAllTask(taskFilter[0]);
