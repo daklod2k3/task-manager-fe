@@ -1,89 +1,37 @@
 "use server";
-import { Tables, TablesInsert } from "@/entity/database.types";
-import { Api } from "@/lib/utils";
+import { Tables } from "@/entity/database.types";
+import { ApiAuth, ApiRoutes, GetProps, IApiResponse } from "./Api";
 import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
 
 export async function addDepartment(department: Tables<"departments">) {
   try {
-    const res = await (
-      await fetch(Api.department, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify(department),
-      })
-    ).json();
+    const res = await new ApiAuth(ApiRoutes.Department).post(department);
 
-    if (!res.accessToken) return;
-    console.log(res);
-
-    cookies().set("access_token", res.accessToken);
-    return res;
+    return (await res.json()) as IApiResponse<Tables<"departments">>;
   } catch (e) {
     console.log(e);
+    throw Error()
   }
 }
 
-export async function addDepartmentSupabase(department: TablesInsert<"departments">) {
-  try {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from("departments")
-      .insert([department]);
+export async function deleteDepartment(departmentId: number) {
+  // try {
+  //   const res = await new ApiAuth(ApiRoutes.Department).detele(departmentId);
 
-    if (error) {
-      console.error("Error adding department:", error.message);
-      return null;
-    }
-    
-    console.log("Department added:", data);
-    return data;
-  } catch (e) {
-    console.error("Unexpected error:", e);
-    return null;
-  }
+  //   return (await res.json()) as IApiResponse<Tables<"departments">>;
+  // } catch (e) {
+  //   console.log(e);
+  //   throw Error()
+  // }
 }
 
-export async function deleteDepartmentSupabase(departmentId: number) {
+export async function updateDepartment(id: number, data: object) {
   try {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from("departments")
-      .delete()
-      .eq("id", departmentId);
-
-    if (error) {
-      console.error("Error deleting department:", error);
-      throw error;
-    }
-
-    return data;
-  } catch (err) {
-    console.error("Error in deleteDepartmentSupabase:", err);
-    return null;
-  }
-}
-
-export async function updateDepartmentName(id: number, newName: string) {
-  try {
-    const supabase = createClient();
-
-    const { data, error } = await supabase
-      .from("departments")
-      .update({ name: newName })
-      .eq("id", id);
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    console.log("Updated department:", data);
-    return data;
+    const res = await new ApiAuth(ApiRoutes.Department).patch(id, data);
+    return (await res.json()) as IApiResponse<Tables<"departments">>;
   } catch (e) {
     console.log(e);
+    throw Error()
   }
 }
 

@@ -72,6 +72,15 @@ export class ApiAuth {
       body: JSON.stringify(data),
     });
   }
+
+  // async delete(id: number) {
+  //   return fetch(`${this.route}/${id}`, {
+  //     headers: {
+  //       Authorization: `Bearer ${await this.token}`,
+  //     },
+  //     method: "DELETE",
+  //   });
+  // }
 }
 
 export enum FilterOperators {

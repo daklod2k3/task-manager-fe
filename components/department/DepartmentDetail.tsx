@@ -7,11 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tables } from "@/entity/database.types";
 import { useDepartmentContext } from "@/context/department-context";
-import { deleteDepartmentSupabase } from "@/action/Department";
+import { deleteDepartmentSupabase, updateDepartmentName } from "@/action/Department";
 import { usePeople } from "@/hooks/use-people";
 import SearchUser from "@/components/department/SearchUser";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast"
+import AlertButton from "@/components/department/AlertButton";
 
 import {
   Table,
@@ -92,11 +93,12 @@ export default function DepartmentDetail() {
   const deleteDepartment = async () => {
     try {
       const res = await deleteDepartmentSupabase(currTeam);
-      departmentFetch.mutate();
       toast({
-        description: "deleted department",
+        description: "deleted department successfully",
       })
       setOpen(false);
+      deleteKey();
+      departmentFetch.mutate();
     } catch (error) {
       toast({
         variant: "destructive",
@@ -119,6 +121,7 @@ export default function DepartmentDetail() {
     reset: () => {
     },
     save: () => {
+      // updateDepartmentName(currTeam,valueInput);
     }
   };
 
@@ -248,35 +251,20 @@ export default function DepartmentDetail() {
               <RenderTable/>
             </div>
               <div className="flex flex-1 justify-around mt-3">
-                {editTable || editTeamName ? 
-                <>
-                  <Button 
-                    className="w-1/4 rounded"
-                    onClick={() => {
-                      setEditTable(prev => !prev)
-                      handleData.save()
-                    }}
-                    >Save
-                  </Button>
-                  <Button 
-                    className="w-1/4 rounded"
-                    onClick={() => {
-                      setEditTable(prev => !prev)
-                      handleData.reset()
-                      }}>
-                    Cancel
-                  </Button>
-                </>
-                  :""
-                }
                 <Button 
-                  className="w-1/4 rounded"
+                  className="w-full mr-3"
                   onClick={() => {
-                    deleteKey()
-                    deleteDepartment();
-                  }}>
-                  Delete Department
+                    setEditTable(prev => !prev)
+                    handleData.save()
+                  }}
+                  >Save
                 </Button>
+                  <AlertButton 
+                    actionLabel="Delete"
+                    title="Do you want to delete this department?"
+                    description="This action cannot be undone."
+                    onAction={deleteDepartment} 
+                    openButtonLabel="Delete Department" />
               </div>
           </div>
         </div>

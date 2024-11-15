@@ -10,6 +10,7 @@ import { addDepartmentSupabase } from "@/action/Department";
 import { useDepartmentContext } from "@/context/department-context";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast"
+import AlertButton from "@/components/department/AlertButton";
 
 import {
   Dialog,
@@ -35,7 +36,7 @@ export default function CreateDepartment() {
 
   const teamSchema = z.object({
     teamName: z.string().min(1, "Team name is required"),
-    teamLeader: z.string().min(1, "Team leader is required"),
+    member: z.string(),
   });
 
   const CreateTeamForm: React.FC = () => {
@@ -43,7 +44,7 @@ export default function CreateDepartment() {
       resolver: zodResolver(teamSchema),
       defaultValues: {
         teamName: "",
-        teamLeader: "",
+        member: "",
       },
     });
 
@@ -87,7 +88,7 @@ export default function CreateDepartment() {
             )}
           />
           <FormField
-            name="teamLeader"
+            name="member"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Team Leader</FormLabel>
@@ -107,9 +108,12 @@ export default function CreateDepartment() {
             >
               Cancel
             </Button>
-            <Button type="submit" className="w-full">
-              Create
-            </Button>
+            <AlertButton
+              btnType="submit"
+              title="Do you want to add this department?"
+              openButtonLabel="Create"
+              onAction={form.handleSubmit(onSubmit)}
+            />
           </div>
         </form>
       </Form>
