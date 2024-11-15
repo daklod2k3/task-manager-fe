@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { addDepartmentSupabase } from "@/action/Department";
 import { useDepartmentContext } from "@/context/department-context";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast"
 
 import {
   Dialog,
@@ -29,6 +31,7 @@ import {
 export default function CreateDepartment() {
   const [open, setOpen] = useState(false);
   const {departmentFetch} = useDepartmentContext();
+  const {toast} = useToast();
 
   const teamSchema = z.object({
     teamName: z.string().min(1, "Team name is required"),
@@ -53,8 +56,17 @@ export default function CreateDepartment() {
 
         const res = await addDepartmentSupabase(departmentData);
         departmentFetch.mutate();
+        toast({
+          description: "successfully add department",
+        })
         setOpen(false);
       } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "add department error",
+          description: String(error),
+          action: <ToastAction altText="Try again">Please Try again</ToastAction>,
+        })
         console.error("Error creating team:", error);
       }
     };

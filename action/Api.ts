@@ -12,6 +12,7 @@ export const enum ApiRoutes {
   Task = "/task",
   People = "/people",
   Channel = "/channel",
+  Department = "/department",
 }
 
 export interface GetProps {

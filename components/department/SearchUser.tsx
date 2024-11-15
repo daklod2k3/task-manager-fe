@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Tables } from "@/entity/database.types";
-import { useDepartmentContext } from "@/context/department-context";
+import {usePeople} from "@/hooks/use-people";
 
 import {
   Command,
@@ -23,7 +23,7 @@ const SearchUser: React.FC<CommandClickItemProps> = ({ onClickItem, onAddUserToT
   const [inputValue, setInputValue] = useState("");
   const search = new URLSearchParams(window.location.search);
   const [currTeam, setCurrTeam] = useState(0);
-  const { userFetch } = useDepartmentContext();
+  const userFetch = usePeople();
   const [users, setUsers] = useState<Tables<"profiles">[]>([]);
 
   useEffect(() => {

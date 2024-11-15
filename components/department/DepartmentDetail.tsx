@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tables } from "@/entity/database.types";
 import { useDepartmentContext } from "@/context/department-context";
-import UserList from "@/components/department/UserList";
-import SearchUser from "@/components/department/SearchUser";
-import DeprtmentList from "@/components/department/DepartmentList";
 import { deleteDepartmentSupabase } from "@/action/Department";
-import { date } from "zod";
+import { usePeople } from "@/hooks/use-people";
+import SearchUser from "@/components/department/SearchUser";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast"
 
 import {
   Table,
@@ -21,10 +21,12 @@ import {
 } from "@/components/ui/table"
 
 export default function DepartmentDetail() {
-  const { departmentFetch, departmentUserFetch, userFetch} = useDepartmentContext();
+  const { departmentFetch, departmentUserFetch} = useDepartmentContext();
+  const userFetch = usePeople();
   const [open, setOpen] = useState(false);
   const search = new URLSearchParams(window.location.search);
-  
+  const {toast} = useToast();
+
   const [teams, setTeams] = useState<Tables<"departments">[]>([]);
   const [users, setUsers] = useState<Tables<"profiles">[]>([]);
   const [teamUsers, setTeamUsers] = useState<Tables<"department_user">[]>([]);
@@ -35,6 +37,7 @@ export default function DepartmentDetail() {
   const [editTable, setEditTable] = useState<boolean>(false);
 
   useEffect(() => {
+    console.log(departmentUserFetch.data)
     if (departmentUserFetch.data) {
       setTeamUsers(departmentUserFetch.data);
     }
@@ -74,7 +77,7 @@ export default function DepartmentDetail() {
           <TableBody>
             {teamUsers.map((user) => (
               <TableRow key={user.id} className="bg-white">
-                <TableCell className="font-medium py-3">{handleUser.getName(user.user_id ?? '')}</TableCell>
+                <TableCell className="font-medium py-3">{handleUser.getNameById(user.user_id ?? '')}</TableCell>
                 <TableCell className="flex justify-end">
                   <Button onClick={() => {handleTeamUser.deleteMemberById(user.id)}}><CircleX /></Button>
                 </TableCell>
@@ -90,14 +93,26 @@ export default function DepartmentDetail() {
     try {
       const res = await deleteDepartmentSupabase(currTeam);
       departmentFetch.mutate();
+      toast({
+        description: "deleted department",
+      })
       setOpen(false);
     } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "delete department error",
+        description: String(error),
+        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
+      })
       console.error("Error creating team:", error);
     }
   }
 
   const deleteKey = () => {
-    // keyUrl
+    search.delete('department_id');
+    const url = new URL(window.location.href);
+    url.search = search.toString();
+    window.history.pushState({}, '', url.toString());
   }
 
   const handleData = {
@@ -133,7 +148,8 @@ export default function DepartmentDetail() {
   }
 
   const handleUser = {
-    getName: (userID: string) => {
+    getNameById: (userID: string) => {
+      console.log(users)
       return users.find((user) => user.id === userID)?.name ?? '';
     },
     getMemberByTeamID: (teamID: number) => {
@@ -191,10 +207,7 @@ export default function DepartmentDetail() {
     <div className={open ? "flex-1 bg-primary/10 h-fit p-3 shadow rounded" : "hidden"}>
       <div className="w-full flex justify-end">
         <Button onClick={() => {
-            search.delete('department_id');
-            const url = new URL(window.location.href);
-            url.search = search.toString();
-            window.history.pushState({}, '', url.toString());
+            deleteKey()
             setOpen(false)
           }}>
           <CircleX/>
@@ -259,7 +272,7 @@ export default function DepartmentDetail() {
                 <Button 
                   className="w-1/4 rounded"
                   onClick={() => {
-                    // setEditTable(prev => !prev);
+                    deleteKey()
                     deleteDepartment();
                   }}>
                   Delete Department

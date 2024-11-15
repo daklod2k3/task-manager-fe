@@ -12,12 +12,6 @@ const delay = (delayInms) => {
 };
 
 const fetcher = async (path: string) => {
-<<<<<<< HEAD
-  const search = new URLSearchParams(path);
-  const result = await getTask(Number(search.get("id")));
-  // console.log(path);
-  if (result.error) throw new Error(result.error.message);
-=======
   const id = path.split("/").pop();
   console.log(id);
 
@@ -25,7 +19,6 @@ const fetcher = async (path: string) => {
   const result = await getTask({ id: Number(id), search: search.toString() });
   console.log(result);
   if (result.error) throw new Error(result.error);
->>>>>>> d06eff5dd4ab48cefb7b7b25f1b7f1c9c5fcd382
   return result.data;
 };
 

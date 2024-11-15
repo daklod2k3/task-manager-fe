@@ -6,10 +6,10 @@ import React, { useState, useEffect } from "react";
 
 import Avatar from "@/components/Avatar"
 import { Tables } from "@/entity/database.types";
-import { useDepartmentContext } from "@/context/department-context";
+import {usePeople} from "@/hooks/use-people";
 
 export default function UserList() {
-  const {userFetch} = useDepartmentContext();
+  const userFetch = usePeople();
   const [users, setUsers] = useState<Tables<"profiles">[]>([]);
 
   useEffect(() => {

@@ -9,6 +9,7 @@ interface Props {
 
 const fetcher = async (path: string) => {
   const result = await getUser();
+  console.log(result)
   try {
     return result.data;
   } catch (e) {
