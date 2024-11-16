@@ -1,6 +1,14 @@
 "use server";
 import { Tables } from "@/entity/database.types";
-import { ApiAuth, ApiRoutes, GetProps, IApiResponse } from "./Api";
+import { TaskEntity } from "@/entity/Task";
+import {
+  ApiAuth,
+  ApiRoutes,
+  FilterOperators,
+  GetProps,
+  IApiResponse,
+  RootFilter,
+} from "./Api";
 
 export async function updateTask(task: Tables<"tasks">) {
   // console.log(form);
@@ -19,8 +27,34 @@ export async function updateTask(task: Tables<"tasks">) {
 }
 
 export async function getTask({ id, search }: GetProps) {
+  // console.log(id);
+
+  const includes = "TaskUsers,TaskDepartments,CreatedByNavigation";
+  const params = new URLSearchParams(search);
+  params.append("includes", includes);
+  if (id) {
+    const filter: RootFilter = {
+      filters: [
+        {
+          field: "id",
+          value: id,
+          operator: FilterOperators.eq,
+        },
+      ],
+    };
+    params.append("filter", JSON.stringify(filter));
+    const res = await new ApiAuth(ApiRoutes.Task).get({
+      search: params.toString(),
+    });
+    // console.log(res);
+
+    return await res.json();
+  }
   try {
-    const res = await new ApiAuth(ApiRoutes.Task).get({ id, search });
+    const res = await new ApiAuth(ApiRoutes.Task).get({
+      id,
+      search: params.toString(),
+    });
     return await res.json();
   } catch (e) {
     console.log(e);

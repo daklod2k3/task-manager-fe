@@ -1,7 +1,12 @@
 import { Tables } from "./database.types";
 
 export interface TaskEntity extends Tables<"tasks"> {
-  taskDepartments?: Tables<"task_department">[];
-  taskUser?: Tables<"task_user">[];
-  taskHistory?: Tables<"task_history">[];
+  task_departments?: Tables<"task_department">[];
+  task_users?: TaskUsers[];
+  task_historys?: Tables<"task_history">[];
+  created_by_navigation?: Tables<"profiles">;
+}
+
+export interface TaskUsers extends Tables<"task_user"> {
+  user: Tables<"profiles">;
 }

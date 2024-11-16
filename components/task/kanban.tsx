@@ -3,8 +3,9 @@ import { updateStatus, updateTask } from "@/action/Task";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Loading from "../Loading";
 import LoadingDialog from "../loading/LoadingDialog";
@@ -50,25 +51,29 @@ interface ITableColumn {
   [key: string]: {
     items: Tables<"tasks">[];
     title: string;
+    color: string;
   };
 }
 
+export const ColumnTitles = [
+  { title: "To_do", color: "sky-500" },
+  { title: "In_Progress", color: "blue-500" },
+  // "In_Preview",
+  // "In_Complete",
+  { title: "QA", color: "purple-500" },
+  { title: "Done", color: "green-500" },
+  // "Archived",
+];
+
 const dataToColumn = (taskList: Tables<"tasks">[]) => {
   let filter = taskList;
-  const titles = [
-    "To_do",
-    "In_Progress",
-    // "In_Preview",
-    // "In_Complete",
-    "QA",
-    "Done",
-    // "Archived",
-  ];
+
   const result: ITableColumn = {};
-  for (const title of titles) {
+  for (const { title, color } of ColumnTitles) {
     result[title] = {
-      title: title,
+      title,
       items: [],
+      color,
     };
     filter = filter.filter((item) => {
       if (
@@ -86,9 +91,20 @@ const dataToColumn = (taskList: Tables<"tasks">[]) => {
 
 const sortData = (taskList: Tables<"tasks">[]) => {
   return taskList.sort(
-    (a, b) =>
-      new Date(a.due_date || "").getTime() -
-      new Date(b.due_date || "").getTime(),
+    (a, b) => {
+      // const x = new Date(a.due_date || "").getTime() - new Date().getTime();
+      // const y = new Date(b.due_date || "").getTime() - new Date().getTime();
+      // if (x < 0 || y < 0) {
+      //   return -1;
+      // }
+      return (
+        new Date(a.due_date || "").getTime() -
+        new Date(b.due_date || "").getTime()
+      );
+    },
+
+    // new Date(a.due_date || "").getTime() -
+    // new Date(b.due_date || "").getTime(),
   );
 };
 
@@ -97,7 +113,6 @@ const onDragEnd = async (
   columns: any,
   setColumn: any,
   setLoading: any,
-  mutate: any,
 ) => {
   console.log(result, columns, setColumn);
 
@@ -165,6 +180,9 @@ const Kanban = () => {
 
   const [loading, setLoading] = useState(false);
 
+  const { toast } = useToast();
+  console.log(taskList);
+
   useEffect(() => {
     setColumns(dataToColumn(taskList || []));
   }, [taskList]);
@@ -179,6 +197,13 @@ const Kanban = () => {
 
   if (taskLoading) return <Loading />;
 
+  if (error)
+    toast({
+      title: "Can't load task",
+      description: error,
+      variant: "destructive",
+    });
+
   return (
     <>
       <DragDropContext
@@ -187,7 +212,7 @@ const Kanban = () => {
           const { source, destination } = result;
           if (source.droppableId === destination.droppableId) return;
           setLoading(true);
-          onDragEnd(result, columns, setColumns, setLoading, mutate);
+          onDragEnd(result, columns, setColumns, setLoading);
           // setLoading(false);
         }}
       >
@@ -196,19 +221,32 @@ const Kanban = () => {
           <div className="grid h-max w-max grid-flow-col gap-5">
             {Object.entries(columns).map(([columnId, column], index) => {
               return (
-                <div
-                  className="grid grid-rows-[auto,1fr] rounded-sm bg-primary/10"
-                  key={columnId}
-                >
-                  <div className="sticky top-0 z-50 rounded-sm bg-primary/80 px-3">
-                    <span className="m-1 inline-block font-bold text-white">
-                      {column.title.replace("_", " ")}
-                    </span>
+                <div className={cn("grid grid-rows-[auto,1fr]")} key={columnId}>
+                  <div className="sticky top-0 mb-3 bg-white">
+                    <div
+                      className={cn(
+                        "z-50 border-t-4 px-3",
+                        `border-${column.color} bg-${column.color} bg-opacity-30`,
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "m-1 inline-block font-bold",
+                          `text-${column.color}`,
+                        )}
+                      >
+                        {column.title.replace("_", " ") +
+                          ` (${column.items.length})`}
+                      </span>
+                    </div>
                   </div>
                   <Droppable droppableId={columnId}>
                     {(provided, snapshot) => (
                       <div
-                        className="m-2 mt-2 flex min-h-28 min-w-72 flex-col"
+                        className={cn(
+                          "flex min-h-28 w-72 max-w-72 flex-col p-2 pt-2",
+                          `bg-${column.color}/30`,
+                        )}
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                       >

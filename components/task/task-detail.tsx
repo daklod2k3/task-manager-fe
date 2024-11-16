@@ -16,6 +16,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTaskContext } from "@/context/task-context";
 import { Database, Tables } from "@/entity/database.types";
+import { TaskEntity } from "@/entity/Task";
 import { useTask } from "@/hooks/use-task";
 import { useUser } from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
@@ -34,6 +35,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { Skeleton } from "../ui/skeleton";
 import CommentInput from "./comment-input";
+import TaskDetail2 from "./task-detail-2";
 import UserItem from "./user-item";
 import { PriorityIcon } from "./utils";
 
@@ -147,22 +149,8 @@ export default function TaskDetail() {
   } = useTaskContext();
   const { data: taskFetch, error, isLoading } = useTask(task?.id);
   const [taskChange, setChange] = useState(task);
-  const searchParams = useSearchParams();
-  const { replace } = useRouter();
-  const pathname = usePathname();
-  const { data: user } = useUser();
 
-  useEffect(() => {
-    // if (!taskFetch?.id) return;
-    // const params = new URLSearchParams(searchParams);
-    // if (task?.id) {
-    //   params.set("task_id", String(task.id));
-    // } else {
-    //   params.delete("task_id");
-    // }
-    // console.log(task);
-    // replace(`${pathname}?${params.toString()}`);
-  }, [taskFetch, task]);
+  useEffect(() => {}, [taskFetch, task]);
 
   if (isLoading)
     return (
@@ -187,7 +175,7 @@ export default function TaskDetail() {
       </div>
     );
 
-  const data = taskFetch as Tables<"tasks">;
+  const data = taskFetch[0] as TaskEntity;
   // console.log(data);
 
   if (error) {
@@ -276,13 +264,7 @@ export default function TaskDetail() {
             <ScrollArea className="" type="always">
               <div className="grid h-full min-h-0 grid-cols-[auto,auto] items-center justify-items-end gap-4 rounded border p-2">
                 <FieldLabel value="Assignee:" />
-                <UserItem
-                  currentUsers={
-                    task?.taskUser?.map((item) => {
-                      id: item.user_id;
-                    }) || []
-                  }
-                />
+                {/* <UserItem currentUsers={task?.task_user || []} /> */}
                 <FieldLabel value="Created at:" />
                 <span>{new Date(data.created_at).toLocaleDateString()}</span>
                 <FieldLabel value="Created by:" />
@@ -305,6 +287,8 @@ export function TaskDialog() {
     taskDetail: [detail, setDetail],
   } = useTaskContext();
 
+  const { data: taskFetch, error, isLoading } = useTask(detail?.id);
+
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -320,8 +304,12 @@ export function TaskDialog() {
         if (!x && detail) setDetail(undefined);
       }}
     >
-      <DialogContent className="max-h-[calc(100vh-10rem)] min-h-0 max-w-screen-xl">
-        <TaskDetail />
+      <DialogContent
+        //  className="max-w-screen-xl "
+        className="mx-auto max-h-[calc(100vh-10rem)] min-h-0 w-full max-w-6xl p-2"
+      >
+        {isLoading && <Loading />}
+        {taskFetch && <TaskDetail2 item={taskFetch[0] as TaskEntity} />}
       </DialogContent>
     </Dialog>
   );

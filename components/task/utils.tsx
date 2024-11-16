@@ -7,13 +7,14 @@ import {
   Equal,
 } from "lucide-react";
 import HoverInfo from "../HoverInfo";
+import { Badge } from "../ui/badge";
 
 export const DueDateRender = ({ date }: { date: Date }) => {
   const dayDiff = (date.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
   // console.log(dayDiff);
 
   let color = "";
-  if (dayDiff < 0) color = "red-500";
+  if (dayDiff < 0) color = "gray-500";
   else if (dayDiff > 2) color = "green-500";
   else color = "orange-500";
   const timeStr =
@@ -22,9 +23,18 @@ export const DueDateRender = ({ date }: { date: Date }) => {
       : `${Math.floor(Math.abs(dayDiff))}h`;
   // if ()
   return (
-    <span className={cn("text-" + color)}>
-      {dayDiff < 0 ? `Overdue (${timeStr} ago)` : `${timeStr} left`}
-    </span>
+    <div className="flex flex-wrap gap-2">
+      <Badge className={cn("rounded-full", `bg-${color}`)}>
+        {date.toLocaleDateString("vi-vn", {
+          day: "numeric",
+          month: "short",
+        })}
+      </Badge>
+      <span className={cn("text-" + color)}>
+        {/* {dayDiff < 0 ? `${timeStr} ago` : `${timeStr} left`} */}
+        {dayDiff < 0 ? `Overdue` : `${timeStr} left`}
+      </span>
+    </div>
   );
 };
 

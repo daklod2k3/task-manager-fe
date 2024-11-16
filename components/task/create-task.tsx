@@ -46,10 +46,10 @@ import { Textarea } from "../ui/textarea";
 import { ToastAction } from "../ui/toast";
 import { PriorityIcon } from "./utils";
 
-const formSchema = z.object({
+export const createTaskSchema = z.object({
   title: z.string(),
   description: z.string().optional(),
-  priority: z.enum(["high", "medium", "low"]).default("medium"),
+  priority: z.enum(["High", "Medium", "Low"]),
   due_date: z.date().optional(),
   task_users: z
     .array(
@@ -62,7 +62,7 @@ const formSchema = z.object({
 
 export default function CreateTaskDialog({ children }) {
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(createTaskSchema),
     mode: "all",
   });
 

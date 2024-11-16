@@ -376,6 +376,12 @@ export type Database = {
           id: number;
           priority: Database["public"]["Enums"]["TaskPriority"];
           status: Database["public"]["Enums"]["TaskStatus"];
+          assigned_to_user?: number;
+          assigned_to_department?: number;
+          task_departments?: Tables<"task_department">[];
+          task_user?: Tables<"task_user">[];
+          task_history?: Tables<"task_history">[];
+          created_by_navigation?: Tables<"profiles">;
           title: string;
         };
         Insert: {
@@ -468,7 +474,7 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
-      TaskPriority: "High" | "Medium" | "Low" | "high" | "medium" | "low";
+      TaskPriority: "High" | "Medium" | "Low";
       TaskStatus:
         | "To_do"
         | "In_Progress"

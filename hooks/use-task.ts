@@ -12,13 +12,17 @@ const delay = (delayInms) => {
 };
 
 const fetcher = async (path: string) => {
-  const id = path.split("/").pop();
-  console.log(id);
+  console.log(path);
 
-  const search = new URLSearchParams(path);
+  const id = path.replace("/task", "").split("/")[1];
+
+  const search = new URLSearchParams(path.replace("/task", "").split("?")[1]);
+  console.log(search);
+
   const result = await getTask({ id: Number(id), search: search.toString() });
-  console.log(result);
+  // console.log(result);
   if (result.error) throw new Error(result.error);
+  if (id) return result.data;
   return result.data;
 };
 

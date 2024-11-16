@@ -33,7 +33,7 @@ export function TaskProvider({ children }) {
       params.delete("task_id");
     }
     // replace(`${pathname}?${params.toString()}`);
-    console.log("task detail", taskDetail[0]);
+    // console.log("task detail", taskDetail[0]);
   }, [taskDetail]);
 
   const value = {

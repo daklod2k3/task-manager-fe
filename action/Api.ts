@@ -74,20 +74,20 @@ export class ApiAuth {
 }
 
 export enum FilterOperators {
-  eq,
-  neq,
-  lt,
-  lte,
-  gt,
-  gte,
-  ctn,
+  eq = "eq",
+  neq = "neq",
+  lt = "lt",
+  lte = "lte",
+  gt = "gt",
+  gte = "gte",
+  ctn = "ctn",
 }
 
 export enum FilterLogic {
   And,
   Or,
 }
-export class Filter<T = object> {
+export class Filter<T = any> {
   public field: keyof T;
   public operator: FilterOperators;
   public value: T[keyof T];
@@ -105,7 +105,7 @@ export class Filter<T = object> {
 
 export class RootFilter {
   filters: Filter[];
-  logic: FilterLogic = FilterLogic.And;
+  logic?: FilterLogic;
   constructor({ Filters, Logic }) {
     this.filters = Filters;
     this.logic = Logic;

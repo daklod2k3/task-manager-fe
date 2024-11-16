@@ -60,11 +60,17 @@ const config: Config = {
   },
   safelist: [
     {
-      pattern: /text-.+/,
+      pattern: /(text|size|border|bg)-.+/,
     },
-    {
-      pattern: /size-.+/,
-    },
+    // {
+    //   pattern: /size-.+/,
+    // },
+    // {
+    //   pattern: /border-.+/,
+    // },
+    // {
+    //   pattern: /bg-.+/,
+    // },
   ],
   plugins: [require("tailwindcss-animate")],
 };
