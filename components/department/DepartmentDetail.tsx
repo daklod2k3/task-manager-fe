@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-
 import { CircleX, Loader2  } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tables } from "@/entity/database.types";
 import { useDepartmentContext } from "@/context/department-context";
-import { deleteDepartmentSupabase, updateDepartmentName } from "@/action/Department";
+import { deleteDepartment, updateDepartment } from "@/action/Department";
 import { usePeople } from "@/hooks/use-people";
 import SearchUser from "@/components/department/SearchUser";
 import { useToast } from "@/hooks/use-toast";
@@ -22,7 +21,7 @@ import {
 } from "@/components/ui/table"
 
 export default function DepartmentDetail() {
-  const { departmentFetch, departmentUserFetch} = useDepartmentContext();
+  const { departmentFetch, departmentUserFetch, setMount} = useDepartmentContext();
   const userFetch = usePeople();
   const [open, setOpen] = useState(false);
   const search = new URLSearchParams(window.location.search);
@@ -34,8 +33,9 @@ export default function DepartmentDetail() {
   const [currTeam, setCurrTeam] = useState<number>(0);
 
   const [valueInput, setValueInput] = useState<string>("");
-  const [editTeamName, setEditTeamName] = useState<boolean>(false);
   const [editTable, setEditTable] = useState<boolean>(false);
+  const [editTeamName, setEditTeamName] = useState<boolean>(false);
+  const [save, setSave] = useState<boolean>(false);
 
   useEffect(() => {
     console.log(departmentUserFetch.data)
@@ -90,26 +90,6 @@ export default function DepartmentDetail() {
     }
   }
 
-  const deleteDepartment = async () => {
-    try {
-      const res = await deleteDepartmentSupabase(currTeam);
-      toast({
-        description: "deleted department successfully",
-      })
-      setOpen(false);
-      deleteKey();
-      departmentFetch.mutate();
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "delete department error",
-        description: String(error),
-        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
-      })
-      console.error("Error creating team:", error);
-    }
-  }
-
   const deleteKey = () => {
     search.delete('department_id');
     const url = new URL(window.location.href);
@@ -117,61 +97,66 @@ export default function DepartmentDetail() {
     window.history.pushState({}, '', url.toString());
   }
 
-  const handleData = {
-    reset: () => {
-    },
-    save: () => {
-      // updateDepartmentName(currTeam,valueInput);
+  const deleteDepa = async () => {
+    try {
+      await deleteDepartment(currTeam);
+      setSave(false);
+      setEditTeamName(false);
+      toast({
+        description: "deleted department successfully",
+      })
+      setOpen(false);
+      deleteKey();
+      departmentFetch.mutate();
+      setMount(prev => !prev);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "delete department error",
+        description: String(error),
+        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
+      })
     }
-  };
+  }
+
+  const updateDepa = async () => {
+    try {
+      const data = [
+        {
+          op: "replace", 
+          path: "/name", 
+          value: valueInput
+        }
+      ];
+      setSave(false);
+      setEditTeamName(false);
+      departmentFetch.mutate();
+      const res = await updateDepartment(currTeam, data);
+      toast({
+        title: "updated department successfully",
+        description :  JSON.stringify(res),
+      })
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "update department error",
+        description: String(error),
+        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
+      })
+    }
+  }
 
   const handleTeam = {
-    addTeam: (name: string) => {
-      const id = teams.length + 2;
-      const newTeam = {
-        id,
-        name,
-        created_at: new Date().toISOString(),
-      };
-      setTeams([...teams, newTeam]); 
-    },
     getNameByid: (id: number) => {
       const foundUser = Object.values(teams).find((team) => team.id == id);
-      return foundUser? foundUser.name : '';
+      return foundUser ? foundUser.name : '';
     },
-    setNameById: (id: number, value: string) => {
-      setTeams((prevTeams) => 
-        prevTeams.map((team) => 
-          team.id === id 
-            ? { ...team, name: value } 
-            : team 
-        )
-      );
-    }
   }
 
   const handleUser = {
     getNameById: (userID: string) => {
       console.log(users)
       return users.find((user) => user.id === userID)?.name ?? '';
-    },
-    getMemberByTeamID: (teamID: number) => {
-      // const members = teams
-      //   .filter(team => team.id === teamID)
-      //   // .flatMap(team => team.department_users);
-      // return members;
-      // return 
-    },
-    getIdByName: (name: string) => {
-      const foundUser = Object.values(users).find((user) => user.name === name);
-      return foundUser? foundUser.id : '';
-    },
-    setNameByID: (userID: string, newName: string) => {
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user.id === userID ? { ...user, name: newName } : user
-        )
-      );
     },
   }
 
@@ -210,7 +195,9 @@ export default function DepartmentDetail() {
     <div className={open ? "flex-1 bg-primary/10 h-fit p-3 shadow rounded" : "hidden"}>
       <div className="w-full flex justify-end">
         <Button onClick={() => {
-            deleteKey()
+            setSave(false);
+            setEditTeamName(false);
+            deleteKey();
             setOpen(false)
           }}>
           <CircleX/>
@@ -224,8 +211,10 @@ export default function DepartmentDetail() {
                           }
                         }}
                         value={valueInput}
-                        onChange={e => (setValueInput(e.target.value))}
-                        onBlur={() => {setEditTeamName((prev: any) => !prev)}}
+                        onChange={e => {
+                          setSave(true);
+                          (setValueInput(e.target.value))
+                        }}
                       />
                     : <h2 className="text-lg font-semibold mb-4 mt-4"
                         onClick={() => {
@@ -251,20 +240,18 @@ export default function DepartmentDetail() {
               <RenderTable/>
             </div>
               <div className="flex flex-1 justify-around mt-3">
-                <Button 
-                  className="w-full mr-3"
-                  onClick={() => {
-                    setEditTable(prev => !prev)
-                    handleData.save()
-                  }}
-                  >Save
-                </Button>
-                  <AlertButton 
-                    actionLabel="Delete"
-                    title="Do you want to delete this department?"
-                    description="This action cannot be undone."
-                    onAction={deleteDepartment} 
-                    openButtonLabel="Delete Department" />
+                {save && <AlertButton 
+                  actionLabel="save"
+                  title="Do you want to save this department?"
+                  description="This action cannot be undone."
+                  onAction={updateDepa} 
+                  openButtonLabel="Save" />}
+                <AlertButton 
+                  actionLabel="Delete"
+                  title="Do you want to delete this department?"
+                  description="This action cannot be undone."
+                  onAction={deleteDepa} 
+                  openButtonLabel="Delete Department" />
               </div>
           </div>
         </div>

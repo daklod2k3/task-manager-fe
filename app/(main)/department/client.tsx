@@ -8,10 +8,10 @@ import DeprtmentList from "@/components/department/DepartmentList";
 import DepartmentDetail from "@/components/department/DepartmentDetail";
 
 export default function Department() {
-  const { mount } = useDepartmentContext();
+  const { setMount } = useDepartmentContext();
   useEffect(() => {
-
-  }, [mount]);
+    console.log("mount client")
+  }, [setMount]);
 
   return (
     <div className="flex p-4 flex-wrap">

@@ -3,7 +3,7 @@ import { Tables } from "@/entity/database.types";
 import { ApiAuth, ApiRoutes, GetProps, IApiResponse } from "./Api";
 import { createClient } from "@/utils/supabase/server";
 
-export async function addDepartment(department: Tables<"departments">) {
+export async function createDepartment(department: Tables<"departments">) {
   try {
     const res = await new ApiAuth(ApiRoutes.Department).post(department);
 
@@ -15,14 +15,14 @@ export async function addDepartment(department: Tables<"departments">) {
 }
 
 export async function deleteDepartment(departmentId: number) {
-  // try {
-  //   const res = await new ApiAuth(ApiRoutes.Department).detele(departmentId);
+  try {
+    const res = await new ApiAuth(ApiRoutes.Department).delete(departmentId);
 
-  //   return (await res.json()) as IApiResponse<Tables<"departments">>;
-  // } catch (e) {
-  //   console.log(e);
-  //   throw Error()
-  // }
+    return (await res.json()) as IApiResponse<Tables<"departments">>;
+  } catch (e) {
+    console.log(e);
+    throw Error()
+  }
 }
 
 export async function updateDepartment(id: number, data: object) {

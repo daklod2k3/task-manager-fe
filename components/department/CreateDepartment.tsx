@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form"
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod"
-import { addDepartmentSupabase } from "@/action/Department";
+import { createDepartment } from "@/action/Department";
 import { useDepartmentContext } from "@/context/department-context";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast"
@@ -34,28 +34,29 @@ export default function CreateDepartment() {
   const {departmentFetch} = useDepartmentContext();
   const {toast} = useToast();
 
+  // chua lam
+  // const teamSchema = z.object({
+  //   teamName: z.string().min(1, "Team name is required"),
+  //   members: z.string(),
+  // });
+
   const teamSchema = z.object({
-    teamName: z.string().min(1, "Team name is required"),
-    member: z.string(),
+    name: z.string().min(1, "Team name is required"),
   });
 
   const CreateTeamForm: React.FC = () => {
     const form = useForm({
       resolver: zodResolver(teamSchema),
       defaultValues: {
-        teamName: "",
-        member: "",
+        name: "",
       },
     });
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (formData) => {
       try {
-        const departmentData = {
-          name: data.teamName,
-          created_at: new Date().toISOString(),
-        };
-
-        const res = await addDepartmentSupabase(departmentData);
+        const res = await createDepartment(formData);
+        console.log(res);
+        
         departmentFetch.mutate();
         toast({
           description: "successfully add department",
@@ -68,7 +69,6 @@ export default function CreateDepartment() {
           description: String(error),
           action: <ToastAction altText="Try again">Please Try again</ToastAction>,
         })
-        console.error("Error creating team:", error);
       }
     };
 
@@ -76,10 +76,10 @@ export default function CreateDepartment() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
-            name="teamName"
+            name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Team Name</FormLabel>
+                <FormLabel>Name Team</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter team name" {...field} />
                 </FormControl>
@@ -87,7 +87,7 @@ export default function CreateDepartment() {
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             name="member"
             render={({ field }) => (
               <FormItem>
@@ -98,7 +98,7 @@ export default function CreateDepartment() {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           <div className="flex space-x-2">
             <Button
               type="button"
