@@ -7,21 +7,20 @@ Icon: [https://lucide.dev/icons/](https://lucide.dev/icons/), [https://www.radix
 
 ## Getting Started
 
-First, run the development server:
+First, run the api server: <https://github.com/daklod2k3/task-manager-be>
+
+Second, run the local development
 
 ```bash
-npm run dev
-# or
+# install package for first time run
+yarn install
+
+# run local development
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 

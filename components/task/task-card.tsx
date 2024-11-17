@@ -22,7 +22,7 @@ export const PriorityColor = (priority: string) => {
     case "high":
       return "red-500";
     case "medium":
-      return "orange-500";
+      return "amber-500";
     case "low":
       return "green-500";
     default:
@@ -66,7 +66,8 @@ const TaskCard = ({ item, index }: { item: TaskEntity; index: number }) => {
             </div>
           </div> */}
           <Badge
-            className={`w-fit rounded-none px-2 text-white bg-${PriorityColor(item.priority)} group`}
+            variant={"outline"}
+            className={`w-fit rounded-none px-2 text-white border-${PriorityColor(item.priority)} bg-${PriorityColor(item.priority)}/20 rounded-full text-${PriorityColor(item.priority)} group`}
           >
             {item.priority}
           </Badge>

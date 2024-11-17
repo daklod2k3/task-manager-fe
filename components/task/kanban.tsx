@@ -58,7 +58,7 @@ interface ITableColumn {
 export const ColumnTitles = [
   { title: "To_do", color: "sky-500" },
   { title: "In_Progress", color: "blue-500" },
-  // "In_Preview",
+  { title: "In_Preview", color: "orange-500" },
   // "In_Complete",
   { title: "QA", color: "purple-500" },
   { title: "Done", color: "green-500" },
@@ -245,7 +245,7 @@ const Kanban = () => {
                       <div
                         className={cn(
                           "flex min-h-28 w-72 max-w-72 flex-col p-2 pt-2",
-                          `bg-${column.color}/30`,
+                          `bg-${column.color}/20`,
                         )}
                         ref={provided.innerRef}
                         {...provided.droppableProps}

@@ -13,6 +13,7 @@ import {
   Settings,
   Users,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface IChannelSelect extends IChannelButton {}
@@ -99,6 +100,8 @@ export default function ChannelList({
     },
   ];
 
+  const { replace } = useRouter();
+
   useEffect(() => {
     // setActiveChat()
   }, []);
@@ -116,7 +119,10 @@ export default function ChannelList({
               active={channel.id == activeChat}
               title={channel.name}
               key={channel.id}
-              onClick={() => setActiveChat(channel.id)}
+              onClick={() => {
+                replace(`/chat/1`);
+                setActiveChat(channel.id);
+              }}
             />
           ))}
           <ChannelButton
