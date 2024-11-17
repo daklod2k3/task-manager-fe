@@ -49,7 +49,7 @@ import { PriorityIcon } from "./utils";
 export const createTaskSchema = z.object({
   title: z.string(),
   description: z.string().optional(),
-  priority: z.enum(["High", "Medium", "Low"]),
+  priority: z.enum(["High", "Medium", "Low"]).default("Medium"),
   due_date: z.date().optional(),
   task_users: z
     .array(
@@ -201,7 +201,7 @@ export default function CreateTaskDialog({ children }) {
                   <FormLabel>Priority</FormLabel>
                   <FormControl>
                     <Select
-                      defaultValue="medium"
+                      defaultValue="Medium"
                       {...field}
                       onValueChange={(value) => {
                         field.onChange(value);
@@ -211,19 +211,19 @@ export default function CreateTaskDialog({ children }) {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="high">
+                        <SelectItem value="High">
                           <div className="flex items-center">
                             <PriorityIcon priority={"high"} />
                             <span>High</span>
                           </div>
                         </SelectItem>
-                        <SelectItem value="medium">
+                        <SelectItem value="Medium">
                           <div className="flex w-full items-center justify-between">
                             <PriorityIcon priority={"medium"} />
                             <span>Medium</span>
                           </div>
                         </SelectItem>
-                        <SelectItem value="low">
+                        <SelectItem value="Low">
                           <div className="flex items-center">
                             <PriorityIcon priority={"low"} />
                             <span>Low</span>

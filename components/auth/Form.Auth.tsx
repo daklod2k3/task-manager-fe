@@ -13,7 +13,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { lazy, useEffect, useState } from "react";
 import { z } from "zod";
 
-import { login } from "@/action/Auth";
+import { login, signup } from "@/action/Auth";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckIcon } from "@radix-ui/react-icons";
@@ -122,7 +122,7 @@ export function AuthForm({ isLogin = true }) {
   const formSubmit = async (data: any) => {
     setLoading(true);
     // if ()
-    const result = isLogin ? await login(data) : null;
+    const result = isLogin ? await login(data) : await signup(data);
     if (!result) {
       return;
     }

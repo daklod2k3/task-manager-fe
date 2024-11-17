@@ -22,6 +22,31 @@ export async function login(form: any) {
   revalidatePath("/", "layout");
   redirect("/");
 }
+export async function signup(form: any) {
+  // console.log(form);
+
+  // const data = {
+  //   email: formData.get("email") as string,
+  //   password: formData.get("password") as string,
+  // };
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signUp({
+    ...form,
+    options: {
+      data: {
+        name: form.name,
+      },
+    },
+  });
+
+  if (error) {
+    console.log(error.message);
+
+    return { error: error.message };
+  }
+  revalidatePath("/", "layout");
+  redirect("/");
+}
 // export async function login(form: any) {
 //   // console.log(form);
 

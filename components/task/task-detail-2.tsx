@@ -13,7 +13,7 @@ import { useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
 import { TaskEntity } from "@/entity/Task";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
-import { useTask } from "@/hooks/use-task";
+import { useAllTask, useTask } from "@/hooks/use-task";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,6 +24,7 @@ import {
   ChevronRight,
   Edit,
   FileText,
+  Loader2,
   Mail,
   MessageSquare,
   MoreVertical,
@@ -79,7 +80,13 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
 
   const { data: peoples, isLoading: peopleLoading } = usePeople();
   const { toast } = useToast();
-  const { mutate } = useTask();
+  const { mutate: mutateList } = useAllTask();
+  const { mutate: mutateDetail } = useTask();
+  const {
+    taskDetail: [, setDetail],
+  } = useTaskContext();
+
+  const [saveLoading, setSaveLoading] = useState(false);
 
   const [assigneeSelect, setAssigneeSelect] = useState<Tables<"profiles">[]>(
     item.task_users?.map((x) => x.user || { id: x.user_id }) || [],
@@ -88,8 +95,11 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
 
   // useEffect(() => {}, [taskFetch, task]);
   const handleSubmit = async (formData) => {
+    setSaveLoading(true);
     const res = await updateTask(formData);
-    mutate();
+    await mutateDetail();
+    await mutateList();
+    setSaveLoading(false);
     if (res.error) {
       toast({
         title: "Error",
@@ -103,6 +113,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
       title: "Success",
       description: "Task updated",
     });
+    // setDetail(undefined);
   };
   console.log(item);
   console.log(item.task_users);
@@ -391,7 +402,11 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button className="" disabled={!form.formState.isDirty}>
+            <Button
+              className=""
+              disabled={!form.formState.isDirty || saveLoading}
+            >
+              {saveLoading && <Loader2 className="animate-spin" />}
               Save
             </Button>
             <Button variant="ghost" type="reset">
