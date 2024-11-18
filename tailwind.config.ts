@@ -59,18 +59,18 @@ const config: Config = {
     },
   },
   safelist: [
+    // {
+    //   pattern: /(text|size|border|bg)-.+/,
+    // },
     {
-      pattern: /(text|size|border|bg)-.+/,
+      pattern: /size-.+/,
     },
-    // {
-    //   pattern: /size-.+/,
-    // },
-    // {
-    //   pattern: /border-.+/,
-    // },
-    // {
-    //   pattern: /bg-.+/,
-    // },
+    {
+      pattern: /border-(green|yellow|orange|red|sky|blue|purple|gray)-.+/,
+    },
+    {
+      pattern: /bg-(green|yellow|orange|red|sky|blue|purple|gray)-.+/,
+    },
   ],
   plugins: [require("tailwindcss-animate")],
 };

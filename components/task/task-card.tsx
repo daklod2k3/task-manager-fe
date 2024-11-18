@@ -72,7 +72,7 @@ const TaskCard = ({ item, index }: { item: TaskEntity; index: number }) => {
             {item.priority}
           </Badge>
 
-          <span className="text-current">{item.title}</span>
+          <span className="font-semibold text-current">{item.title}</span>
 
           {item.status.toLocaleLowerCase() != "done" && item.due_date && (
             <div className="flex items-center gap-2 text-gray-500">
@@ -102,7 +102,7 @@ const TaskCard = ({ item, index }: { item: TaskEntity; index: number }) => {
 
           <div className="flex gap-2 text-gray-500">
             <PencilLine size={17} />
-            <span className="font-semibold text-black">Created:</span>
+            <span className="font-semibold text-gray-500">Created:</span>
             {item.created_by_navigation?.name}
           </div>
         </div>
