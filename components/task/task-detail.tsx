@@ -31,7 +31,7 @@ import { CardTitle } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
 import { Dialog, DialogClose, DialogContent } from "../ui/dialog";
 import { Label } from "../ui/label";
-import { ScrollArea } from "../ui/scroll-area";
+import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { Skeleton } from "../ui/skeleton";
 import CommentInput from "./comment-input";
@@ -304,13 +304,16 @@ export function TaskDialog() {
         if (!x && detail) setDetail(undefined);
       }}
     >
-      <DialogContent
-        //  className="max-w-screen-xl "
-        className="mx-auto max-h-[calc(100vh-10rem)] min-h-0 w-full max-w-6xl p-2"
-      >
-        {isLoading && <Loading />}
-        {taskFetch && <TaskDetail2 item={taskFetch[0] as TaskEntity} />}
-      </DialogContent>
+      <ScrollArea>
+        <DialogContent
+          //  className="max-w-screen-xl "
+          className="mx-auto max-h-[calc(100vh-10rem)] min-h-0 w-full max-w-6xl p-2"
+        >
+          {isLoading && <Loading />}
+          {taskFetch && <TaskDetail2 item={taskFetch[0] as TaskEntity} />}
+        </DialogContent>
+        <ScrollBar />
+      </ScrollArea>
     </Dialog>
   );
 }

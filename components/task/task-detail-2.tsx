@@ -65,7 +65,6 @@ import { PriorityIcon } from "./utils";
 const updateTaskSchema = createTaskSchema.extend({
   id: z.number(),
   created_by: z.string(),
-  task_users: z.any(),
   status: z.string(),
 });
 
@@ -74,7 +73,10 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
     resolver: zodResolver(updateTaskSchema),
     mode: "all",
     defaultValues: {
-      ...item,
+      ...updateTaskSchema.parse({
+        ...(item as Tables<"tasks">),
+        due_date: item.due_date ? new Date(item.due_date) : undefined,
+      }),
     },
   });
 
@@ -91,7 +93,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
   const [assigneeSelect, setAssigneeSelect] = useState<Tables<"profiles">[]>(
     item.task_users?.map((x) => x.user || { id: x.user_id }) || [],
   );
-  console.log(assigneeSelect);
+  // console.log(assigneeSelect);
 
   // useEffect(() => {}, [taskFetch, task]);
   const handleSubmit = async (formData) => {
@@ -122,11 +124,11 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
 
   const addAssignee = (x) => {
     if (assigneeSelect.filter((item) => item.id == x.id).length > 0) return;
-    setAssigneeSelect([...assigneeSelect, x]);
+    setAssigneeSelect((prev) => [...prev, x]);
   };
 
   const removeAssignee = (x) => {
-    setAssigneeSelect(assigneeSelect.filter((item) => item.id !== x.id));
+    setAssigneeSelect((prev) => prev.filter((value) => value.id !== x.id));
   };
 
   useEffect(() => {
@@ -358,6 +360,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                       ))}
                     </div>
                     <SearchSelect
+                      disable
                       isLoading={peopleLoading}
                       placeholder="Type to search"
                       ItemRender={PeopleSearchItem}
@@ -409,7 +412,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
               {saveLoading && <Loader2 className="animate-spin" />}
               Save
             </Button>
-            <Button variant="ghost" type="reset">
+            <Button variant="ghost" type="reset" onClick={() => form.reset()}>
               Reset
             </Button>
           </div>

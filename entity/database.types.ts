@@ -372,7 +372,7 @@ export type Database = {
           created_at: string;
           created_by: string;
           description: string | null;
-          due_date: string | null;
+          due_date: Date | null;
           id: number;
           priority: Database["public"]["Enums"]["TaskPriority"];
           status: Database["public"]["Enums"]["TaskStatus"];

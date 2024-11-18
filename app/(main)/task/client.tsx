@@ -186,7 +186,7 @@ export default function Client() {
 
   return (
     <div className="flex max-h-full min-h-0 min-w-0 flex-col gap-5 p-4 pb-0 text-foreground">
-      <h1 className="text-lg font-bold text-[hsl(0,0%,3.9%)]">Task List</h1>
+      <h1 className="text-lg font-bold">Your task</h1>
       <div className="flex w-full items-center gap-3">
         <SearchInput
           className="bg-white"

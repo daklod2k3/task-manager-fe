@@ -13,11 +13,17 @@ import { Command as CommandPrimitive } from "cmdk";
 
 import { Tables } from "@/entity/database.types";
 import { cn } from "@/lib/utils";
-import { Search } from "lucide-react";
+import { ChevronsUpDown, Search } from "lucide-react";
 import React, { useMemo } from "react";
 import MyAvatar from "./Avatar";
+import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Popover, PopoverAnchor, PopoverContent } from "./ui/popover";
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+  PopoverTrigger,
+} from "./ui/popover";
 import { Skeleton } from "./ui/skeleton";
 
 export function PeopleSearchItem<T extends Tables<"profiles">>({
@@ -47,16 +53,19 @@ interface SearchSelectProps<T> {
   modal?: boolean;
   inputClassName?: string;
   placeholder?: string;
+  disable?: boolean;
+  CustomTrigger: React.Component<HTMLButtonElement>;
 }
 
 export default function SearchSelect<T>({
-  inputClassName,
+  disable = false,
   items,
   isLoading = false,
   onSelectedValueChange,
   modal = false,
   ItemRender,
   placeholder,
+  CustomTrigger,
 }: SearchSelectProps<T>) {
   const [searchValue, setSearchValue] = React.useState("");
   const [open, setOpen] = React.useState(false);
@@ -111,11 +120,28 @@ export default function SearchSelect<T>({
   return (
     <div className="flex items-center">
       <Popover open={open} modal={modal} onOpenChange={setOpen}>
-        <Command shouldFilter={false}>
-          <PopoverAnchor asChild>
-            <div className="relative flex items-center">
-              <Search className="absolute ml-2 h-4 w-4" />
+        <PopoverTrigger asChild>
+          {/* <div className="relative flex items-center"> */}
+          {CustomTrigger ? (
+            <CustomTrigger />
+          ) : (
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="w-[200px] justify-between"
+              type="button"
+            >
+              {/* {value
+            ? frameworks.find((framework) => framework.value === value)?.label
+            : "Select framework..."} */}
+              {placeholder || "Select..."}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          )}
+          {/* <Search className="absolute ml-2 h-4 w-4" />
               <CommandPrimitive.Input
+                disabled={disable}
                 asChild
                 value={searchValue}
                 onValueChange={setSearchValue}
@@ -129,23 +155,37 @@ export default function SearchSelect<T>({
                   placeholder={placeholder}
                   disabled={isLoading}
                 />
-              </CommandPrimitive.Input>
-            </div>
-          </PopoverAnchor>
-          {!open && <CommandList aria-hidden="true" className="hidden" />}
-          <PopoverContent
-            asChild
-            onOpenAutoFocus={(e) => e.preventDefault()}
-            onInteractOutside={(e) => {
-              if (
-                e.target instanceof Element &&
-                e.target.hasAttribute("cmdk-input")
-              ) {
-                e.preventDefault();
-              }
-            }}
-            className="max-h-52 min-h-0 w-[--radix-popover-trigger-width] p-0"
-          >
+              </CommandPrimitive.Input> */}
+          {/* </div> */}
+        </PopoverTrigger>
+        {/* {!open && <CommandList aria-hidden="true" className="hidden" />} */}
+        <PopoverContent
+          asChild
+          onInteractOutside={(e) => {
+            if (
+              e.target instanceof Element &&
+              e.target.hasAttribute("cmdk-input")
+            ) {
+              e.preventDefault();
+            }
+          }}
+          className="max-h-52 min-h-0 w-[--radix-popover-trigger-width] p-0"
+        >
+          <Command shouldFilter={false}>
+            <CommandInput
+              disabled={disable}
+              // asChild
+              value={searchValue}
+              onValueChange={setSearchValue}
+              onKeyDown={(e) => setOpen(e.key !== "Escape")}
+              // onBlur={onInputBlur}
+            >
+              {/* <Input
+                className={cn("bg-white/50 pl-7", inputClassName)}
+                placeholder={placeholder}
+                disabled={isLoading}
+              /> */}
+            </CommandInput>
             <CommandList asChild>
               {isLoading && (
                 <CommandPrimitive.Loading>
@@ -171,8 +211,8 @@ export default function SearchSelect<T>({
                 <CommandEmpty>No items found</CommandEmpty>
               )}
             </CommandList>
-          </PopoverContent>
-        </Command>
+          </Command>
+        </PopoverContent>
       </Popover>
     </div>
   );
