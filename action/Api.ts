@@ -12,6 +12,8 @@ export const enum ApiRoutes {
   Task = "/task",
   People = "/people",
   Channel = "/channel",
+  Department = "/department",
+  DepartmentUser = "/departmentUser",
 }
 
 export interface GetProps {
@@ -69,6 +71,16 @@ export class ApiAuth {
       },
       method: "PATCH",
       body: JSON.stringify(data),
+    });
+  }
+
+  // viết tạm
+  async delete(id: number) {
+    return fetch(this.route + `/${id}`, {
+      headers: {
+        Authorization: `Bearer ${await this.token}`,
+      },
+      method: "DELETE",
     });
   }
 }
