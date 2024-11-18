@@ -65,7 +65,8 @@ function AlertButton({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={closeDialog}>{cancelLabel}</AlertDialogCancel>
-            <AlertDialogAction type={btnType} onClick={() => {
+            <AlertDialogAction 
+                  type={btnType} onClick={() => {
                   if (onAction) onAction(); 
                   closeDialog();
                   }}>

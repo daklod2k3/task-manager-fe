@@ -10,7 +10,7 @@ import CreateDepartment from "@/components/department/CreateDepartment";
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default function DepartmentList() {
-  const {departmentFetch,departmentUserFetch, setMount} = useDepartmentContext();
+  const {departmentFetch, setMount} = useDepartmentContext();
   const [teams, setTeams] = useState<Tables<"departments">[]>([]);
 
   useEffect(() => {

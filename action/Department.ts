@@ -42,13 +42,6 @@ export async function getDepartment(id?: number) {
   return filter;
 }
 
-export async function getUser(id?: number) {
-  const supabase = createClient();
-  let filter = supabase.from("profiles").select();
-  if (id) filter = filter.eq("id", id);
-  return filter;
-}
-
 export async function getUserByDepartment(departmentId?: number) {
   const supabase = createClient();
   let filter = supabase.from("department_user").select();

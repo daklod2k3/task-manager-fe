@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form"
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod"
-import { createDepartment } from "@/action/Department";
+import { updateDepartment } from "@/action/Department";
 import { useDepartmentContext } from "@/context/department-context";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast"
@@ -29,7 +29,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
-export default function CreateDepartment() {
+export default function UpdateDepartment() {
   const [open, setOpen] = useState(false);
   const {departmentFetch} = useDepartmentContext();
   const {toast} = useToast();
@@ -54,9 +54,15 @@ export default function CreateDepartment() {
 
     const onSubmit = async (formData) => {
       try {
-        const res = await createDepartment(formData);
-        console.log(res);
-        
+        console.log(formData.name)
+        const data = [
+          {
+            op: "replace", 
+            path: "/name", 
+            value: formData.name,
+          }
+        ];
+        await updateDepartment(32, data);
         departmentFetch.mutate();
         toast({
           description: "successfully add department",
@@ -79,7 +85,7 @@ export default function CreateDepartment() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name Department</FormLabel>
+                <FormLabel>New Department</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter team name" {...field} />
                 </FormControl>
@@ -87,7 +93,7 @@ export default function CreateDepartment() {
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             name="member"
             render={({ field }) => (
               <FormItem>
@@ -98,7 +104,7 @@ export default function CreateDepartment() {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           <div className="flex space-x-2">
             <Button
               type="button"
@@ -122,13 +128,13 @@ export default function CreateDepartment() {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className="mb-2 px-4">
-        Create Department
+      <Button onClick={() => setOpen(true)} className="w-full mb-2 px-4">
+        Edit
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create a Department</DialogTitle>
+            <DialogTitle>Name Department</DialogTitle>
           </DialogHeader>
           <DialogDescription>
             <CreateTeamForm />

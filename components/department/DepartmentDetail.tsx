@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/table"
 
 export default function DepartmentDetail() {
-  const { departmentFetch, departmentUserFetch, setMount} = useDepartmentContext();
+  const { departmentFetch, setMount} = useDepartmentContext();
   const userFetch = usePeople();
   const [open, setOpen] = useState(false);
   const search = new URLSearchParams(window.location.search);
@@ -37,12 +37,12 @@ export default function DepartmentDetail() {
   const [editTeamName, setEditTeamName] = useState<boolean>(false);
   const [save, setSave] = useState<boolean>(false);
 
-  useEffect(() => {
-    console.log(departmentUserFetch.data)
-    if (departmentUserFetch.data) {
-      setTeamUsers(departmentUserFetch.data);
-    }
-  }, [departmentUserFetch.data]);
+  // useEffect(() => {
+  //   console.log(departmentUserFetch.data)
+  //   if (departmentUserFetch.data) {
+  //     setTeamUsers(departmentUserFetch.data);
+  //   }
+  // }, [departmentUserFetch.data]);
   
   useEffect(() => {
     if (userFetch.data) {
@@ -65,7 +65,7 @@ export default function DepartmentDetail() {
   }, [search]);
 
   const RenderTable: React.FC = () => {
-    if(departmentUserFetch.isLoading) {
+    if(departmentFetch.isLoading) {
       return (
         <Button disabled className="h-24 w-56">
           <Loader2 className="animate-spin" />

@@ -1,10 +1,9 @@
 "use client"; 
 import { createContext, useContext, ReactNode, useState } from "react";
-import {useDepartment, useDepartmentUser} from "@/hooks/use-department";
+import {useDepartment} from "@/hooks/use-department";
 
 interface IDepartmentContext {
   departmentFetch: ReturnType<typeof useDepartment>;
-  departmentUserFetch: ReturnType<typeof useDepartmentUser>;
   mount: boolean;
   setMount: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -17,12 +16,10 @@ interface DepartmentProviderProps {
 
 export function DepartmentProvider({ children }: DepartmentProviderProps) {
   const departmentFetch = useDepartment();
-  const departmentUserFetch = useDepartmentUser();
   const [mount, setMount] = useState(false);
   
   const value = {
     departmentFetch,
-    departmentUserFetch,
     mount,
     setMount,
   };
