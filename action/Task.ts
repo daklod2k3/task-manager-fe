@@ -32,24 +32,14 @@ export async function getTask({ id, search }: GetProps) {
   const includes = "TaskUsers,TaskDepartments,CreatedByNavigation";
   const params = new URLSearchParams(search);
   params.append("includes", includes);
-  if (id) {
-    const filter: RootFilter = {
-      filters: [
-        {
-          field: "id",
-          value: id,
-          operator: FilterOperators.eq,
-        },
-      ],
-    };
-    params.append("filter", JSON.stringify(filter));
-    const res = await new ApiAuth(ApiRoutes.Task).get({
-      search: params.toString(),
-    });
-    // console.log(res);
+  // if (id) {
+  //   const res = await new ApiAuth(ApiRoutes.Task + /).get({
+  //     search: params.toString(),
+  //   });
+  //   // console.log(res);
 
-    return await res.json();
-  }
+  //   return await res.json();
+  // }
   try {
     const res = await new ApiAuth(ApiRoutes.Task).get({
       id,

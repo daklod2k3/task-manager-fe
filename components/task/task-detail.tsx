@@ -285,10 +285,13 @@ export default function TaskDetail() {
 export function TaskDialog() {
   const {
     taskDetail: [detail, setDetail],
+    setDetail: setOpenDetail,
   } = useTaskContext();
 
   const { data: taskFetch, error, isLoading } = useTask(detail?.id);
 
+  const pathname = usePathname();
+  const { replace } = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -296,24 +299,28 @@ export function TaskDialog() {
     if (task_id) setDetail({ id: Number(task_id) } as Tables<"tasks">);
   }, []);
 
+  console.log(taskFetch);
+
   return (
     <Dialog
-      open={detail != null && detail != undefined}
+      open={detail?.id ? true : false}
       onOpenChange={(x) => {
         console.log(x);
-        if (!x && detail) setDetail(undefined);
+        if (!x && detail) setOpenDetail();
       }}
     >
-      <ScrollArea>
-        <DialogContent
-          //  className="max-w-screen-xl "
-          className="mx-auto max-h-[calc(100vh-10rem)] min-h-0 w-full max-w-6xl p-2"
-        >
+      <DialogContent
+        //  className="max-w-screen-xl "
+        className="mx-auto max-h-[calc(100vh-10rem)] min-h-0 w-full max-w-6xl p-2"
+      >
+        <ScrollArea>
           {isLoading && <Loading />}
-          {taskFetch && <TaskDetail2 item={taskFetch[0] as TaskEntity} />}
-        </DialogContent>
-        <ScrollBar />
-      </ScrollArea>
+          {taskFetch && detail && (
+            <TaskDetail2 item={taskFetch as TaskEntity} />
+          )}
+          <ScrollBar />
+        </ScrollArea>
+      </DialogContent>
     </Dialog>
   );
 }

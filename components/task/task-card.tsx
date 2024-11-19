@@ -31,13 +31,11 @@ export const PriorityColor = (priority: string) => {
 };
 
 const TaskCard = ({ item, index }: { item: TaskEntity; index: number }) => {
-  const {
-    taskDetail: [, setDetail],
-  } = useTaskContext();
+  const { setDetail } = useTaskContext();
 
   const onClick = () => {
     "click";
-    setDetail(item);
+    setDetail(item.id);
   };
 
   return (

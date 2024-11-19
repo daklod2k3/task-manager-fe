@@ -13,7 +13,7 @@ import { Command as CommandPrimitive } from "cmdk";
 
 import { Tables } from "@/entity/database.types";
 import { cn } from "@/lib/utils";
-import { ChevronsUpDown, Search } from "lucide-react";
+import { ChevronsUpDown, Loader2, Search } from "lucide-react";
 import React, { useMemo } from "react";
 import MyAvatar from "./Avatar";
 import { Button } from "./ui/button";
@@ -49,12 +49,12 @@ interface SearchSelectProps<T> {
   items: ISearchItem<any>[];
   onSelectedValueChange: (value: T) => void;
   isLoading?: boolean;
-  ItemRender?: React.FC<{ item: T }>;
   modal?: boolean;
+  variant?: "people" | "custom";
   inputClassName?: string;
   placeholder?: string;
   disable?: boolean;
-  CustomTrigger: React.Component<HTMLButtonElement>;
+  CustomTrigger?: React.FC;
 }
 
 export default function SearchSelect<T>({
@@ -63,9 +63,9 @@ export default function SearchSelect<T>({
   isLoading = false,
   onSelectedValueChange,
   modal = false,
-  ItemRender,
   placeholder,
   CustomTrigger,
+  variant = "people",
 }: SearchSelectProps<T>) {
   const [searchValue, setSearchValue] = React.useState("");
   const [open, setOpen] = React.useState(false);
@@ -117,6 +117,14 @@ export default function SearchSelect<T>({
     onSelectedValueChange(item);
   };
 
+  const ItemRender = (props) => {
+    switch (variant) {
+      case "people":
+        return <PeopleSearchItem {...props} />;
+    }
+    return;
+  };
+
   return (
     <div className="flex items-center">
       <Popover open={open} modal={modal} onOpenChange={setOpen}>
@@ -129,14 +137,19 @@ export default function SearchSelect<T>({
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="w-[200px] justify-between"
+              disabled={disable}
+              className="w-[200px] justify-between border-dashed border-sky-500 text-sky-500"
               type="button"
             >
               {/* {value
             ? frameworks.find((framework) => framework.value === value)?.label
             : "Select framework..."} */}
               {placeholder || "Select..."}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              {isLoading ? (
+                <Loader2 className="ml-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
+              ) : (
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              )}
             </Button>
           )}
           {/* <Search className="absolute ml-2 h-4 w-4" />

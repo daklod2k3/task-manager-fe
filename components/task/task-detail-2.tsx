@@ -57,6 +57,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import AddAssignee from "./add-assignee";
 import { createTaskSchema } from "./create-task";
 import { ColumnTitles } from "./kanban";
 import { PriorityColor } from "./task-card";
@@ -69,6 +70,7 @@ const updateTaskSchema = createTaskSchema.extend({
 });
 
 export default function TaskDetail2({ item }: { item: TaskEntity }) {
+  // FORM STATE
   const form = useForm({
     resolver: zodResolver(updateTaskSchema),
     mode: "all",
@@ -80,14 +82,18 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
     },
   });
 
+  // Data fetching
   const { data: peoples, isLoading: peopleLoading } = usePeople();
   const { toast } = useToast();
   const { mutate: mutateList } = useAllTask();
-  const { mutate: mutateDetail } = useTask();
+  const { mutate: mutateDetail } = useTask(item.id);
   const {
     taskDetail: [, setDetail],
   } = useTaskContext();
 
+  // const
+
+  // Component state
   const [saveLoading, setSaveLoading] = useState(false);
 
   const [assigneeSelect, setAssigneeSelect] = useState<Tables<"profiles">[]>(
@@ -164,14 +170,34 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
             </Badge>
           </div>
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={async () => {
+                try {
+                  const res = await navigator.clipboard.writeText(
+                    document.location.origin + "/task?task_id=" + item.id,
+                  );
+                  toast({
+                    title: "Copied to clipboard",
+                  });
+                } catch {
+                  toast({
+                    title: "Error",
+                    description: "Failed to copy",
+                    variant: "destructive",
+                  });
+                }
+              }}
+            >
               <Share2 className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon">
+            <Button type="button" variant="ghost" size="icon">
               <Edit className="h-4 w-4" />
             </Button>
             <DialogClose asChild>
-              <Button variant="ghost" size="icon">
+              <Button type="button" variant="ghost" size="icon">
                 <X className="h-4 w-4" />
               </Button>
             </DialogClose>
@@ -359,18 +385,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                         </Badge>
                       ))}
                     </div>
-                    <SearchSelect
-                      disable
-                      isLoading={peopleLoading}
-                      placeholder="Type to search"
-                      ItemRender={PeopleSearchItem}
-                      modal={true}
-                      onSelectedValueChange={(x) => {
-                        console.log("click");
-                        addAssignee(x);
-                      }}
-                      items={peopleToSearch(peoples || [])}
-                    />
+                    <AddAssignee task_id={item.id} />
                   </>
                 </FormControl>
                 <FormMessage />
@@ -409,8 +424,10 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
               className=""
               disabled={!form.formState.isDirty || saveLoading}
             >
-              {saveLoading && <Loader2 className="animate-spin" />}
               Save
+              {saveLoading && (
+                <Loader2 className="ml-2 animate-spin" size={14} />
+              )}
             </Button>
             <Button variant="ghost" type="reset" onClick={() => form.reset()}>
               Reset

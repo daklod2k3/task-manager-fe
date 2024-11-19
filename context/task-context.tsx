@@ -9,7 +9,7 @@ interface ITaskContext {
   taskFetch: ReturnType<typeof useAllTask>;
   taskDetail: ReturnType<typeof useState<TaskEntity>>;
   taskFilter: ReturnType<typeof useState<TaskFilter>>;
-  // setOpen: (task?: Tables<"tasks">) => void;
+  setDetail: (id?: number) => void;
 }
 
 export const TaskContext = createContext<ITaskContext | undefined>(undefined);
@@ -25,21 +25,25 @@ export function TaskProvider({ children }) {
   const { replace } = useRouter();
   const searchParams = useSearchParams();
 
-  useEffect(() => {
+  const setDetail = (id?: number) => {
     const params = new URLSearchParams(searchParams);
-    if (taskDetail[0]?.id) {
-      params.set("task_id", String(taskDetail[0].id));
+    if (id) {
+      taskDetail[1]({ id } as Tables<"tasks">);
+      params.set("task_id", String(id));
     } else {
+      taskDetail[1](undefined);
       params.delete("task_id");
     }
-    // replace(`${pathname}?${params.toString()}`);
-    // console.log("task detail", taskDetail[0]);
-  }, [taskDetail]);
+    console.log("replace");
+
+    replace(`${pathname}?${params.toString()}`);
+  };
 
   const value = {
     taskFetch,
     taskDetail,
     // setOpen: setOpenTask,
+    setDetail,
     taskFilter,
   };
   return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>;
