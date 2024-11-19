@@ -66,11 +66,12 @@ const config: Config = {
       pattern: /size-.+/,
     },
     {
-      pattern: /border-(green|yellow|orange|red|sky|blue|purple|gray)-.+/,
+      pattern:
+        /(border|bg|text)-(green|amber|orange|red|sky|blue|purple|gray)-.+/,
     },
-    {
-      pattern: /bg-(green|yellow|orange|red|sky|blue|purple|gray)-.+/,
-    },
+    // {
+    //   pattern: /bg-(green|yellow|orange|red|sky|blue|purple|gray)-.+/,
+    // },
   ],
   plugins: [require("tailwindcss-animate")],
 };
