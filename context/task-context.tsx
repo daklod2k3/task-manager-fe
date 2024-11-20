@@ -1,6 +1,6 @@
 "use client";
 import { Tables } from "@/entity/database.types";
-import { TaskEntity } from "@/entity/Task";
+import { TaskEntity } from "@/entity/Entity";
 import { TaskFilter, useAllTask, useTask } from "@/hooks/use-task";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { createContext, useContext, useEffect, useState } from "react";

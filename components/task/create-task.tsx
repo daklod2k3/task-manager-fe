@@ -179,8 +179,8 @@ export default function CreateTaskDialog({ children }) {
                       <SearchSelect
                         isLoading={peopleLoading}
                         placeholder="Type to search"
-                        ItemRender={PeopleSearchItem}
                         modal={true}
+                        variant="people"
                         onSelectedValueChange={(x) => {
                           console.log("click");
                           addAssignee(x);

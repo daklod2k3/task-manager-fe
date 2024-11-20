@@ -1,6 +1,5 @@
 "use server";
 import { Tables } from "@/entity/database.types";
-import { TaskEntity } from "@/entity/Task";
 import {
   ApiAuth,
   ApiRoutes,
@@ -29,7 +28,7 @@ export async function updateTask(task: Tables<"tasks">) {
 export async function getTask({ id, search }: GetProps) {
   // console.log(id);
 
-  const includes = "TaskUsers,TaskDepartments,CreatedByNavigation";
+  const includes = "TaskUsers.User,TaskDepartments,CreatedByNavigation";
   const params = new URLSearchParams(search);
   params.append("includes", includes);
   // if (id) {

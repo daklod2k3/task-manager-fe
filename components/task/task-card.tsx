@@ -4,7 +4,7 @@ import { Draggable } from "@hello-pangea/dnd";
 import React from "react";
 
 import { useTaskContext } from "@/context/task-context";
-import { TaskEntity } from "@/entity/Task";
+import { TaskEntity } from "@/entity/Entity";
 import { cn } from "@/lib/utils";
 import {
   Building,
@@ -13,6 +13,8 @@ import {
   UserPen,
   Users,
 } from "lucide-react";
+import MyAvatar from "../Avatar";
+import HoverInfo from "../HoverInfo";
 import { Badge } from "../ui/badge";
 import UserItem from "./user-item";
 import { DueDateRender, PriorityIcon } from "./utils";
@@ -82,10 +84,25 @@ const TaskCard = ({ item, index }: { item: TaskEntity; index: number }) => {
           {item.assigned_to_user != 0 && (
             <div className="flex items-center gap-2 text-gray-500">
               <UserPen size={17} />
-              <>
-                <Badge className="rounded-full">Assigned</Badge> to{" "}
-                {item.assigned_to_user} users
-              </>
+              <div className="flex items-center -space-x-2">
+                {/* <Badge className="rounded-full">Assigned</Badge> to{" "}
+                {item.assigned_to_user} users */}
+                {item.task_users?.slice(0, 3).map((item) => (
+                  <div
+                    key={item.id}
+                    className="box-border rounded-full ring-1 ring-white hover:z-10 hover:ring-1"
+                  >
+                    <HoverInfo label={item.user.name}>
+                      <div>
+                        <MyAvatar user={item.user} size={9} />
+                      </div>
+                    </HoverInfo>
+                  </div>
+                ))}
+              </div>
+              {item.assigned_to_user > 3 && (
+                <span>+{item.assigned_to_user - 3}</span>
+              )}
             </div>
           )}
           {item.assigned_to_department != 0 && (

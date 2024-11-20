@@ -190,7 +190,7 @@ export default function Client() {
       <div className="flex w-full items-center gap-3">
         <SearchInput
           className="bg-white"
-          placeholder="Search task by name"
+          placeholder="Search task"
           onChange={(e) => searchBounce(e.currentTarget.value, searchTaskName)}
         />
         {/* <SearchSelect
@@ -199,23 +199,12 @@ export default function Client() {
           items={peopleToSearch(peoples ?? [])}
         /> */}
         {/* <UserSelect /> */}
-        <p>People:</p>
-        <SearchSelect
-          onSelectedValueChange={(value) =>
-            searchBounce(String(value), searchTaskName)
-          }
-          placeholder="filter by people"
-          items={peopleToSearch(peoples || [])}
-        />
-        <Button variant={"link"} onClick={() => form.resetField("items")}>
-          Clear filter
-        </Button>
-        <CreateTaskDialog>
+        {/* <CreateTaskDialog>
           <Button>
             <Plus className="mr-2" size={16} />
             Add task
           </Button>
-        </CreateTaskDialog>
+        </CreateTaskDialog> */}
       </div>
       <Kanban />
       <TaskDialog />

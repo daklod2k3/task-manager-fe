@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
-import { TaskEntity } from "@/entity/Task";
+import { TaskEntity } from "@/entity/Entity";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
 import { useAllTask, useTask } from "@/hooks/use-task";
 import { useToast } from "@/hooks/use-toast";
@@ -371,22 +371,10 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
               <FormItem>
                 <FormLabel>Assign to</FormLabel>
                 <FormControl>
-                  <>
-                    <div className="flex flex-wrap gap-1">
-                      {assigneeSelect.map((x) => (
-                        <Badge key={x.id} className="flex gap-1 p-1">
-                          <MyAvatar user={x} size={7} />
-                          {x.name || x.id}
-                          <X
-                            size={18}
-                            className="cursor-pointer rounded-full hover:bg-white hover:text-primary"
-                            onClick={() => removeAssignee(x)}
-                          />
-                        </Badge>
-                      ))}
-                    </div>
-                    <AddAssignee task_id={item.id} />
-                  </>
+                  <AddAssignee
+                    task_id={item.id}
+                    task_user={item?.task_users || []}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -16,7 +16,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTaskContext } from "@/context/task-context";
 import { Database, Tables } from "@/entity/database.types";
-import { TaskEntity } from "@/entity/Task";
+import { TaskEntity } from "@/entity/Entity";
 import { useTask } from "@/hooks/use-task";
 import { useUser } from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
