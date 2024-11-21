@@ -1,5 +1,6 @@
 "use client";
 import { ApiRoutes } from "@/action/Api";
+import { getTaskUser } from "@/action/TaskUser";
 import { Tables } from "@/entity/database.types";
 import useSWR from "swr";
 
@@ -11,7 +12,10 @@ const fetcher = async (path: string) => {
   const search = new URLSearchParams(path.replace("/task", "").split("?")[1]);
   console.log(search);
 
-  const result = await getTask({ id: Number(id), search: search.toString() });
+  const result = await getTaskUser({
+    id: Number(id),
+    search: search.toString(),
+  });
   console.log(result);
   if (result.error) throw new Error(result.error);
   if (id) return result.data;
@@ -19,12 +23,9 @@ const fetcher = async (path: string) => {
 };
 
 export function useTaskUser(id?: number) {
-  const { data, error, isLoading, mutate } = useSWR(
-    ApiRoutes.Task + "/" + id,
-    fetcher,
-    {
-      revalidateOnMount: true,
-    },
-  );
+  const path = id ? ApiRoutes.TaskUser + "/" + id : ApiRoutes.TaskUser;
+  const { data, error, isLoading, mutate } = useSWR(path, fetcher, {
+    revalidateOnMount: true,
+  });
   return { data, error, isLoading, mutate };
 }

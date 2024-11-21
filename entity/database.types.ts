@@ -411,6 +411,45 @@ export type Database = {
           },
         ];
       };
+      task_comment: {
+        Row: {
+          comment: string;
+          created_at: string;
+          created_by: string | null;
+          id: number;
+          task_id: number | null;
+        };
+        Insert: {
+          comment: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: number;
+          task_id?: number | null;
+        };
+        Update: {
+          comment?: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: number;
+          task_id?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "task_comment_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "task_comment_task_id_fkey";
+            columns: ["task_id"];
+            isOneToOne: false;
+            referencedRelation: "tasks";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       user_message: {
         Row: {
           content: string;

@@ -79,39 +79,34 @@ export default function CreateTaskDialog({ children }) {
     [],
   );
 
-  const formSubmit = useCallback(
-    async (formData) => {
-      // console.log(formData);
-      const result = await createTask(formData);
-      // console.log(result);
-      if (!result || result?.error || !result?.data) {
-        toast({
-          title: "Task create failed",
-          description: result?.error || "Unknown server error",
-          variant: "destructive",
-        });
-        return;
-      }
-      mutate();
+  const formSubmit = async (formData) => {
+    // console.log(formData);
+    const result = await createTask(formData);
+    // console.log(result);
+    if (!result || result?.error || !result?.data) {
       toast({
-        title: "Task created",
-        description: `${result?.data.title} created`,
-        action: (
-          <ToastAction
-            altText="Show detail"
-            onClick={() =>
-              setDetail({ id: result?.data.id } as Tables<"tasks">)
-            }
-          >
-            Show more
-          </ToastAction>
-        ),
+        title: "Task create failed",
+        description: result?.error || "Unknown server error",
+        variant: "destructive",
       });
-      setOpen(false);
-      form.reset();
-    },
-    [toast],
-  );
+      return;
+    }
+    mutate();
+    toast({
+      title: "Task created",
+      description: `${result?.data.title} created`,
+      action: (
+        <ToastAction
+          altText="Show detail"
+          onClick={() => setDetail({ id: result?.data.id } as Tables<"tasks">)}
+        >
+          Show more
+        </ToastAction>
+      ),
+    });
+    setOpen(false);
+    form.reset();
+  };
 
   const addAssignee = (x) => {
     if (assigneeSelect.filter((item) => item.id == x.id).length > 0) return;

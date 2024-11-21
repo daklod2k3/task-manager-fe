@@ -90,13 +90,13 @@ const TaskCard = ({ item, index }: { item: TaskEntity; index: number }) => {
                 {item.task_users?.slice(0, 3).map((item) => (
                   <div
                     key={item.id}
-                    className="box-border rounded-full ring-1 ring-white hover:z-10 hover:ring-1"
+                    className="box-border rounded-full hover:ring-1"
                   >
-                    <HoverInfo label={item.user.name}>
-                      <div>
-                        <MyAvatar user={item.user} size={9} />
-                      </div>
-                    </HoverInfo>
+                    {/* <HoverInfo label={item.user.name}> */}
+                    <div>
+                      <MyAvatar user={item.user} size={9} />
+                    </div>
+                    {/* </HoverInfo> */}
                   </div>
                 ))}
               </div>

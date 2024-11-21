@@ -1,7 +1,8 @@
 import { addTaskUser, deleteTaskUser } from "@/action/TaskUser";
 import { TaskUsers } from "@/entity/Entity";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
-import { useTask } from "@/hooks/use-task";
+import { useAllTask, useTask } from "@/hooks/use-task";
+import { useTaskUser } from "@/hooks/use-task-user";
 import { useToast } from "@/hooks/use-toast";
 import { X } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
@@ -16,7 +17,10 @@ interface Props {
 
 export default function AddAssignee({ task_id, task_user }: Props) {
   const { data: peoples, isLoading: peopleLoading } = usePeople();
+  const { mutate: mutateAllTask } = useAllTask();
+  const { mutate: mutateTask } = useTask(task_id);
   const [select, setSelect] = useState(task_user || []);
+  const [loading, setLoading] = useState(false);
 
   const { toast } = useToast();
 
@@ -25,10 +29,12 @@ export default function AddAssignee({ task_id, task_user }: Props) {
       toast({ title: "User already added", variant: "destructive" });
       return;
     }
+    setLoading(true);
     const res = await addTaskUser({
       task_id,
       user_id: user.id,
     });
+    setLoading(false);
     if (res?.error || !res) {
       toast({
         title: "Failed to add assignee",
@@ -38,10 +44,14 @@ export default function AddAssignee({ task_id, task_user }: Props) {
       return;
     }
     setSelect([...select, { ...res.data, user }]);
+    mutateAllTask();
+    mutateTask();
   };
 
   const remove = async (id) => {
+    setLoading(true);
     const res = await deleteTaskUser(id);
+    setLoading(false);
     if (res?.error || !res) {
       toast({
         title: "Failed to add assignee",
@@ -51,7 +61,11 @@ export default function AddAssignee({ task_id, task_user }: Props) {
       return;
     }
     setSelect(select.filter((x) => x.id !== id));
+    mutateAllTask();
+    mutateTask();
   };
+
+  // const {data: } = useTaskUser();
 
   return (
     <div>
@@ -69,7 +83,8 @@ export default function AddAssignee({ task_id, task_user }: Props) {
         ))}
       </div>
       <SearchSelect
-        isLoading={peopleLoading}
+        disable={loading}
+        isLoading={peopleLoading || loading}
         placeholder="Add assignee"
         variant="people"
         modal={true}

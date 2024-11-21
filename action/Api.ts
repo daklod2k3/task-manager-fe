@@ -15,6 +15,7 @@ export const enum ApiRoutes {
   Department = "/department",
   DepartmentUser = "/departmentUser",
   TaskUser = "/taskUser",
+  TaskComment = "/taskComment",
 }
 
 export interface GetProps {
@@ -107,7 +108,13 @@ export class Filter<T = any> {
   public logic?: FilterLogic = FilterLogic.And;
   public filters?: Filter[];
 
-  constructor({ Field, Operator, Value, Logic, Filters }) {
+  constructor({
+    Field,
+    Operator,
+    Value,
+    Logic = FilterLogic.And,
+    Filters = [],
+  }) {
     this.field = Field;
     this.operator = Operator;
     this.value = Value;
@@ -119,7 +126,7 @@ export class Filter<T = any> {
 export class RootFilter {
   filters: Filter[];
   logic?: FilterLogic;
-  constructor({ Filters, Logic }) {
+  constructor({ Filters, Logic = FilterLogic.And }) {
     this.filters = Filters;
     this.logic = Logic;
   }

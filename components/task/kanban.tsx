@@ -228,10 +228,10 @@ const Kanban = () => {
             {Object.entries(columns).map(([columnId, column], index) => {
               return (
                 <div className={cn("grid grid-rows-[auto,1fr]")} key={columnId}>
-                  <div className="sticky top-0 mb-3 bg-white">
+                  <div className="sticky top-0 z-50 mb-3 bg-white">
                     <div
                       className={cn(
-                        "z-50 border-t-4 px-3",
+                        "relative border-t-4 px-3",
                         `border-${column.color} bg-${column.color} bg-opacity-30`,
                       )}
                     >

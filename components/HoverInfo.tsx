@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import React, { ReactElement } from "react";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 
 interface Props {
   children?: React.ReactNode;
@@ -21,15 +22,15 @@ export default function HoverInfo({
   className,
 }: Props) {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger className={className} asChild>
-          {children}
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{label}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <HoverCard>
+      <HoverCardTrigger>
+        {/* <TooltipTrigger className={className} asChild> */}
+        {children}
+        {/* </TooltipTrigger> */}
+      </HoverCardTrigger>
+      <HoverCardContent>
+        <p>{label}</p>
+      </HoverCardContent>
+    </HoverCard>
   );
 }

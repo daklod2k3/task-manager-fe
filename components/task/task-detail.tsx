@@ -311,14 +311,13 @@ export function TaskDialog() {
     >
       <DialogContent
         //  className="max-w-screen-xl "
-        className="mx-auto max-h-[calc(100vh-10rem)] min-h-0 w-full max-w-6xl p-2"
+        className="mx-auto flex max-h-[calc(100vh-10rem)] min-h-0 w-full max-w-6xl p-2"
       >
-        <ScrollArea>
+        <ScrollArea className="grid min-h-0 flex-1">
           {isLoading && <Loading />}
           {taskFetch && detail && (
             <TaskDetail2 item={taskFetch as TaskEntity} />
           )}
-          <ScrollBar />
         </ScrollArea>
       </DialogContent>
     </Dialog>

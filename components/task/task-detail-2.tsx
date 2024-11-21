@@ -61,6 +61,7 @@ import AddAssignee from "./add-assignee";
 import { createTaskSchema } from "./create-task";
 import { ColumnTitles } from "./kanban";
 import { PriorityColor } from "./task-card";
+import TaskComment from "./task-comment";
 import { PriorityIcon } from "./utils";
 
 const updateTaskSchema = createTaskSchema.extend({
@@ -83,7 +84,6 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
   });
 
   // Data fetching
-  const { data: peoples, isLoading: peopleLoading } = usePeople();
   const { toast } = useToast();
   const { mutate: mutateList } = useAllTask();
   const { mutate: mutateDetail } = useTask(item.id);
@@ -340,7 +340,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="flex flex-1 flex-col space-y-6">
             <div>
               <div className="mb-4 flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">
@@ -396,7 +396,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
               </div>
             </div> */}
 
-            <div className="space-y-4">
+            {/* <div className="space-y-4">
               <h3 className="font-medium">Activities</h3>
               <div className="flex gap-2">
                 <MyAvatar className="h-8 w-8" />
@@ -405,10 +405,12 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                   className="flex-1"
                 />
               </div>
-            </div>
+            </div> */}
+            <TaskComment task_id={item.id} />
           </div>
           <div className="flex gap-2">
             <Button
+              type="submit"
               className=""
               disabled={!form.formState.isDirty || saveLoading}
             >
