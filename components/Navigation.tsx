@@ -94,6 +94,12 @@ export default function Navigation({}) {
         current_path={path}
         title="Report"
       />
+      <NavigationButton
+        Icon={NotepadText}
+        base_path="/permission"
+        current_path={path}
+        title="Permission"
+      />
     </div>
   );
 }

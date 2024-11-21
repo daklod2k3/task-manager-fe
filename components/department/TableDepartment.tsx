@@ -2,76 +2,56 @@
 
 import React, { useEffect, useState } from "react";
 import { Tables } from "@/entity/database.types";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Avatar from "@/components/Avatar";
 import { useDepartmentContext } from "@/context/department-context";
-import {EllipsisVertical } from 'lucide-react';
-import { deleteDepartment, updateDepartment } from "@/action/Department";
+import { EllipsisVertical, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { deleteDepartment } from "@/action/Department";
 import { useToast } from "@/hooks/use-toast";
-import { ToastAction } from "@/components/ui/toast"
+import { ToastAction } from "@/components/ui/toast";
 import CreateDepartment from "@/components/department/CreateDepartment";
 import EditDepartment from "@/components/department/EditDepartment";
 import AlertButton from "@/components/department/AlertButton";
+import SearchUser from "@/components/department/SearchDepartment";
 
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-  } from "@/components/ui/table"
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import Link from "next/link";
+import LoadPeople from "./LoadPeople";
+import LoadTask from "./LoadTask";
 
 interface SettingDepartmentProps {
   id: number;
 }
-  
-  export default function TableDepartment() {
-    const [depa, setDepa] = useState<Tables<"departments">[]>([]);
-    const [checkList, setCheckList] = useState<number[]>([]);
-    const { departmentFetch } = useDepartmentContext();
-    const {toast} = useToast();
-    
-    useEffect(() => {
-      if (departmentFetch.data) {
-        setDepa(departmentFetch.data);
-      }
-    }, [departmentFetch.data]);
 
-    const deleteDepa = async () => {
-      for (const id of checkList) {
-        try {
-          await deleteDepartment(id);
-          toast({
-            description: "Deleted department successfully",
-          });
-          departmentFetch.mutate();
-        } catch (error) {
-          toast({
-            variant: "destructive",
-            title: "Delete department error",
-            description: String(error),
-            action: <ToastAction altText="Try again">Please Try again</ToastAction>,
-          });
-        }
-      }
-    };    
-    const deleteDepaById = async (id:number) => {
+export default function TableDepartment() {
+  const ITEMS_PER_PAGE = 10;
+  const [depa, setDepa] = useState<any[]>([]);
+  const [checkList, setCheckList] = useState<number[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { departmentFetch } = useDepartmentContext();
+  const { toast } = useToast();
+  
+  useEffect(() => {
+    if (departmentFetch.data) {
+      setDepa(departmentFetch.data);
+    }
+  }, [departmentFetch.data]);
+
+  const deleteDepa = async () => {
+    for (const id of checkList) {
       try {
         await deleteDepartment(id);
         toast({
@@ -86,74 +66,103 @@ interface SettingDepartmentProps {
           action: <ToastAction altText="Try again">Please Try again</ToastAction>,
         });
       }
-    }; 
+    }
+  };
 
-    const SettingDepartment: React.FC<SettingDepartmentProps> = ({ id }) => {
-      return (
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button>
-              <EllipsisVertical />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-40">
-            <EditDepartment/>
-            <AlertButton 
-              openButtonLabel="Delete"
-              title="bạn có chắc muốn xóa"
-              actionLabel="Delete"
-              onAction={() => {deleteDepaById(id)}}
-              />
-          </PopoverContent>
-        </Popover>
-      );
-    };
+  const deleteDepaById = async (id: number) => {
+    try {
+      await deleteDepartment(id);
+      toast({
+        description: "Deleted department successfully",
+      });
+      departmentFetch.mutate();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Delete department error",
+        description: String(error),
+        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
+      });
+    }
+  };
 
-    const addCheckList = (id: number) => {
-      console.log(checkList)
-      setCheckList((prevCheckList) => 
-        prevCheckList.includes(id)
-          ? prevCheckList.filter((item) => item !== id)
-          : [...prevCheckList, id]
-      );
-    };
-
+  const SettingDepartment: React.FC<SettingDepartmentProps> = ({ id }) => {
     return (
-      <div className="flex w-full h-screen bg-background">
-        {/* Sidebar */}
-        <div className="w-64 border-r p-4 space-y-4">
-          <div className="font-medium">Expense and Travel Management</div>
-          <nav className="space-y-2">
-            {["Budget", "Department", "Category", "Mileage", "Financial year", "Employee", "Currency conversion", "Policy"].map(
-              (item) => (
-                <div
-                  key={item}
-                  className="px-3 py-2 text-sm text-muted-foreground hover:bg-muted rounded-md cursor-pointer"
-                >
-                  {item}
-                </div>
-              )
-            )}
-          </nav>
-        </div>
-  
-        {/* Main Content */}
-        <div className="flex-1 p-8">
-          <div className="flex justify-between items-center mb-8">
-            <div className="text-xl font-semibold">Department</div>
-            <div className="flex gap-2">
-              {/* <Button variant="outline">Export</Button> */}
-              {checkList.length > 0 ? <AlertButton 
-                openButtonLabel="Delete Department"
-                onAction={deleteDepa}
-                />:""}
-              <CreateDepartment/>
-            </div>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button>
+            <EllipsisVertical />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-40">
+          <EditDepartment idDepartment={id}/>
+          <AlertButton
+            btnIcon="trash"
+            openButtonLabel="Delete"
+            title="Bạn có chắc muốn xóa"
+            actionLabel="Delete"
+            onAction={() => deleteDepaById(id)}
+          />
+        </PopoverContent>
+      </Popover>
+    );
+  };
+
+  const addCheckList = (id: number) => {
+    setCheckList((prevCheckList) =>
+      prevCheckList.includes(id)
+        ? prevCheckList.filter((item) => item !== id)
+        : [...prevCheckList, id]
+    );
+  };
+
+  const currentData = depa.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const totalPages = Math.ceil(depa.length / ITEMS_PER_PAGE);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  const getNameById = (id:number) => {
+    
+  }
+
+  return (
+    <div className="flex w-full h-screen bg-background">
+      <div className="flex-1 p-8">
+        <div className="text-xl font-semibold mb-3">Department</div>
+        <div className="flex justify-between items-center mb-3">
+          <div className="w-1/4">
+            <SearchUser onClickItem={getNameById}/>
           </div>
-  
-          {/* Table */}
+          <div className="flex gap-2">
+            {checkList.length > 0 && (
+              <AlertButton openButtonLabel="Delete Department" onAction={deleteDepa} />
+            )}
+            <CreateDepartment />
+          </div>
+        </div>
+
+        {departmentFetch.isLoading ? (
+          <div className="w-full h-screen flex items-start justify-center">
+            <Loader2 className="animate-spin text-primary" size={28} />
+            <h1 className="text-xl text-primary mr-2">Loading Department</h1>
+          </div>
+        ) : (
           <div className="rounded-md border">
-            <Table>
+            <Table className="">
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-12">
@@ -163,17 +172,21 @@ interface SettingDepartmentProps {
                   <TableHead>Department Name</TableHead>
                   <TableHead>Department Owner</TableHead>
                   <TableHead>Members</TableHead>
-                  <TableHead>Complete</TableHead>
+                  <TableHead>Tasks</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {depa.map((dept) => (
+                {currentData.map((dept) => (
                   <TableRow key={dept.id}>
                     <TableCell>
-                      <input onClick={() => {addCheckList(dept.id)}} type="checkbox" className="rounded border-gray-300" />
+                      <input
+                        onClick={() => addCheckList(dept.id)}
+                        type="checkbox"
+                        className="rounded border-gray-300"
+                      />
                     </TableCell>
                     <TableCell>{dept.id}</TableCell>
-                    <TableCell>{dept.name}</TableCell>
+                    <TableCell><Link title="Click view detail" href={"/department/" + dept.id}>{dept.name}</Link></TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Avatar className="w-8 h-8"></Avatar>
@@ -181,36 +194,56 @@ interface SettingDepartmentProps {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Avatar/>
-                      </TableCell>
-                    <TableCell>100%</TableCell>
-                    <TableCell className="w-[50px]">
-                      <SettingDepartment id={dept.id}/>
+                      <Link className="flex w-fit items-center" title="Click view detail" href={"/department/" + dept.id}>
+                        {dept.department_user.length > 0 
+                          ? dept.department_user.map((user,idx) => (
+                            <LoadPeople className={idx < 5 ? "mr-1" : ""} showLoading={idx < 0} key={user.user_id} id={user.user_id} showAvt={true && idx < 5}/>
+                          )) 
+                          : "Chưa có ai"}
+                        {dept.department_user.length > 4 && <span className="text-2xl text-primary">...</span>}
+                      </Link>
                     </TableCell>
+                    <TableCell className="max-w-[200px] w-[200px]">
+                      <Link className="flex w-fit items-center" title="Click view detail" href={"/department/" + dept.id}>
+                        {dept.task_department.length > 0 
+                          ? dept.task_department.map((task,idx) => (
+                            <>
+                              <span className="text-xl h-[40px] mx-0.5">{idx != 0 ? "," : ""}</span>
+                              <LoadTask showLoading={idx < 0} key={task.task_id} id={task.task_id} showName={true && idx < 5}/>
+                            </>
+                          )) 
+                          : "Chưa có công việc"}
+                        {dept.task_department.length > 4 && <span className="text-2xl text-primary">...</span>}
+                      </Link>
+                      </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
             <div className="flex items-center justify-between px-4 py-2 border-t">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Rows per page:</span>
-                <Select defaultValue="10">
-                  <SelectTrigger className="w-16">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <Button
+                size="sm"
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Previous
+              </Button>
               <div className="text-sm text-muted-foreground">
-                Showing 1 to 4 out of 4 entries
+                Page {currentPage} of {totalPages}
               </div>
+              <Button
+                size="sm"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+              >
+                Next
+                <ChevronRight className="h-4 w-4" />
+              </Button>
             </div>
           </div>
-        </div>
+        )}
       </div>
-    )
-  }
+    </div>
+  );
+}

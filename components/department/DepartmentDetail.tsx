@@ -1,261 +1,160 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { CircleX, Loader2  } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Tables } from "@/entity/database.types";
+import { useState,useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useDepartmentContext } from "@/context/department-context";
-import { deleteDepartment, updateDepartment } from "@/action/Department";
-import { usePeople } from "@/hooks/use-people";
-import SearchUser from "@/components/department/SearchUser";
-import { useToast } from "@/hooks/use-toast";
-import { ToastAction } from "@/components/ui/toast"
+import { Ellipsis, Info, EllipsisVertical } from "lucide-react";
+import EditDepartment from "@/components/department/EditDepartment";
 import AlertButton from "@/components/department/AlertButton";
+import { deleteDepartment } from "@/action/Department";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import { Loader2 } from "lucide-react";
 
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-} from "@/components/ui/table"
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+  } from "@/components/ui/popover";
+import { useDepartment } from "@/hooks/use-department";
+import Loading from "../Loading";
+import LoadPeople from "./LoadPeople";
+import Link from "next/link";
+import { useRouter } from 'next/navigation';
+import { ScrollArea } from "@/components/ui/scroll-area"
+import LoadTask from "./LoadTask";
 
-export default function DepartmentDetail() {
-  const { departmentFetch, setMount} = useDepartmentContext();
-  const userFetch = usePeople();
-  const [open, setOpen] = useState(false);
-  const search = new URLSearchParams(window.location.search);
-  const {toast} = useToast();
+interface SettingDepartmentProps {
+    id: number;
+}
 
-  const [teams, setTeams] = useState<Tables<"departments">[]>([]);
-  const [users, setUsers] = useState<Tables<"profiles">[]>([]);
-  const [teamUsers, setTeamUsers] = useState<Tables<"department_user">[]>([]);
-  const [currTeam, setCurrTeam] = useState<number>(0);
+export default function DepartmentDetail({ idDepartment }: { idDepartment: number }) {
+  const [deptName, setDeptName] = useState<string | null>(null);
+  const [deptUser, setDeptUser] = useState<any[]>([]);
+  const [deptTask, setDeptTask] = useState<any[]>([]);
+  const departmentFetch = useDepartment(idDepartment);
+  const { toast } = useToast();
+  const router = useRouter();
 
-  const [valueInput, setValueInput] = useState<string>("");
-  const [editTable, setEditTable] = useState<boolean>(false);
-  const [editTeamName, setEditTeamName] = useState<boolean>(false);
-  const [save, setSave] = useState<boolean>(false);
-
-  // useEffect(() => {
-  //   console.log(departmentUserFetch.data)
-  //   if (departmentUserFetch.data) {
-  //     setTeamUsers(departmentUserFetch.data);
-  //   }
-  // }, [departmentUserFetch.data]);
-  
   useEffect(() => {
-    if (userFetch.data) {
-      setUsers(userFetch.data);
-    }
-  }, [userFetch.data]);
-  
-  useEffect(() => {
-    if (departmentFetch.data) {
-      setTeams(departmentFetch.data);
-    }
+    const fetchData = async () => {
+      if (departmentFetch.data) {
+        if (departmentFetch.data.length > 0) {
+          setDeptName(departmentFetch.data[0].name);
+          setDeptUser(departmentFetch.data[0].department_user);
+          setDeptTask(departmentFetch.data[0].task_department)
+        } else {
+          setDeptName(null);
+        }
+      }
+    };
+    fetchData();
   }, [departmentFetch.data]);
 
-  useEffect(() => {
-    const departmentId = Number(search.get("department_id"));
-    if(departmentId) {
-      setCurrTeam(departmentId)
-      setOpen(true);
+  const deleteDepaById = async () => {
+    try {
+      router.push("/department");
+      await deleteDepartment(idDepartment);
+      toast({
+        description: "Deleted department successfully",
+      });
+      departmentFetch.mutate();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Delete department error",
+        description: String(error),
+        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
+      });
     }
-  }, [search]);
+  };
 
-  const RenderTable: React.FC = () => {
-    if(departmentFetch.isLoading) {
-      return (
-        <Button disabled className="h-24 w-56">
-          <Loader2 className="animate-spin" />
-          Please wait
+  const SettingDepartment: React.FC<SettingDepartmentProps> = ({ id }) => (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button>
+          <EllipsisVertical />
         </Button>
-      )
-    } else {
-      return (
-        <Table>
-          <TableBody>
-            {teamUsers.map((user) => (
-              <TableRow key={user.id} className="bg-white">
-                <TableCell className="font-medium py-3">{handleUser.getNameById(user.user_id ?? '')}</TableCell>
-                <TableCell className="flex justify-end">
-                  <Button onClick={() => {handleTeamUser.deleteMemberById(user.id)}}><CircleX /></Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )
-    }
-  }
-
-  const deleteKey = () => {
-    search.delete('department_id');
-    const url = new URL(window.location.href);
-    url.search = search.toString();
-    window.history.pushState({}, '', url.toString());
-  }
-
-  const deleteDepa = async () => {
-    try {
-      await deleteDepartment(currTeam);
-      setSave(false);
-      setEditTeamName(false);
-      toast({
-        description: "deleted department successfully",
-      })
-      setOpen(false);
-      deleteKey();
-      departmentFetch.mutate();
-      setMount(prev => !prev);
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "delete department error",
-        description: String(error),
-        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
-      })
-    }
-  }
-
-  const updateDepa = async () => {
-    try {
-      const data = [
-        {
-          op: "replace", 
-          path: "/name", 
-          value: valueInput
-        }
-      ];
-      setSave(false);
-      setEditTeamName(false);
-      departmentFetch.mutate();
-      const res = await updateDepartment(currTeam, data);
-      toast({
-        title: "updated department successfully",
-        description :  JSON.stringify(res),
-      })
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "update department error",
-        description: String(error),
-        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
-      })
-    }
-  }
-
-  const handleTeam = {
-    getNameByid: (id: number) => {
-      const foundUser = Object.values(teams).find((team) => team.id == id);
-      return foundUser ? foundUser.name : '';
-    },
-  }
-
-  const handleUser = {
-    getNameById: (userID: string) => {
-      console.log(users)
-      return users.find((user) => user.id === userID)?.name ?? '';
-    },
-  }
-
-  const handleTeamUser = {
-    generateUniqueID: (existingIDs: number[]): number => {
-      let newID;
-      do {
-        newID = Math.floor(Math.random() * 9000000000) + 1000000000;
-      } while (existingIDs.includes(newID));
-      return newID;
-    },
-    addMemberToTeam: (teamID: number, name: string) => {
-      const existingIDs = teamUsers.map((user) => user.id);
-      const newUserTeamID = handleTeamUser.generateUniqueID(existingIDs);
-
-      setTeamUsers((prevTeamUsers) => [
-        ...prevTeamUsers,
-        {
-          id: newUserTeamID,
-          created_at: new Date().toISOString(),
-          department_id: teamID,
-          user_id: handleUser.getIdByName(name),
-        },
-      ]);
-    },
-    deleteMemberById: (id: number) => {
-      const updatedTeamUsers = teamUsers.filter(member => member.id !== id);
-      setTeamUsers(updatedTeamUsers);
-    },
-    getMemberByDepartmentId: (departmentId: number) => {
-      return 
-    }
-  }
+      </PopoverTrigger>
+      <PopoverContent className="w-40">
+        <EditDepartment idDepartment={id} />
+        <AlertButton
+          btnIcon="trash"
+          openButtonLabel="Delete"
+          title="Bạn có chắc muốn xóa"
+          actionLabel="Delete"
+          onAction={() => deleteDepaById()}
+        />
+      </PopoverContent>
+    </Popover>
+  );
 
   return (
-    <div className={open ? "flex-1 bg-primary/10 h-fit p-3 shadow rounded" : "hidden"}>
-      <div className="w-full flex justify-end">
-        <Button onClick={() => {
-            setSave(false);
-            setEditTeamName(false);
-            deleteKey();
-            setOpen(false)
-          }}>
-          <CircleX/>
-        </Button>
-      </div>
-      {editTeamName ? <Input
-                        className="text-lg font-semibold mb-4 mt-4"
-                        ref={(input) => {
-                          if (input) {
-                            input.focus();
-                          }
-                        }}
-                        value={valueInput}
-                        onChange={e => {
-                          setSave(true);
-                          (setValueInput(e.target.value))
-                        }}
-                      />
-                    : <h2 className="text-lg font-semibold mb-4 mt-4"
-                        onClick={() => {
-                          setEditTeamName((prev: any) => !prev)
-                          setValueInput(handleTeam.getNameByid(currTeam))
-                        }}
-                      >{handleTeam.getNameByid(currTeam)}</h2>
-      }
-      <div className="flex gap-3">
-        <div className="flex flex-wrap p-4 rounded-lg w-full shadow bg-gray-100 justify-around">
-          <div className="flex flex-1 flex-wrap">
-            <div className="flex flex-1 justify-between mb-2">
-              <div>
-                <h2 className="text-lg font-semibold">Member</h2>
-                <span className="text-xs mb-2">{teamUsers.length} member</span>
-              </div>
-              {/* <h2 className="text-lg font-semibold mb-2">Position</h2> */}
-            </div>
-            <div className="mb-2 w-full flex">
-              <SearchUser onAddUserToTeam={handleTeamUser.addMemberToTeam}/>
-            </div>
-            <div className="flex flex-wrap w-full h-fit max-h-[520px] overflow-y-scroll">
-              <RenderTable/>
-            </div>
-              <div className="flex flex-1 justify-around mt-3">
-                {save && <AlertButton 
-                  actionLabel="save"
-                  title="Do you want to save this department?"
-                  description="This action cannot be undone."
-                  onAction={updateDepa} 
-                  openButtonLabel="Save" />}
-                <AlertButton 
-                  actionLabel="Delete"
-                  title="Do you want to delete this department?"
-                  description="This action cannot be undone."
-                  onAction={deleteDepa} 
-                  openButtonLabel="Delete Department" />
-              </div>
-          </div>
+    <div className="flex min-h-screen bg-gray-50">
+      {departmentFetch.isLoading ? (
+        <div className="w-full flex items-center justify-center">
+          <Loading />
         </div>
-      </div>
+      ) : deptName ? (
+        <>
+          <aside className="w-fit h-full p-4 bg-white border-r">
+            <h1 className="text-xl font-bold mb-4">{deptName}</h1>
+            <div className="flex items-center mb-4">
+              <Button className="w-full flex-1 mr-2">Add people</Button>
+              <SettingDepartment id={idDepartment} />
+            </div>
+            <div className="max-w-xs h-full p-4 border rounded-lg shadow-sm">
+              <div className="flex justify-between items-center mb-2">
+                <h2 className="text-lg font-semibold">Members</h2>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">{deptUser.length} member</p>
+              <hr className="mb-4" />
+              <ScrollArea className="h-[60vh] w-fit max-h-[60vh] rounded-md">
+                <div className="flex items-center flex-wrap">
+                  {deptUser.map((user,idx) => (
+                    <LoadPeople className="flex w-full items-center mb-2 bg-primary/10 p-2 rounded cursor-pointer" showLoading={idx < 1} showName={true} showAvt={true} showPosition={true} key={user.user_id} id={user.user_id} />
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+          </aside>
+          <main className="flex-1 p-6">
+            <div className="flex justify-between">
+              <Button className="mb-2">Add task</Button>
+              <Button className="mb-2">
+                <Link href={"/department"}>Back</Link>
+              </Button>
+            </div>
+            <section className="mb-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="mb-2">Task Department</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 h-4/5">
+                    {deptTask.map(
+                      (task, index) => (
+                        <LoadTask className="flex mb-3 items-center" showIcon={true} showDoing={true} showName={true} showDesc={true} key={index} id={task.task_id}/>
+                      )
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </section>
+          </main>
+        </>
+      ) : (
+        <div className="w-full flex items-center justify-center">
+          <p className="mr-2">Department not found</p>
+          <Button>
+            <Link href={"/department"}>Click to back</Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

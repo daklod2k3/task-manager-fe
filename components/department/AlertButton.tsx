@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
+import ButtonIcon from "@/components/department/ButtonIcon";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,7 +16,7 @@ import {
 
 function AlertButton({ 
   openButtonLabel = "Show Dialog",
-  btnType = "button",
+  btnIcon = "default",
   title = "Are you absolutely sure?",
   description = "This action cannot be undone.",
   cancelLabel = "Cancel",
@@ -23,7 +24,7 @@ function AlertButton({
   onAction,
 }: {
   openButtonLabel?: string;
-  btnType?: "button" | "reset" | "submit";
+  btnIcon?: "trash" | "plus" | "default" ;
   title?: string;
   description?: string;
   cancelLabel?: string;
@@ -54,9 +55,12 @@ function AlertButton({
 
   return (
     <>
-      <Button onClick={openDialog} type="button" className="w-full">
-        {openButtonLabel}
-      </Button>
+     <ButtonIcon 
+       nameIcon={btnIcon}
+       onClick={openDialog}
+       classNameBtn="w-full"
+       label={openButtonLabel}
+       />
       <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
         <AlertDialogContent ref={dialogRef}>
           <AlertDialogHeader>
@@ -66,7 +70,7 @@ function AlertButton({
           <AlertDialogFooter>
             <AlertDialogCancel onClick={closeDialog}>{cancelLabel}</AlertDialogCancel>
             <AlertDialogAction 
-                  type={btnType} onClick={() => {
+                  onClick={() => {
                   if (onAction) onAction(); 
                   closeDialog();
                   }}>

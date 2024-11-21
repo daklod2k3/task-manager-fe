@@ -1,22 +1,17 @@
 "use client";
-import { getDepartment, getUserByDepartment } from "@/action/Department";
-import { ApiRoutes, Filter } from "@/action/Api";
-import { Tables } from "@/entity/database.types";
+import { getDepartment } from "@/action/Department";
+import { ApiRoutes } from "@/action/Api";
 import useSWR from "swr";
 
-interface Props {
-  department?: Tables<"departments">;
-}
-
-const fetcher = async () => {
-  const result = await getDepartment();
+const fetcherById = async (id?: number) => {
+  const result = await getDepartment(id);
   return result.data;
 };
 
-export function useDepartment() {
+export function useDepartment(id?: number) {
   const { data, error, isLoading, mutate } = useSWR(
-    ApiRoutes.Department,
-    fetcher,
+    [ApiRoutes.Department, id],
+    () => fetcherById(id),
     {
       revalidateOnMount: true,
     },

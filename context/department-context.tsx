@@ -18,6 +18,7 @@ export function DepartmentProvider({ children }: DepartmentProviderProps) {
   const departmentFetch = useDepartment();
   const [mount, setMount] = useState(false);
   
+  console.log(departmentFetch.data);
   const value = {
     departmentFetch,
     mount,

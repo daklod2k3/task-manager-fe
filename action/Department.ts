@@ -37,14 +37,12 @@ export async function updateDepartment(id: number, data: object) {
 
 export async function getDepartment(id?: number) {
   const supabase = createClient();
-  let filter = supabase.from("departments").select();
+  let filter = supabase.from("departments").select(
+    `id, 
+    name, 
+    department_user (user_id), 
+    task_department (task_id)`
+  );
   if (id) filter = filter.eq("id", id);
-  return filter;
-}
-
-export async function getUserByDepartment(departmentId?: number) {
-  const supabase = createClient();
-  let filter = supabase.from("department_user").select();
-  if (departmentId) filter = filter.eq("department_id", departmentId);
   return filter;
 }

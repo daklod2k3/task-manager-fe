@@ -74,7 +74,6 @@ export class ApiAuth {
     });
   }
 
-  // viết tạm
   async delete(id: number) {
     return fetch(this.route + `/${id}`, {
       headers: {

@@ -29,7 +29,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
-export default function UpdateDepartment() {
+function EditDepartment({idDepartment}:{idDepartment:number}) {
   const [open, setOpen] = useState(false);
   const {departmentFetch} = useDepartmentContext();
   const {toast} = useToast();
@@ -62,7 +62,7 @@ export default function UpdateDepartment() {
             value: formData.name,
           }
         ];
-        await updateDepartment(32, data);
+        await updateDepartment(idDepartment, data);
         departmentFetch.mutate();
         toast({
           description: "successfully add department",
@@ -115,9 +115,8 @@ export default function UpdateDepartment() {
               Cancel
             </Button>
             <AlertButton
-              btnType="submit"
-              title="Do you want to add this department?"
-              openButtonLabel="Create"
+              title="Do you want to edit this department?"
+              openButtonLabel="Save"
               onAction={form.handleSubmit(onSubmit)}
             />
           </div>
@@ -129,7 +128,7 @@ export default function UpdateDepartment() {
   return (
     <>
       <Button onClick={() => setOpen(true)} className="w-full mb-2 px-4">
-        Edit
+        Edit Department
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
@@ -144,3 +143,5 @@ export default function UpdateDepartment() {
     </>
   );
 }
+
+export default EditDepartment;

@@ -200,7 +200,7 @@ export default function SearchSelect<T>({
                     className="cursor-pointer"
                     key={item.search}
                     onSelect={() => {
-                      console.log("click");
+                      // console.log("click");
                       onSelected(item.value);
                     }}
                   >
