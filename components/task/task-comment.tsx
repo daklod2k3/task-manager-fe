@@ -3,11 +3,12 @@ import { addTaskComment } from "@/action/TaskComment";
 import { useTaskComment } from "@/hooks/use-task-comment";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Forward } from "lucide-react";
+import { Forward, Loader2, MessageSquare } from "lucide-react";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import MyAvatar from "../Avatar";
+import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import {
   Form,
@@ -24,7 +25,7 @@ interface Props {
 }
 
 const schema = z.object({
-  comment: z.string(),
+  comment: z.string({ message: "Comment can't null" }),
 });
 
 export default function TaskComment({ task_id }: Props) {
@@ -98,7 +99,7 @@ export default function TaskComment({ task_id }: Props) {
               type="button"
               onClick={form.handleSubmit(send)}
             >
-              Send <Forward size={14} />
+              Send {sendLoad && <Loader2 size={14} className="animate-spin" />}
             </Button>
           </div>
         </form>
@@ -113,7 +114,7 @@ export default function TaskComment({ task_id }: Props) {
               <MyAvatar user={item.user} size={8} />
               <div className="flex flex-col gap-1">
                 <span className="font-semibold">
-                  {item.user.name}{" "}
+                  <Badge className="bg-sky-500">{item.user.name}</Badge>{" "}
                   <span className="text-sm font-normal text-muted-foreground">
                     {new Date(item.created_at).toLocaleDateString("vi-VN", {
                       year: "numeric",

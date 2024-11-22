@@ -89,3 +89,8 @@ export async function updateStatus(
 
   return await res.json();
 }
+
+export async function deleteTask(id: number) {
+  const res = await new ApiAuth(ApiRoutes.Task).delete(id);
+  return await res.json();
+}

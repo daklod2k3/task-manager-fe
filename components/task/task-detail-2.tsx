@@ -1,6 +1,6 @@
 "use client";
 
-import { updateTask } from "@/action/Task";
+import { deleteTask, updateTask } from "@/action/Task";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ import {
   ChevronRight,
   Edit,
   FileText,
+  icons,
   Loader2,
   Mail,
   MessageSquare,
@@ -31,14 +32,17 @@ import {
   Paperclip,
   Plus,
   Share2,
+  Trash2,
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import AlertButton from "../alert-button";
 import MyAvatar from "../Avatar";
 import Loading from "../Loading";
 import SearchSelect, { PeopleSearchItem } from "../search-select";
+import { AlertDialogTrigger } from "../ui/alert-dialog";
 import { Calendar } from "../ui/calendar";
 import { DialogClose } from "../ui/dialog";
 import {
@@ -144,6 +148,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
     );
   }, [assigneeSelect, form]);
 
+  const deleteTaskSubmit = async () => {};
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} autoComplete="off">
@@ -170,6 +175,18 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
             </Badge>
           </div>
           <div className="flex items-center space-x-2">
+            <Button size="sm" className="bg-green-500">
+              Mark as Complete
+            </Button>
+            <AlertButton
+              submitLabel="Delete"
+              description="This action cannot be undone. This will permanently delete task and remove data from servers."
+              onSubmit={async () => await deleteTask(item.id)}
+            >
+              <AlertDialogTrigger className="bg-red-600">
+                <Trash2 size={18} />
+              </AlertDialogTrigger>
+            </AlertButton>
             <Button
               type="button"
               variant="ghost"

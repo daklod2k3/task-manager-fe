@@ -92,11 +92,11 @@ const TaskCard = ({ item, index }: { item: TaskEntity; index: number }) => {
                     key={item.id}
                     className="box-border rounded-full hover:ring-1"
                   >
-                    {/* <HoverInfo label={item.user.name}> */}
-                    <div>
-                      <MyAvatar user={item.user} size={9} />
-                    </div>
-                    {/* </HoverInfo> */}
+                    <HoverInfo user={item.user} label={item.user.name}>
+                      <div>
+                        <MyAvatar user={item.user} size={9} />
+                      </div>
+                    </HoverInfo>
                   </div>
                 ))}
               </div>
