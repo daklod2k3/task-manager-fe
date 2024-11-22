@@ -40,7 +40,7 @@ export async function getDepartment(id?: number) {
   let filter = supabase.from("departments").select(
     `id, 
     name, 
-    department_user (user_id), 
+    department_user (id, user_id, owner_type), 
     task_department (task_id)`
   );
   if (id) filter = filter.eq("id", id);

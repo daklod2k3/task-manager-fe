@@ -27,6 +27,7 @@ import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import LoadTask from "./LoadTask";
+import AddPeopleForDept from "./AddPeopleForDept";
 
 interface SettingDepartmentProps {
     id: number;
@@ -104,10 +105,11 @@ export default function DepartmentDetail({ idDepartment }: { idDepartment: numbe
           <aside className="w-fit h-full p-4 bg-white border-r">
             <h1 className="text-xl font-bold mb-4">{deptName}</h1>
             <div className="flex items-center mb-4">
-              <Button className="w-full flex-1 mr-2">Add people</Button>
+              <AddPeopleForDept idDert={idDepartment}/>
+              <div className="ml-2"></div>
               <SettingDepartment id={idDepartment} />
             </div>
-            <div className="max-w-xs h-full p-4 border rounded-lg shadow-sm">
+            <div className="max-w-[450px] w-fit h-full p-4 border rounded-lg shadow-sm">
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-lg font-semibold">Members</h2>
               </div>
@@ -116,7 +118,7 @@ export default function DepartmentDetail({ idDepartment }: { idDepartment: numbe
               <ScrollArea className="h-[60vh] w-fit max-h-[60vh] rounded-md">
                 <div className="flex items-center flex-wrap">
                   {deptUser.map((user,idx) => (
-                    <LoadPeople className="flex w-full items-center mb-2 bg-primary/10 p-2 rounded cursor-pointer" showLoading={idx < 1} showName={true} showAvt={true} showPosition={true} key={user.user_id} id={user.user_id} />
+                    <LoadPeople showDelete={true} Owner={user.owner_type} className="flex w-full justify-between items-center mb-2 bg-primary/10 p-2 rounded cursor-pointer" showLoading={idx < 1} showName={true} showAvt={true} showPosition={true} key={user.user_id} id={user.user_id} />
                   ))}
                 </div>
               </ScrollArea>
@@ -138,7 +140,7 @@ export default function DepartmentDetail({ idDepartment }: { idDepartment: numbe
                   <div className="space-y-2 h-4/5">
                     {deptTask.map(
                       (task, index) => (
-                        <LoadTask className="flex mb-3 items-center" showIcon={true} showDoing={true} showName={true} showDesc={true} key={index} id={task.task_id}/>
+                        <LoadTask showLoading={index < 1} className="flex mb-3 items-center" showIcon={true} showDoing={true} showName={true} showDesc={true} key={index} id={task.task_id}/>
                       )
                     )}
                   </div>

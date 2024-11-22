@@ -34,21 +34,17 @@ function EditDepartment({idDepartment}:{idDepartment:number}) {
   const {departmentFetch} = useDepartmentContext();
   const {toast} = useToast();
 
-  // chua lam
-  // const teamSchema = z.object({
-  //   teamName: z.string().min(1, "Team name is required"),
-  //   members: z.string(),
-  // });
-
   const teamSchema = z.object({
-    name: z.string().min(1, "Team name is required"),
+    teamName: z.string().min(1, "Team name is required"),
+    // teamOwner: z.string(),
   });
 
   const CreateTeamForm: React.FC = () => {
     const form = useForm({
       resolver: zodResolver(teamSchema),
       defaultValues: {
-        name: "",
+        teamName: "",
+        teamOwner: ""
       },
     });
 
@@ -82,19 +78,19 @@ function EditDepartment({idDepartment}:{idDepartment:number}) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
-            name="name"
+            name="teamName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>New Department</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter team name" {...field} />
+                  <Input placeholder="Enter department name" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           {/* <FormField
-            name="member"
+            name="teamOwner"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Department Owner</FormLabel>
@@ -128,12 +124,12 @@ function EditDepartment({idDepartment}:{idDepartment:number}) {
   return (
     <>
       <Button onClick={() => setOpen(true)} className="w-full mb-2 px-4">
-        Edit Department
+        Edit Name
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Name Department</DialogTitle>
+            <DialogTitle>Edit Name Department</DialogTitle>
           </DialogHeader>
           <DialogDescription>
             <CreateTeamForm />

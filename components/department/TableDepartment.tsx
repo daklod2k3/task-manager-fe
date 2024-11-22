@@ -188,10 +188,17 @@ export default function TableDepartment() {
                     <TableCell>{dept.id}</TableCell>
                     <TableCell><Link title="Click view detail" href={"/department/" + dept.id}>{dept.name}</Link></TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Avatar className="w-8 h-8"></Avatar>
-                        nam
-                      </div>
+                      {dept.department_user.filter(user => user.owner_type === "owner").length > 0 ? (
+                        dept.department_user
+                          .filter(user => user.owner_type === "owner")
+                          .map(user => (
+                            <div key={user.user_id} className="flex items-center gap-2">
+                              <LoadPeople className="flex items-center" showName={true} key={user.user_id} id={user.user_id} showAvt={true} />
+                            </div>
+                          ))
+                      ) : (
+                        <span>không có</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Link className="flex w-fit items-center" title="Click view detail" href={"/department/" + dept.id}>
@@ -203,19 +210,27 @@ export default function TableDepartment() {
                         {dept.department_user.length > 4 && <span className="text-2xl text-primary">...</span>}
                       </Link>
                     </TableCell>
-                    <TableCell className="max-w-[200px] w-[200px]">
-                      <Link className="flex w-fit items-center" title="Click view detail" href={"/department/" + dept.id}>
+                    <TableCell className="max-w-[200px] min-w-[200px]">
+                      <Link 
+                        className="flex items-center whitespace-nowrap overflow-hidden text-ellipsis" 
+                        title="Click view detail" 
+                        href={"/department/" + dept.id}
+                      >
                         {dept.task_department.length > 0 
-                          ? dept.task_department.map((task,idx) => (
-                            <>
-                              <span className="text-xl h-[40px] mx-0.5">{idx != 0 ? "," : ""}</span>
-                              <LoadTask showLoading={idx < 0} key={task.task_id} id={task.task_id} showName={true && idx < 5}/>
-                            </>
-                          )) 
+                          ? dept.task_department.map((task, idx) => (
+                              <React.Fragment key={task.task_id}>
+                                {idx !== 0 && <span className="text-xl h-[40px] mx-0.5">,</span>}
+                                <LoadTask 
+                                  className="w-fit truncate" 
+                                  showLoading={idx < 0} 
+                                  id={task.task_id} 
+                                  showName={true && idx < 5} 
+                                />
+                              </React.Fragment>
+                            ))
                           : "Chưa có công việc"}
-                        {dept.task_department.length > 4 && <span className="text-2xl text-primary">...</span>}
                       </Link>
-                      </TableCell>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
