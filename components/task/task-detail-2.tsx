@@ -44,7 +44,7 @@ import Loading from "../Loading";
 import SearchSelect, { PeopleSearchItem } from "../search-select";
 import { AlertDialogTrigger } from "../ui/alert-dialog";
 import { Calendar } from "../ui/calendar";
-import { DialogClose } from "../ui/dialog";
+import { Dialog, DialogClose, DialogTrigger } from "../ui/dialog";
 import {
   Form,
   FormControl,
@@ -175,16 +175,21 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
             </Badge>
           </div>
           <div className="flex items-center space-x-2">
-            <Button size="sm" className="bg-green-500">
-              Mark as Complete
-            </Button>
+            <Dialog>
+              <DialogTrigger className="bg-green-500 font-semibold">
+                Mark as Complete
+              </DialogTrigger>
+            </Dialog>
+            <Button className="bg-green-500 font-semibold"></Button>
             <AlertButton
               submitLabel="Delete"
               description="This action cannot be undone. This will permanently delete task and remove data from servers."
               onSubmit={async () => await deleteTask(item.id)}
             >
-              <AlertDialogTrigger className="bg-red-600">
-                <Trash2 size={18} />
+              <AlertDialogTrigger>
+                <Button size={"icon"}>
+                  <Trash2 size={18} />
+                </Button>
               </AlertDialogTrigger>
             </AlertButton>
             <Button

@@ -11,10 +11,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { FC, ReactNode, useState } from "react";
 
 interface Props {
-  children?: typeof AlertDialogTrigger;
+  children?: ReactNode;
   triggerLabel?: string;
   submitLabel?: string;
   cancelLabel?: string;
@@ -35,7 +35,7 @@ export default function AlertButton({
   onSubmit,
 }: Props) {
   const [loading, setLoading] = useState(false);
-  const Trigger = children || AlertDialogTrigger;
+  const Trigger = children ? () => children : AlertDialogTrigger;
   return (
     <AlertDialog>
       <Trigger>
