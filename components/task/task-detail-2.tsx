@@ -66,6 +66,7 @@ import { createTaskSchema } from "./create-task";
 import { ColumnTitles } from "./kanban";
 import { PriorityColor } from "./task-card";
 import TaskComment from "./task-comment";
+import TaskComplete from "./task-complete";
 import { PriorityIcon } from "./utils";
 
 const updateTaskSchema = createTaskSchema.extend({
@@ -175,12 +176,8 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
             </Badge>
           </div>
           <div className="flex items-center space-x-2">
-            <Dialog>
-              <DialogTrigger className="bg-green-500 font-semibold">
-                Mark as Complete
-              </DialogTrigger>
-            </Dialog>
-            <Button className="bg-green-500 font-semibold"></Button>
+            <TaskComplete />
+
             <AlertButton
               submitLabel="Delete"
               description="This action cannot be undone. This will permanently delete task and remove data from servers."
