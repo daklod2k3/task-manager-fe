@@ -66,7 +66,7 @@ import { createTaskSchema } from "./create-task";
 import { ColumnTitles } from "./kanban";
 import { PriorityColor } from "./task-card";
 import TaskComment from "./task-comment";
-import TaskComplete from "./task-complete";
+import { default as TaskRequirePreview } from "./task-complete";
 import { PriorityIcon } from "./utils";
 
 const updateTaskSchema = createTaskSchema.extend({
@@ -176,8 +176,6 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
             </Badge>
           </div>
           <div className="flex items-center space-x-2">
-            <TaskComplete />
-
             <AlertButton
               submitLabel="Delete"
               description="This action cannot be undone. This will permanently delete task and remove data from servers."
@@ -222,9 +220,9 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
             </DialogClose>
           </div>
         </CardHeader>
-        <CardContent className="grid gap-6 md:grid-cols-3">
+        <CardContent className="grid gap-6 md:grid-cols-4">
           <div className="space-y-6 md:col-span-2">
-            <div className="flex space-x-4">
+            {/* <div className="flex space-x-4">
               <Button variant="outline" size="sm" className="flex items-center">
                 <Paperclip className="mr-2 h-4 w-4" />
                 Attachments
@@ -245,15 +243,18 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 <Mail className="mr-2 h-4 w-4" />
                 Email
               </Button>
-            </div>
+            </div> */}
 
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label className="font-semibold">Created by</Label>
-                <Input
+                {/* <Input
                   disabled
                   defaultValue={item.created_by_navigation?.name}
-                />
+                /> */}
+                <div>
+                  <Badge>{item.created_by_navigation?.name}</Badge>
+                </div>
               </div>
 
               <FormField
@@ -261,7 +262,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 name="priority"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Priority</FormLabel>
+                    <FormLabel className="font-bold">Priority</FormLabel>
                     <FormControl>
                       <Select
                         {...field}
@@ -375,6 +376,17 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
             </div>
 
             <div className="space-y-4">
+              <div className="space-y-2">
+                <TaskRequirePreview task_id={item.id} />
+
+                {/* <Button variant="ghost" className="w-full justify-between">
+                  Archived
+                  <ChevronRight className="h-4 w-4" />
+                </Button> */}
+              </div>
+            </div>
+
+            <div className="space-y-4">
               {/* <h3 className="font-medium">Assignee</h3>
               <Button
                 type="button"
@@ -402,20 +414,6 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
             </div>
 
             {/* <div className="space-y-4">
-              <h3 className="font-medium">Move to phase</h3>
-              <div className="space-y-2">
-                <Button variant="ghost" className="w-full justify-between">
-                  Doing
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" className="w-full justify-between">
-                  Archived
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div> */}
-
-            {/* <div className="space-y-4">
               <h3 className="font-medium">Activities</h3>
               <div className="flex gap-2">
                 <MyAvatar className="h-8 w-8" />
@@ -425,8 +423,8 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 />
               </div>
             </div> */}
-            <TaskComment task_id={item.id} />
           </div>
+          <TaskComment task_id={item.id} />
           <div className="flex gap-2">
             <Button
               type="submit"

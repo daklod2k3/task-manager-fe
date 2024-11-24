@@ -3,7 +3,12 @@ import { addTaskComment } from "@/action/TaskComment";
 import { useTaskComment } from "@/hooks/use-task-comment";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Forward, Loader2, MessageSquare } from "lucide-react";
+import {
+  ArrowDownNarrowWide,
+  Forward,
+  Loader2,
+  MessageSquare,
+} from "lucide-react";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -104,6 +109,7 @@ export default function TaskComment({ task_id }: Props) {
           </div>
         </form>
       </Form>
+      <ArrowDownNarrowWide />
       <ScrollArea className="grid max-h-80 min-h-0">
         <div className="grid min-h-0 flex-col gap-2">
           {data?.map((item) => (

@@ -94,3 +94,15 @@ export async function deleteTask(id: number) {
   const res = await new ApiAuth(ApiRoutes.Task).delete(id);
   return await res.json();
 }
+
+export async function completeTask(id: number, formData) {
+  const api = new ApiAuth();
+  const res = await fetch(api.baseUrl + "/taskComplete/" + id, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${await api.token}`,
+    },
+    body: formData,
+  });
+  return await res.json();
+}

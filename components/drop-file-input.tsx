@@ -6,59 +6,92 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Download, Eye, Upload, X } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Download, Eye, Plus, Upload, X } from "lucide-react";
+import dynamic from "next/dynamic";
 import React, { useCallback, useState } from "react";
+import { UseFormReturn } from "react-hook-form";
+import { z } from "zod";
 
-interface FileWithPreview extends File {
-  preview: string;
+const CSVViewer = dynamic(() => import("./csv-viewer"), { ssr: false });
+const ExcelViewer = dynamic(() => import("./excel-viewer"), { ssr: false });
+const DocxViewer = dynamic(() => import("./docx-viewer"), { ssr: false });
+
+export const fileSchema = z.object({
+  name: z.string(),
+  type: z.string(),
+  size: z.number(),
+  lastModified: z.number(),
+  preview: z.string(),
+});
+
+export const formFileSchema = z.object({
+  file: fileSchema.nullable().optional(),
+});
+
+export type FormData = z.infer<typeof formFileSchema>;
+
+interface FileContentPreviewProps {
+  form: UseFormReturn<FormData>;
 }
 
-export default function FileContentPreview() {
-  const [files, setFiles] = useState<FileWithPreview[]>([]);
-  const [previewFile, setPreviewFile] = useState<FileWithPreview | null>(null);
+const allowedFileTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "application/pdf",
+  "text/csv",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
+
+export default function FileContentPreview({ form }: FileContentPreviewProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    setFiles(
-      acceptedFiles.map((file) =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        }),
-      ),
-    );
-  }, []);
+  const { register, setValue, watch } = form;
+  const file = watch("file");
 
-  const removeFile = useCallback(
-    (file: FileWithPreview) => {
-      const newFiles = [...files];
-      newFiles.splice(newFiles.indexOf(file), 1);
-      setFiles(newFiles);
-      if (previewFile === file) {
-        setPreviewFile(null);
-        setIsDialogOpen(false);
+  const onDrop = useCallback(
+    (acceptedFile: File | null) => {
+      if (acceptedFile && allowedFileTypes.includes(acceptedFile.type)) {
+        const newFile = {
+          name: acceptedFile.name,
+          type: acceptedFile.type,
+          size: acceptedFile.size,
+          lastModified: acceptedFile.lastModified,
+          preview: URL.createObjectURL(acceptedFile),
+        };
+        const validFile = fileSchema.parse(newFile);
+        setValue("file", validFile);
+      } else {
+        setValue("file", null);
       }
-      URL.revokeObjectURL(file.preview);
     },
-    [files, previewFile],
+    [setValue],
   );
 
-  const handlePreview = useCallback((file: FileWithPreview) => {
-    setPreviewFile(file);
-    setIsDialogOpen(true);
-  }, []);
+  const removeFile = useCallback(() => {
+    if (file) {
+      URL.revokeObjectURL(file.preview);
+    }
+    setValue("file", null);
+  }, [file, setValue]);
 
-  const handleDownload = useCallback((file: FileWithPreview) => {
-    const link = document.createElement("a");
-    link.href = file.preview;
-    link.download = file.name;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }, []);
+  const handleDownload = useCallback(() => {
+    if (file) {
+      const link = document.createElement("a");
+      link.href = file.preview;
+      link.download = file.name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }, [file]);
 
-  const renderPreview = useCallback((file: FileWithPreview) => {
-    const className = "max-w-full max-h-[70vh] object-contain";
+  const renderPreview = useCallback((file: z.infer<typeof fileSchema>) => {
+    const className = "w-full h-auto max-h-[70vh] object-contain";
 
     if (file.type.startsWith("image/")) {
       return <img src={file.preview} alt={file.name} className={className} />;
@@ -66,22 +99,22 @@ export default function FileContentPreview() {
       return (
         <iframe
           src={file.preview}
-          className="h-full min-h-[70vh] w-full"
+          className="h-[70vh] w-full"
           title={file.name}
         />
       );
-    } else if (file.type.startsWith("text/")) {
-      return (
-        <iframe
-          src={file.preview}
-          className="h-full min-h-[70vh] w-full"
-          title={file.name}
-        />
-      );
-    } else if (file.type.startsWith("video/")) {
-      return <video src={file.preview} controls className={className} />;
-    } else if (file.type.startsWith("audio/")) {
-      return <audio src={file.preview} controls className="w-full" />;
+    } else if (file.type === "text/csv") {
+      return <CSVViewer file={file as unknown as File} />;
+    } else if (
+      file.type ===
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ) {
+      return <ExcelViewer file={file as unknown as File} />;
+    } else if (
+      file.type ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      return <DocxViewer file={file as unknown as File} />;
     } else {
       return (
         <div className="flex h-full flex-col items-center justify-center">
@@ -95,80 +128,76 @@ export default function FileContentPreview() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-2xl p-4">
-      <div
-        onDrop={(e) => {
-          e.preventDefault();
-          onDrop(Array.from(e.dataTransfer.files));
-        }}
-        onDragOver={(e) => e.preventDefault()}
-        className="cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors hover:border-primary"
-      >
-        <input
-          type="file"
-          onChange={(e) => e.target.files && onDrop(Array.from(e.target.files))}
-          className="hidden"
-          id="fileInput"
-          multiple
-        />
-        <label htmlFor="fileInput" className="cursor-pointer">
-          <Upload className="mx-auto h-12 w-12 text-gray-400" />
-          <p className="mt-2 text-sm text-gray-600">
-            Drag &apos;n&apos; drop some files here, or click to select files
-          </p>
-        </label>
-      </div>
-
-      {files.length > 0 && (
-        <div className="mt-6 space-y-4">
-          <h2 className="text-lg font-semibold">Uploaded Files</h2>
-          {files.map((file) => (
-            <div
-              key={file.name}
-              className="flex items-center justify-between rounded-lg bg-gray-50 p-4"
-            >
-              <span className="truncate text-sm">{file.name}</span>
-              <div className="flex space-x-2">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => handlePreview(file)}
-                >
-                  <Eye className="h-4 w-4" />
-                  <span className="sr-only">Preview {file.name}</span>
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => handleDownload(file)}
-                >
-                  <Download className="h-4 w-4" />
-                  <span className="sr-only">Download {file.name}</span>
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => removeFile(file)}
-                >
-                  <X className="h-4 w-4" />
-                  <span className="sr-only">Remove {file.name}</span>
-                </Button>
-              </div>
-            </div>
-          ))}
+    <div className="flex flex-grow overflow-hidden">
+      <div className="w-1/3 overflow-y-auto border-r p-4">
+        <div
+          onDrop={(e) => {
+            e.preventDefault();
+            const droppedFile = e.dataTransfer.files[0];
+            onDrop(droppedFile || null);
+          }}
+          onDragOver={(e) => e.preventDefault()}
+          className="mb-4 cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors hover:border-primary"
+        >
+          <input
+            {...register("file")}
+            type="file"
+            onChange={(e) => {
+              const selectedFile = e.target.files?.[0];
+              onDrop(selectedFile || null);
+            }}
+            className="hidden"
+            id="fileInput"
+            accept={allowedFileTypes.join(",")}
+          />
+          <Label htmlFor="fileInput" className="cursor-pointer">
+            <Upload className="mx-auto h-12 w-12 text-gray-400" />
+            <p className="mt-2 text-sm text-gray-600">
+              Drag &#39;n&#39; drop a file here, or click to select a file
+            </p>
+            <p className="mt-1 text-xs text-gray-500">
+              (Allowed file types: Images, PDF, CSV, XLSX, DOCX)
+            </p>
+          </Label>
         </div>
-      )}
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="w-full max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>{previewFile?.name}</DialogTitle>
-          </DialogHeader>
-          <div className="mt-4">
-            {previewFile && renderPreview(previewFile)}
+        {file && (
+          <div className="mb-2 flex items-center justify-between rounded-lg bg-gray-50 p-2">
+            <span className="max-w-[60%] truncate text-sm">{file.name}</span>
+            <div className="flex space-x-1">
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                onClick={() => setIsDialogOpen(true)}
+              >
+                <Eye className="h-4 w-4" />
+                <span className="sr-only">Preview {file.name}</span>
+              </Button>
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                onClick={handleDownload}
+              >
+                <Download className="h-4 w-4" />
+                <span className="sr-only">Download {file.name}</span>
+              </Button>
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                onClick={removeFile}
+              >
+                <X className="h-4 w-4" />
+                <span className="sr-only">Remove {file.name}</span>
+              </Button>
+            </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        )}
+      </div>
+      <div className="w-2/3 overflow-y-auto p-4">
+        {file && renderPreview(file)}
+      </div>
     </div>
   );
 }
