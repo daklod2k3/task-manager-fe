@@ -6,7 +6,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-export const fileSchema = z.object({
+const fileSchema = z.object({
   name: z.string(),
   type: z.string(),
   size: z.number(),
@@ -14,7 +14,7 @@ export const fileSchema = z.object({
   preview: z.string(),
 });
 
-export const formFileSchema = z.object({
+const formFileSchema = z.object({
   file: fileSchema.nullable().optional(),
 });
 

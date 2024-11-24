@@ -11,7 +11,6 @@ import Loading from "../Loading";
 import LoadingDialog from "../loading/LoadingDialog";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import TaskCard from "./task-card";
-import TaskDetail, { TaskDialog } from "./task-detail";
 
 // const Container = styled.div`
 //   display: flex;
