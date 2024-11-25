@@ -20,7 +20,7 @@ const fetcher = async (path: string) => {
   console.log(search);
 
   const result = await getTask({ id: Number(id), search: search.toString() });
-  // console.log(result);
+  console.log(result);
   if (result.error) throw new Error(result.error);
   if (id) return result.data;
   return result.data;
@@ -56,7 +56,7 @@ export function useAllTask(taskFilter?: TaskFilter) {
     ApiRoutes.Task + "?" + search,
     fetcher,
     {
-      revalidateOnMount: true,
+      // revalidateOnMount: true,
     },
   );
   return { data, error, isLoading, mutate };

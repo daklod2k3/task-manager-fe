@@ -6,12 +6,11 @@ import { Tables } from "@/entity/database.types";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Loading from "../Loading";
 import LoadingDialog from "../loading/LoadingDialog";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import TaskCard from "./task-card";
-import TaskDetail, { TaskDialog } from "./task-detail";
 
 // const Container = styled.div`
 //   display: flex;
@@ -58,9 +57,9 @@ interface ITableColumn {
 export const ColumnTitles = [
   { title: "To_do", color: "sky-500" },
   { title: "In_Progress", color: "blue-500" },
+  { title: "QA", color: "purple-500" },
   { title: "In_Preview", color: "orange-500" },
   // "In_Complete",
-  { title: "QA", color: "purple-500" },
   { title: "Done", color: "green-500" },
   // "Archived",
 ];
@@ -108,70 +107,6 @@ const sortData = (taskList: Tables<"tasks">[]) => {
   );
 };
 
-const onDragEnd = async (
-  result: any,
-  columns: any,
-  setColumn: any,
-  setLoading: any,
-) => {
-  console.log(result, columns, setColumn);
-
-  if (!result.destination) return;
-  const { source, destination } = result;
-  setLoading(true);
-  // updateTask()
-  // mutate(undefined, { revalidate: true });
-  if (source.droppableId !== destination.droppableId) {
-    const sourceColumn = columns[source.droppableId];
-    const destColumn = columns[destination.droppableId];
-    const sourceItems = [...sourceColumn.items];
-    const destItems = [...destColumn.items];
-    const [removed] = sourceItems.splice(source.index, 1);
-
-    destItems.splice(destination.index, 0, removed);
-    await setColumn({
-      ...columns,
-      [source.droppableId]: {
-        ...sourceColumn,
-        items: sourceItems,
-      },
-      [destination.droppableId]: {
-        ...destColumn,
-        items: sortData(destItems),
-      },
-    });
-
-    const result = await updateStatus(removed.id, destination.droppableId);
-    console.log(result);
-    if (result.status != 200) {
-      await setColumn({
-        ...columns,
-      });
-    }
-    setLoading(false);
-  }
-  //  else {
-  //   const column = columns[source.droppableId];
-  //   const copiedItems = [...column.items];
-  //   const [removed] = copiedItems.splice(source.index, 1);
-  //   copiedItems.splice(destination.index, 0, removed);
-  //   const result = await updateTask({
-  //     ...removed,
-  //     status: destination.droppableId,
-  //   });
-  //   if (!result) {
-  //     setLoading(false);
-  //   }
-  //   await setColumn({
-  //     ...columns,
-  //     [source.droppableId]: {
-  //       ...column,
-  //       items: sortData(copiedItems),
-  //     },
-  //   });
-  // }
-};
-
 const Kanban = () => {
   const {
     taskFetch: { data: taskList, isLoading: taskLoading, mutate, error },
@@ -191,7 +126,78 @@ const Kanban = () => {
     setLoading((l) => l && taskLoading);
   }, [taskLoading]);
 
-  useEffect(() => {}, []);
+  const onDragEnd = useCallback(
+    async (result: any, columns: any, setColumn: any, setLoading: any) => {
+      // console.log(result, columns, setColumn);
+
+      if (!result.destination) return;
+      const { source, destination } = result;
+      if (destination.droppableId == "Done") {
+        toast({
+          title: "Task can't be moved to Done",
+          description:
+            "You must open detail and attach some file to mark as Done",
+          variant: "destructive",
+        });
+
+        return;
+      }
+
+      setLoading(true);
+      // updateTask()
+      // mutate(undefined, { revalidate: true });
+      if (source.droppableId !== destination.droppableId) {
+        const sourceColumn = columns[source.droppableId];
+        const destColumn = columns[destination.droppableId];
+        const sourceItems = [...sourceColumn.items];
+        const destItems = [...destColumn.items];
+        const [removed] = sourceItems.splice(source.index, 1);
+
+        destItems.splice(destination.index, 0, removed);
+        await setColumn({
+          ...columns,
+          [source.droppableId]: {
+            ...sourceColumn,
+            items: sourceItems,
+          },
+          [destination.droppableId]: {
+            ...destColumn,
+            items: sortData(destItems),
+          },
+        });
+
+        const result = await updateStatus(removed.id, destination.droppableId);
+        console.log(result);
+        if (result.status != 200) {
+          await setColumn({
+            ...columns,
+          });
+        }
+        setLoading(false);
+      }
+      //  else {
+      //   const column = columns[source.droppableId];
+      //   const copiedItems = [...column.items];
+      //   const [removed] = copiedItems.splice(source.index, 1);
+      //   copiedItems.splice(destination.index, 0, removed);
+      //   const result = await updateTask({
+      //     ...removed,
+      //     status: destination.droppableId,
+      //   });
+      //   if (!result) {
+      //     setLoading(false);
+      //   }
+      //   await setColumn({
+      //     ...columns,
+      //     [source.droppableId]: {
+      //       ...column,
+      //       items: sortData(copiedItems),
+      //     },
+      //   });
+      // }
+    },
+    [],
+  );
 
   if (taskList?.length == 0) return <span>No tasks found</span>;
 
@@ -211,7 +217,6 @@ const Kanban = () => {
           if (!result.destination) return;
           const { source, destination } = result;
           if (source.droppableId === destination.droppableId) return;
-          setLoading(true);
           onDragEnd(result, columns, setColumns, setLoading);
           // setLoading(false);
         }}
@@ -222,10 +227,10 @@ const Kanban = () => {
             {Object.entries(columns).map(([columnId, column], index) => {
               return (
                 <div className={cn("grid grid-rows-[auto,1fr]")} key={columnId}>
-                  <div className="sticky top-0 mb-3 bg-white">
+                  <div className="sticky top-0 z-50 mb-3 bg-white">
                     <div
                       className={cn(
-                        "z-50 border-t-4 px-3",
+                        "relative border-t-4 px-3",
                         `border-${column.color} bg-${column.color} bg-opacity-30`,
                       )}
                     >

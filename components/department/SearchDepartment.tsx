@@ -22,14 +22,14 @@ interface CommandClickItemProps {
 const SearchUser: React.FC<CommandClickItemProps> = ({ onClickItem }) => {
   const [isInputActive, setIsInputActive] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  const {departmentFetch} = useDepartmentContext();
+  const {departmentAllFetch} = useDepartmentContext();
   const [depa, setDepa] = useState<any[]>([]);
 
   useEffect(() => {
-    if (departmentFetch.data) {
-      setDepa(departmentFetch.data);
+    if (departmentAllFetch.data) {
+      setDepa(departmentAllFetch.data);
     }
-  }, [departmentFetch.data]);
+  }, [departmentAllFetch.data]);
 
   return (
     <Command className="rounded-lg border shadow-md relative overflow-visible">

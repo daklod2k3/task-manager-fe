@@ -41,14 +41,14 @@ export default function TableDepartment() {
   const [depa, setDepa] = useState<any[]>([]);
   const [checkList, setCheckList] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const { departmentFetch } = useDepartmentContext();
+  const { departmentAllFetch } = useDepartmentContext();
   const { toast } = useToast();
   
   useEffect(() => {
-    if (departmentFetch.data) {
-      setDepa(departmentFetch.data);
+    if (departmentAllFetch.data) {
+      setDepa(departmentAllFetch.data);
     }
-  }, [departmentFetch.data]);
+  }, [departmentAllFetch.data]);
 
   const deleteDepa = async () => {
     for (const id of checkList) {
@@ -57,7 +57,7 @@ export default function TableDepartment() {
         toast({
           description: "Deleted department successfully",
         });
-        departmentFetch.mutate();
+        departmentAllFetch.mutate();
       } catch (error) {
         toast({
           variant: "destructive",
@@ -75,7 +75,7 @@ export default function TableDepartment() {
       toast({
         description: "Deleted department successfully",
       });
-      departmentFetch.mutate();
+      departmentAllFetch.mutate();
     } catch (error) {
       toast({
         variant: "destructive",
@@ -155,7 +155,7 @@ export default function TableDepartment() {
           </div>
         </div>
 
-        {departmentFetch.isLoading ? (
+        {departmentAllFetch.isLoading ? (
           <div className="w-full h-screen flex items-start justify-center">
             <Loader2 className="animate-spin text-primary" size={28} />
             <h1 className="text-xl text-primary mr-2">Loading Department</h1>
@@ -188,7 +188,7 @@ export default function TableDepartment() {
                     <TableCell>{dept.id}</TableCell>
                     <TableCell><Link title="Click view detail" href={"/department/" + dept.id}>{dept.name}</Link></TableCell>
                     <TableCell>
-                      {dept.department_user.filter(user => user.owner_type === "owner").length > 0 ? (
+                      {dept.department_users.filter(user => user.owner_type === "owner").length > 0 ? (
                         dept.department_user
                           .filter(user => user.owner_type === "owner")
                           .map(user => (
@@ -202,12 +202,12 @@ export default function TableDepartment() {
                     </TableCell>
                     <TableCell>
                       <Link className="flex w-fit items-center" title="Click view detail" href={"/department/" + dept.id}>
-                        {dept.department_user.length > 0 
-                          ? dept.department_user.map((user,idx) => (
+                        {dept.department_users.length > 0 
+                          ? dept.department_users.map((user,idx) => (
                             <LoadPeople className={idx < 5 ? "mr-1" : ""} showLoading={idx < 0} key={user.user_id} id={user.user_id} showAvt={true && idx < 5}/>
                           )) 
                           : "Chưa có ai"}
-                        {dept.department_user.length > 4 && <span className="text-2xl text-primary">...</span>}
+                        {dept.department_users.length > 4 && <span className="text-2xl text-primary">...</span>}
                       </Link>
                     </TableCell>
                     <TableCell className="max-w-[200px] min-w-[200px]">
@@ -216,8 +216,8 @@ export default function TableDepartment() {
                         title="Click view detail" 
                         href={"/department/" + dept.id}
                       >
-                        {dept.task_department.length > 0 
-                          ? dept.task_department.map((task, idx) => (
+                        {dept.task_departments.length > 0 
+                          ? dept.task_departments.map((task, idx) => (
                               <React.Fragment key={task.task_id}>
                                 {idx !== 0 && <span className="text-xl h-[40px] mx-0.5">,</span>}
                                 <LoadTask 

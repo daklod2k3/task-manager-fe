@@ -1,6 +1,5 @@
 "use server";
 import { Tables } from "@/entity/database.types";
-import { TaskEntity } from "@/entity/Task";
 import {
   ApiAuth,
   ApiRoutes,
@@ -29,27 +28,17 @@ export async function updateTask(task: Tables<"tasks">) {
 export async function getTask({ id, search }: GetProps) {
   // console.log(id);
 
-  const includes = "TaskUsers,TaskDepartments,CreatedByNavigation";
+  const includes = "TaskUsers.User,TaskDepartments,CreatedByNavigation";
   const params = new URLSearchParams(search);
   params.append("includes", includes);
-  if (id) {
-    const filter: RootFilter = {
-      filters: [
-        {
-          field: "id",
-          value: id,
-          operator: FilterOperators.eq,
-        },
-      ],
-    };
-    params.append("filter", JSON.stringify(filter));
-    const res = await new ApiAuth(ApiRoutes.Task).get({
-      search: params.toString(),
-    });
-    // console.log(res);
+  // if (id) {
+  //   const res = await new ApiAuth(ApiRoutes.Task + /).get({
+  //     search: params.toString(),
+  //   });
+  //   // console.log(res);
 
-    return await res.json();
-  }
+  //   return await res.json();
+  // }
   try {
     const res = await new ApiAuth(ApiRoutes.Task).get({
       id,
@@ -98,5 +87,22 @@ export async function updateStatus(
     },
   ]);
 
+  return await res.json();
+}
+
+export async function deleteTask(id: number) {
+  const res = await new ApiAuth(ApiRoutes.Task).delete(id);
+  return await res.json();
+}
+
+export async function completeTask(id: number, formData) {
+  const api = new ApiAuth();
+  const res = await fetch(api.baseUrl + "/taskComplete/" + id, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${await api.token}`,
+    },
+    body: formData,
+  });
   return await res.json();
 }

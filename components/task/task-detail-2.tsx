@@ -1,6 +1,6 @@
 "use client";
 
-import { updateTask } from "@/action/Task";
+import { deleteTask, updateTask } from "@/action/Task";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
-import { TaskEntity } from "@/entity/Task";
+import { TaskEntity } from "@/entity/Entity";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
 import { useAllTask, useTask } from "@/hooks/use-task";
 import { useToast } from "@/hooks/use-toast";
@@ -24,6 +24,7 @@ import {
   ChevronRight,
   Edit,
   FileText,
+  icons,
   Loader2,
   Mail,
   MessageSquare,
@@ -31,16 +32,19 @@ import {
   Paperclip,
   Plus,
   Share2,
+  Trash2,
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import AlertButton from "../alert-button";
 import MyAvatar from "../Avatar";
 import Loading from "../Loading";
 import SearchSelect, { PeopleSearchItem } from "../search-select";
+import { AlertDialogTrigger } from "../ui/alert-dialog";
 import { Calendar } from "../ui/calendar";
-import { DialogClose } from "../ui/dialog";
+import { Dialog, DialogClose, DialogTrigger } from "../ui/dialog";
 import {
   Form,
   FormControl,
@@ -57,9 +61,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import AddAssignee from "./add-assignee";
 import { createTaskSchema } from "./create-task";
 import { ColumnTitles } from "./kanban";
 import { PriorityColor } from "./task-card";
+import TaskComment from "./task-comment";
+import { default as TaskRequirePreview } from "./task-complete";
 import { PriorityIcon } from "./utils";
 
 const updateTaskSchema = createTaskSchema.extend({
@@ -69,6 +76,7 @@ const updateTaskSchema = createTaskSchema.extend({
 });
 
 export default function TaskDetail2({ item }: { item: TaskEntity }) {
+  // FORM STATE
   const form = useForm({
     resolver: zodResolver(updateTaskSchema),
     mode: "all",
@@ -80,14 +88,17 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
     },
   });
 
-  const { data: peoples, isLoading: peopleLoading } = usePeople();
+  // Data fetching
   const { toast } = useToast();
   const { mutate: mutateList } = useAllTask();
-  const { mutate: mutateDetail } = useTask();
+  const { mutate: mutateDetail } = useTask(item.id);
   const {
     taskDetail: [, setDetail],
   } = useTaskContext();
 
+  // const
+
+  // Component state
   const [saveLoading, setSaveLoading] = useState(false);
 
   const [assigneeSelect, setAssigneeSelect] = useState<Tables<"profiles">[]>(
@@ -96,9 +107,10 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
   // console.log(assigneeSelect);
 
   // useEffect(() => {}, [taskFetch, task]);
-  const handleSubmit = async (formData) => {
+  const handleSubmit = async (formData: z.infer<typeof updateTaskSchema>) => {
+    formData.task_users = [];
     setSaveLoading(true);
-    const res = await updateTask(formData);
+    const res = await updateTask(formData as Tables<"tasks">);
     await mutateDetail();
     await mutateList();
     setSaveLoading(false);
@@ -138,6 +150,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
     );
   }, [assigneeSelect, form]);
 
+  const deleteTaskSubmit = async () => {};
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} autoComplete="off">
@@ -164,22 +177,53 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
             </Badge>
           </div>
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
+            <AlertButton
+              submitLabel="Delete"
+              description="This action cannot be undone. This will permanently delete task and remove data from servers."
+              onSubmit={async () => await deleteTask(item.id)}
+            >
+              <AlertDialogTrigger>
+                <Button size={"icon"}>
+                  <Trash2 size={18} />
+                </Button>
+              </AlertDialogTrigger>
+            </AlertButton>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={async () => {
+                try {
+                  const res = await navigator.clipboard.writeText(
+                    document.location.origin + "/task?task_id=" + item.id,
+                  );
+                  toast({
+                    title: "Copied to clipboard",
+                  });
+                } catch {
+                  toast({
+                    title: "Error",
+                    description: "Failed to copy",
+                    variant: "destructive",
+                  });
+                }
+              }}
+            >
               <Share2 className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon">
+            <Button type="button" variant="ghost" size="icon">
               <Edit className="h-4 w-4" />
             </Button>
             <DialogClose asChild>
-              <Button variant="ghost" size="icon">
+              <Button type="button" variant="ghost" size="icon">
                 <X className="h-4 w-4" />
               </Button>
             </DialogClose>
           </div>
         </CardHeader>
-        <CardContent className="grid gap-6 md:grid-cols-3">
-          <div className="space-y-6 md:col-span-2">
-            <div className="flex space-x-4">
+        <CardContent className="grid gap-6 md:grid-cols-4">
+          <div className="flex flex-col space-y-6 md:col-span-2">
+            {/* <div className="flex space-x-4">
               <Button variant="outline" size="sm" className="flex items-center">
                 <Paperclip className="mr-2 h-4 w-4" />
                 Attachments
@@ -200,15 +244,19 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 <Mail className="mr-2 h-4 w-4" />
                 Email
               </Button>
-            </div>
+            </div> */}
 
             <div className="space-y-4">
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Label className="font-semibold">Created by</Label>
-                <Input
+                {/* <Input
                   disabled
                   defaultValue={item.created_by_navigation?.name}
-                />
+                /> */}
+                {/* <div className="flex gap-2"> */}
+                {/* <Badge>{item.created_by_navigation?.name}</Badge> */}
+                <MyAvatar user={item.created_by_navigation} includeInfo />
+                {/* </div> */}
               </div>
 
               <FormField
@@ -216,7 +264,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 name="priority"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Priority</FormLabel>
+                    <FormLabel className="font-bold">Priority</FormLabel>
                     <FormControl>
                       <Select
                         {...field}
@@ -258,7 +306,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 name="due_date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Due date</FormLabel>
+                    <FormLabel className="font-bold">Due date</FormLabel>
                     <Popover modal>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -298,7 +346,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
               />
             </div>
 
-            <div>
+            <div className="flex-1 space-y-2">
               <h2 className="mb-4 font-semibold">History</h2>
               <div className="rounded-lg bg-muted/50 p-3">
                 <div className="flex items-center justify-between">
@@ -311,10 +359,54 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">2 hours</p>
               </div>
+              {/* <div className="rounded-lg bg-muted/50 p-3">
+                <div className="flex items-center justify-between">
+                  <Badge
+                    className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
+                  >
+                    {item.status.replaceAll("_", " ")}
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">Nov 22</span>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">2 hours</p>
+              </div>
+              <div className="rounded-lg bg-muted/50 p-3">
+                <div className="flex items-center justify-between">
+                  <Badge
+                    className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
+                  >
+                    {item.status.replaceAll("_", " ")}
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">Nov 22</span>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">2 hours</p>
+              </div>
+              <div className="rounded-lg bg-muted/50 p-3">
+                <div className="flex items-center justify-between">
+                  <Badge
+                    className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
+                  >
+                    {item.status.replaceAll("_", " ")}
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">Nov 22</span>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">2 hours</p>
+              </div>
+              <div className="rounded-lg bg-muted/50 p-3">
+                <div className="flex items-center justify-between">
+                  <Badge
+                    className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
+                  >
+                    {item.status.replaceAll("_", " ")}
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">Nov 22</span>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">2 hours</p>
+              </div> */}
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="flex flex-1 flex-col space-y-6">
             <div>
               <div className="mb-4 flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">
@@ -328,6 +420,23 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
               </div>
               <Separator />
             </div>
+
+            {item.status != "Done" && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  {item.status != "In_Preview" ? (
+                    <TaskRequirePreview task_id={item.id} />
+                  ) : (
+                    <TaskRequirePreview task_id={item.id} />
+                  )}
+
+                  {/* <Button variant="ghost" className="w-full justify-between">
+                  Archived
+                  <ChevronRight className="h-4 w-4" />
+                </Button> */}
+                </div>
+              </div>
+            )}
 
             <div className="space-y-4">
               {/* <h3 className="font-medium">Assignee</h3>
@@ -345,33 +454,10 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
               <FormItem>
                 <FormLabel>Assign to</FormLabel>
                 <FormControl>
-                  <>
-                    <div className="flex flex-wrap gap-1">
-                      {assigneeSelect.map((x) => (
-                        <Badge key={x.id} className="flex gap-1 p-1">
-                          <MyAvatar user={x} size={7} />
-                          {x.name || x.id}
-                          <X
-                            size={18}
-                            className="cursor-pointer rounded-full hover:bg-white hover:text-primary"
-                            onClick={() => removeAssignee(x)}
-                          />
-                        </Badge>
-                      ))}
-                    </div>
-                    <SearchSelect
-                      disable
-                      isLoading={peopleLoading}
-                      placeholder="Type to search"
-                      ItemRender={PeopleSearchItem}
-                      modal={true}
-                      onSelectedValueChange={(x) => {
-                        console.log("click");
-                        addAssignee(x);
-                      }}
-                      items={peopleToSearch(peoples || [])}
-                    />
-                  </>
+                  <AddAssignee
+                    task_id={item.id}
+                    task_user={item?.task_users || []}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -380,20 +466,6 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
             </div>
 
             {/* <div className="space-y-4">
-              <h3 className="font-medium">Move to phase</h3>
-              <div className="space-y-2">
-                <Button variant="ghost" className="w-full justify-between">
-                  Doing
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" className="w-full justify-between">
-                  Archived
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div> */}
-
-            <div className="space-y-4">
               <h3 className="font-medium">Activities</h3>
               <div className="flex gap-2">
                 <MyAvatar className="h-8 w-8" />
@@ -402,15 +474,19 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                   className="flex-1"
                 />
               </div>
-            </div>
+            </div> */}
           </div>
+          <TaskComment task_id={item.id} />
           <div className="flex gap-2">
             <Button
+              type="submit"
               className=""
               disabled={!form.formState.isDirty || saveLoading}
             >
-              {saveLoading && <Loader2 className="animate-spin" />}
               Save
+              {saveLoading && (
+                <Loader2 className="ml-2 animate-spin" size={14} />
+              )}
             </Button>
             <Button variant="ghost" type="reset" onClick={() => form.reset()}>
               Reset

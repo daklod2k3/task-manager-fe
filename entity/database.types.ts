@@ -241,6 +241,12 @@ export type Database = {
           bio: string | null;
           id: string;
           name: string;
+          role_name?: string;
+          role_id: string;
+          role?: {
+            id: string;
+            name: string;
+          };
         };
         Insert: {
           avt?: string | null;
@@ -376,11 +382,8 @@ export type Database = {
           id: number;
           priority: Database["public"]["Enums"]["TaskPriority"];
           status: Database["public"]["Enums"]["TaskStatus"];
-          assigned_to_user?: number;
-          assigned_to_department?: number;
-          task_departments?: Tables<"task_department">[];
-          task_user?: Tables<"task_user">[];
-          task_history?: Tables<"task_history">[];
+          assigned_to_user: number;
+          assigned_to_department: number;
           created_by_navigation?: Tables<"profiles">;
           title: string;
         };
@@ -410,6 +413,45 @@ export type Database = {
             columns: ["created_by"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      task_comment: {
+        Row: {
+          comment: string;
+          created_at: string;
+          created_by: string | null;
+          id: number;
+          task_id: number | null;
+        };
+        Insert: {
+          comment: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: number;
+          task_id?: number | null;
+        };
+        Update: {
+          comment?: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: number;
+          task_id?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "task_comment_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "task_comment_task_id_fkey";
+            columns: ["task_id"];
+            isOneToOne: false;
+            referencedRelation: "tasks";
             referencedColumns: ["id"];
           },
         ];

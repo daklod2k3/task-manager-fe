@@ -1,7 +1,6 @@
 "use server";
 import { Tables } from "@/entity/database.types";
 import { ApiAuth, ApiRoutes, GetProps, IApiResponse } from "./Api";
-import { createClient } from "@/utils/supabase/server";
 
 export async function createDepartment(department: Tables<"departments">) {
   try {
@@ -35,14 +34,21 @@ export async function updateDepartment(id: number, data: object) {
   }
 }
 
-export async function getDepartment(id?: number) {
-  const supabase = createClient();
-  let filter = supabase.from("departments").select(
-    `id, 
-    name, 
-    department_user (id, user_id, owner_type), 
-    task_department (task_id)`
-  );
-  if (id) filter = filter.eq("id", id);
-  return filter;
+export async function getDepartment({ id, search }: GetProps) {
+  const includes = "DepartmentUsers,TaskDepartments";
+  const params = new URLSearchParams(search);
+  params.append("includes", includes);
+  try {
+    const res = await new ApiAuth(ApiRoutes.Department).get({
+      id,
+      search: params.toString(),
+    });
+    console.log(res);
+    return await res.json();
+  } catch (e) {
+    console.log(e);
+    return {
+      error: "Server error",
+    };
+  }
 }

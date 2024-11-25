@@ -14,6 +14,9 @@ export const enum ApiRoutes {
   Channel = "/channel",
   Department = "/department",
   DepartmentUser = "/departmentUser",
+  TaskUser = "/taskUser",
+  TaskComment = "/taskComment",
+  TaskComplete = "/taskComplete",
 }
 
 export interface GetProps {
@@ -21,10 +24,11 @@ export interface GetProps {
   search?: string;
 }
 export class ApiAuth {
-  protected token;
+  public token;
   protected route;
+  public baseUrl = baseUrl;
 
-  constructor(route: ApiRoutes) {
+  constructor(route?: ApiRoutes) {
     this.token = getAccessToken();
     this.route = baseUrl + route;
   }
@@ -105,7 +109,13 @@ export class Filter<T = any> {
   public logic?: FilterLogic = FilterLogic.And;
   public filters?: Filter[];
 
-  constructor({ Field, Operator, Value, Logic, Filters }) {
+  constructor({
+    Field,
+    Operator,
+    Value,
+    Logic = FilterLogic.And,
+    Filters = [],
+  }) {
     this.field = Field;
     this.operator = Operator;
     this.value = Value;
@@ -117,7 +127,7 @@ export class Filter<T = any> {
 export class RootFilter {
   filters: Filter[];
   logic?: FilterLogic;
-  constructor({ Filters, Logic }) {
+  constructor({ Filters, Logic = FilterLogic.And }) {
     this.filters = Filters;
     this.logic = Logic;
   }
