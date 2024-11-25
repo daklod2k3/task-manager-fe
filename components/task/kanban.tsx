@@ -11,7 +11,6 @@ import Loading from "../Loading";
 import LoadingDialog from "../loading/LoadingDialog";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import TaskCard from "./task-card";
-import TaskDetail, { TaskDialog } from "./task-detail";
 
 // const Container = styled.div`
 //   display: flex;
@@ -58,9 +57,9 @@ interface ITableColumn {
 export const ColumnTitles = [
   { title: "To_do", color: "sky-500" },
   { title: "In_Progress", color: "blue-500" },
+  { title: "QA", color: "purple-500" },
   { title: "In_Preview", color: "orange-500" },
   // "In_Complete",
-  { title: "QA", color: "purple-500" },
   { title: "Done", color: "green-500" },
   // "Archived",
 ];

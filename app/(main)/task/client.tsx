@@ -199,12 +199,12 @@ export default function Client() {
           items={peopleToSearch(peoples ?? [])}
         /> */}
         {/* <UserSelect /> */}
-        {/* <CreateTaskDialog>
+        <CreateTaskDialog>
           <Button>
             <Plus className="mr-2" size={16} />
-            Add task
+            Create task
           </Button>
-        </CreateTaskDialog> */}
+        </CreateTaskDialog>
       </div>
       <Kanban />
       <TaskDialog />

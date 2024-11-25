@@ -107,9 +107,10 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
   // console.log(assigneeSelect);
 
   // useEffect(() => {}, [taskFetch, task]);
-  const handleSubmit = async (formData) => {
+  const handleSubmit = async (formData: z.infer<typeof updateTaskSchema>) => {
+    formData.task_users = [];
     setSaveLoading(true);
-    const res = await updateTask(formData);
+    const res = await updateTask(formData as Tables<"tasks">);
     await mutateDetail();
     await mutateList();
     setSaveLoading(false);
@@ -221,7 +222,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
           </div>
         </CardHeader>
         <CardContent className="grid gap-6 md:grid-cols-4">
-          <div className="space-y-6 md:col-span-2">
+          <div className="flex flex-col space-y-6 md:col-span-2">
             {/* <div className="flex space-x-4">
               <Button variant="outline" size="sm" className="flex items-center">
                 <Paperclip className="mr-2 h-4 w-4" />
@@ -246,15 +247,16 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
             </div> */}
 
             <div className="space-y-4">
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Label className="font-semibold">Created by</Label>
                 {/* <Input
                   disabled
                   defaultValue={item.created_by_navigation?.name}
                 /> */}
-                <div>
-                  <Badge>{item.created_by_navigation?.name}</Badge>
-                </div>
+                {/* <div className="flex gap-2"> */}
+                {/* <Badge>{item.created_by_navigation?.name}</Badge> */}
+                <MyAvatar user={item.created_by_navigation} includeInfo />
+                {/* </div> */}
               </div>
 
               <FormField
@@ -304,7 +306,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 name="due_date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Due date</FormLabel>
+                    <FormLabel className="font-bold">Due date</FormLabel>
                     <Popover modal>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -344,7 +346,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
               />
             </div>
 
-            <div>
+            <div className="flex-1 space-y-2">
               <h2 className="mb-4 font-semibold">History</h2>
               <div className="rounded-lg bg-muted/50 p-3">
                 <div className="flex items-center justify-between">
@@ -357,6 +359,50 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">2 hours</p>
               </div>
+              {/* <div className="rounded-lg bg-muted/50 p-3">
+                <div className="flex items-center justify-between">
+                  <Badge
+                    className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
+                  >
+                    {item.status.replaceAll("_", " ")}
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">Nov 22</span>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">2 hours</p>
+              </div>
+              <div className="rounded-lg bg-muted/50 p-3">
+                <div className="flex items-center justify-between">
+                  <Badge
+                    className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
+                  >
+                    {item.status.replaceAll("_", " ")}
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">Nov 22</span>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">2 hours</p>
+              </div>
+              <div className="rounded-lg bg-muted/50 p-3">
+                <div className="flex items-center justify-between">
+                  <Badge
+                    className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
+                  >
+                    {item.status.replaceAll("_", " ")}
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">Nov 22</span>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">2 hours</p>
+              </div>
+              <div className="rounded-lg bg-muted/50 p-3">
+                <div className="flex items-center justify-between">
+                  <Badge
+                    className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
+                  >
+                    {item.status.replaceAll("_", " ")}
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">Nov 22</span>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">2 hours</p>
+              </div> */}
             </div>
           </div>
 
@@ -375,16 +421,22 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
               <Separator />
             </div>
 
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <TaskRequirePreview task_id={item.id} />
+            {item.status != "Done" && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  {item.status != "In_Preview" ? (
+                    <TaskRequirePreview task_id={item.id} />
+                  ) : (
+                    <TaskRequirePreview task_id={item.id} />
+                  )}
 
-                {/* <Button variant="ghost" className="w-full justify-between">
+                  {/* <Button variant="ghost" className="w-full justify-between">
                   Archived
                   <ChevronRight className="h-4 w-4" />
                 </Button> */}
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="space-y-4">
               {/* <h3 className="font-medium">Assignee</h3>

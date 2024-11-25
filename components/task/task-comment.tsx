@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import MyAvatar from "../Avatar";
+import ToggleFilter from "../toggle-filter";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import {
@@ -24,6 +25,7 @@ import {
 } from "../ui/form";
 import { ScrollArea } from "../ui/scroll-area";
 import { Textarea } from "../ui/textarea";
+import { Toggle } from "../ui/toggle";
 
 interface Props {
   task_id: number;
@@ -76,7 +78,7 @@ export default function TaskComment({ task_id }: Props) {
   };
 
   return (
-    <div className="grid flex-1 flex-col gap-2">
+    <div className="flex flex-1 flex-col gap-2">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(send)} className="space-y-4">
           <h3 className="font-medium">Comment</h3>
@@ -109,9 +111,12 @@ export default function TaskComment({ task_id }: Props) {
           </div>
         </form>
       </Form>
-      <ArrowDownNarrowWide />
-      <ScrollArea className="grid max-h-80 min-h-0">
+      <ToggleFilter onChange={() => console.log()} label="Created date" />
+      <ScrollArea className="grid max-h-80 min-h-0 flex-1">
         <div className="grid min-h-0 flex-col gap-2">
+          {data?.length == 0 && (
+            <span className="text-muted-foreground">No comment found</span>
+          )}
           {data?.map((item) => (
             <div
               key={item.id}

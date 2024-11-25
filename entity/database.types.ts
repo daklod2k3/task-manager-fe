@@ -241,6 +241,12 @@ export type Database = {
           bio: string | null;
           id: string;
           name: string;
+          role_name?: string;
+          role_id: string;
+          role?: {
+            id: string;
+            name: string;
+          };
         };
         Insert: {
           avt?: string | null;

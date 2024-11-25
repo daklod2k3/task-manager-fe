@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import DropFileInput, { formFileSchema } from "../drop-file-input";
+import { DropFileInput, FileFormData } from "../drop-file-input";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -22,10 +22,9 @@ interface Props {
 }
 
 export default function TaskRequirePreview({ task_id }: Props) {
-  const form = useForm<z.infer<typeof formFileSchema>>({
-    resolver: zodResolver(formFileSchema),
+  const form = useForm<FileFormData>({
     defaultValues: {
-      file: null,
+      files: [],
     },
   });
 
@@ -33,7 +32,7 @@ export default function TaskRequirePreview({ task_id }: Props) {
 
   const onSubmit = form.handleSubmit((formData) => {
     console.log("submit");
-    if (!formData.file) {
+    if (formData.files.length === 0) {
       toast({
         title: "Submit error",
         description: "You must upload file to complete task",
@@ -42,28 +41,14 @@ export default function TaskRequirePreview({ task_id }: Props) {
       return;
     }
     const data = new FormData();
-    data.append("file", formData.file as unknown as File);
+    data.append("file", formData.files[0]);
     console.log(formData);
-    fetch("/api/taskComplete/" + task_id, {
-      method: "POST",
-      body: data,
-    })
-      .then(async (res) => {
-        console.log(await res.json());
-      })
-      .catch((e) => {
-        console.log(e);
-
-        toast({
-          title: "Submit error",
-          description: "Server error",
-          variant: "destructive",
-        });
-      });
-
-    // completeTask(task_id, data)
-    //   .then((res) => {
-    //     console.log(res);
+    // fetch("/api/taskComplete/" + task_id, {
+    //   method: "POST",
+    //   body: data,
+    // })
+    //   .then(async (res) => {
+    //     console.log(await res.json());
     //   })
     //   .catch((e) => {
     //     console.log(e);
@@ -74,6 +59,23 @@ export default function TaskRequirePreview({ task_id }: Props) {
     //       variant: "destructive",
     //     });
     //   });
+
+    completeTask(task_id, data)
+      .then((res) => {
+        console.log(res);
+        toast({
+          title: "Action success",
+          description: "Marked task as complete",
+        });
+      })
+      .catch((e) => {
+        console.log(e);
+        toast({
+          title: "Submit error",
+          description: "Server error",
+          variant: "destructive",
+        });
+      });
   });
 
   return (
@@ -82,10 +84,10 @@ export default function TaskRequirePreview({ task_id }: Props) {
         <Button
           variant="outline"
           role="combobox"
-          className="h-10 w-full justify-between border-dashed border-green-500 text-green-500"
+          className="h-10 w-full justify-between border-dashed border-purple-500 text-purple-500"
           type="button"
         >
-          Mark complete
+          Ask preview to complete
           <ChevronRight />
         </Button>
       </DialogTrigger>
