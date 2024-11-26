@@ -186,13 +186,13 @@ export function PreviewFile({ file_id }: PreviewFileProps) {
 
       <DialogContent className="flex h-[80vh] flex-col sm:max-w-[80vw]">
         <DialogHeader>
-          <DialogTitle>Complete task</DialogTitle>
+          <DialogTitle>Preview to complete task</DialogTitle>
         </DialogHeader>
         {file &&
           renderPreview(
             Object.assign(file, { preview: URL.createObjectURL(file) }),
           )}
-        <DialogFooter>
+        <DialogFooter className="mt-auto">
           <Button onClick={onSubmit}>Complete task</Button>
         </DialogFooter>
       </DialogContent>

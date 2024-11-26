@@ -159,7 +159,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
         autoComplete="off"
-        className="flex flex-1 flex-col"
+        className="grid min-h-0 flex-1"
       >
         <ScrollArea className="grid h-full min-h-0 w-full flex-1">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
@@ -229,8 +229,8 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
               </DialogClose>
             </div>
           </CardHeader>
-          <CardContent className="grid h-full min-h-0 grid-cols-3 gap-6">
-            <div className="grid min-h-0 flex-col space-y-6 md:col-span-2">
+          <CardContent className="grid h-full min-h-0 grid-cols-3 gap-6 overflow-hidden">
+            <div className="grid h-full min-h-0 grid-rows-[auto,1fr] space-y-6 overflow-y-auto md:col-span-2">
               {/* <div className="flex space-x-4">
                 <Button
                   variant="outline"
@@ -362,12 +362,29 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 />
               </div>
 
-              <Tabs defaultValue="history" className="h-full flex-col">
+              <Tabs defaultValue="history" className="">
                 <TabsList>
                   <TabsTrigger value="history">History</TabsTrigger>
                   <TabsTrigger value="comment">Comments</TabsTrigger>
                 </TabsList>
-                <TabsContent value="history" className="flex-1 space-y-2">
+                <TabsContent value="history" className="space-y-2">
+                  <div className="rounded-lg bg-muted/50 p-3">
+                    <div className="flex items-center justify-between">
+                      <Badge
+                        className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
+                      >
+                        {item.status.replaceAll("_", " ")}
+                      </Badge>
+                      <span className="text-sm text-muted-foreground">
+                        Nov 22
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      2 hours
+                    </p>
+                  </div>
+                </TabsContent>
+                <TabsContent value="comment" className="space-y-2">
                   <TaskComment task_id={item.id} />
                 </TabsContent>
                 {/* <div className="rounded-lg bg-muted/50 p-3">
@@ -503,7 +520,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
             </div>
           </CardContent>
         </ScrollArea>
-        <CardFooter className="mb-auto flex gap-2">
+        <CardFooter className="mt-auto flex gap-2">
           <Button
             type="submit"
             className=""

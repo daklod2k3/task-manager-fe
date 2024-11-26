@@ -112,36 +112,33 @@ export default function TaskComment({ task_id }: Props) {
         </form>
       </Form>
       <ToggleFilter onChange={() => console.log()} label="Created date" />
-      <ScrollArea className="flex-1">
-        <div className="space-y-4 pr-4">
-          {data?.length === 0 && (
-            <span className="text-muted-foreground">No comments found</span>
-          )}
-          {data?.map((item) => (
-            <div
-              key={item.id}
-              className="flex gap-2 rounded-lg bg-muted/50 p-3"
-            >
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
-                <span className="text-xs font-medium">{item.user.name[0]}</span>
-              </div>
-              <div className="flex flex-1 flex-col gap-1">
-                <span className="flex items-center gap-2 font-semibold">
-                  <Badge className="bg-sky-500">{item.user.name}</Badge>
-                  <span className="text-sm font-normal text-muted-foreground">
-                    {new Date(item.created_at).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </span>
-                </span>
-                <span className="break-words">{item.comment}</span>
-              </div>
+      {/* <ScrollArea className="flex-1"> */}
+      <div className="flex max-h-full min-h-0 flex-col space-y-4 pr-4">
+        {data?.length === 0 && (
+          <span className="text-muted-foreground">No comments found</span>
+        )}
+        {data?.map((item) => (
+          <div key={item.id} className="flex gap-2 rounded-lg bg-muted/50 p-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+              <span className="text-xs font-medium">{item.user.name[0]}</span>
             </div>
-          ))}
-        </div>
-      </ScrollArea>
+            <div className="flex flex-1 flex-col gap-1">
+              <span className="flex items-center gap-2 font-semibold">
+                <Badge className="bg-sky-500">{item.user.name}</Badge>
+                <span className="text-sm font-normal text-muted-foreground">
+                  {new Date(item.created_at).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </span>
+              </span>
+              <span className="break-words">{item.comment}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      {/* </ScrollArea> */}
     </div>
   );
 }
