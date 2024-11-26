@@ -132,14 +132,15 @@ const Kanban = () => {
 
       if (!result.destination) return;
       const { source, destination } = result;
-      if (destination.droppableId == "Done") {
+      if (
+        destination.droppableId == "Done" ||
+        destination.droppableId == "In_Preview"
+      ) {
         toast({
-          title: "Task can't be moved to Done",
-          description:
-            "You must open detail and attach some file to mark as Done",
+          title: "Action can't be done",
+          description: "Please open task detail for this action",
           variant: "destructive",
         });
-
         return;
       }
 

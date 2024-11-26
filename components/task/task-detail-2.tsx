@@ -4,7 +4,12 @@ import { deleteTask, updateTask } from "@/action/Task";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -44,7 +49,12 @@ import Loading from "../Loading";
 import SearchSelect, { PeopleSearchItem } from "../search-select";
 import { AlertDialogTrigger } from "../ui/alert-dialog";
 import { Calendar } from "../ui/calendar";
-import { Dialog, DialogClose, DialogTrigger } from "../ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+} from "../ui/dialog";
 import {
   Form,
   FormControl,
@@ -54,6 +64,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { ScrollArea } from "../ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -61,12 +72,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import AddAssignee from "./add-assignee";
 import { createTaskSchema } from "./create-task";
 import { ColumnTitles } from "./kanban";
 import { PriorityColor } from "./task-card";
 import TaskComment from "./task-comment";
-import { default as TaskRequirePreview } from "./task-complete";
+import { PreviewFile, TaskRequirePreview } from "./task-complete";
 import { PriorityIcon } from "./utils";
 
 const updateTaskSchema = createTaskSchema.extend({
@@ -134,15 +146,6 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
 
   // console.log(form.formState.errors);
 
-  const addAssignee = (x) => {
-    if (assigneeSelect.filter((item) => item.id == x.id).length > 0) return;
-    setAssigneeSelect((prev) => [...prev, x]);
-  };
-
-  const removeAssignee = (x) => {
-    setAssigneeSelect((prev) => prev.filter((value) => value.id !== x.id));
-  };
-
   useEffect(() => {
     form.setValue(
       "task_users",
@@ -153,213 +156,221 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
   const deleteTaskSubmit = async () => {};
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} autoComplete="off">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <div className="flex items-center space-x-2">
-            <h1 className="text-xl font-semibold">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input defaultValue={item.title} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </h1>
-            <Badge
-              className={`rounded-full bg-${PriorityColor(item.priority)}`}
-            >
-              {item.priority}
-            </Badge>
-          </div>
-          <div className="flex items-center space-x-2">
-            <AlertButton
-              submitLabel="Delete"
-              description="This action cannot be undone. This will permanently delete task and remove data from servers."
-              onSubmit={async () => await deleteTask(item.id)}
-            >
-              <AlertDialogTrigger>
-                <Button size={"icon"}>
-                  <Trash2 size={18} />
-                </Button>
-              </AlertDialogTrigger>
-            </AlertButton>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={async () => {
-                try {
-                  const res = await navigator.clipboard.writeText(
-                    document.location.origin + "/task?task_id=" + item.id,
-                  );
-                  toast({
-                    title: "Copied to clipboard",
-                  });
-                } catch {
-                  toast({
-                    title: "Error",
-                    description: "Failed to copy",
-                    variant: "destructive",
-                  });
-                }
-              }}
-            >
-              <Share2 className="h-4 w-4" />
-            </Button>
-            <Button type="button" variant="ghost" size="icon">
-              <Edit className="h-4 w-4" />
-            </Button>
-            <DialogClose asChild>
-              <Button type="button" variant="ghost" size="icon">
-                <X className="h-4 w-4" />
-              </Button>
-            </DialogClose>
-          </div>
-        </CardHeader>
-        <CardContent className="grid gap-6 md:grid-cols-4">
-          <div className="flex flex-col space-y-6 md:col-span-2">
-            {/* <div className="flex space-x-4">
-              <Button variant="outline" size="sm" className="flex items-center">
-                <Paperclip className="mr-2 h-4 w-4" />
-                Attachments
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center">
-                <CheckSquare className="mr-2 h-4 w-4" />
-                Checklists
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center">
-                <MessageSquare className="mr-2 h-4 w-4" />
-                Comments
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center">
-                <FileText className="mr-2 h-4 w-4" />
-                PDF
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center">
-                <Mail className="mr-2 h-4 w-4" />
-                Email
-              </Button>
-            </div> */}
-
-            <div className="space-y-4">
-              <div className="space-y-1">
-                <Label className="font-semibold">Created by</Label>
-                {/* <Input
-                  disabled
-                  defaultValue={item.created_by_navigation?.name}
-                /> */}
-                {/* <div className="flex gap-2"> */}
-                {/* <Badge>{item.created_by_navigation?.name}</Badge> */}
-                <MyAvatar user={item.created_by_navigation} includeInfo />
-                {/* </div> */}
-              </div>
-
-              <FormField
-                control={form.control}
-                name="priority"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-bold">Priority</FormLabel>
-                    <FormControl>
-                      <Select
-                        {...field}
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                        }}
-                      >
-                        <SelectTrigger className="w-fit">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="High">
-                            <div className="flex items-center">
-                              <PriorityIcon priority={"high"} />
-                              <span>High</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="Medium">
-                            <div className="flex w-full items-center justify-between">
-                              <PriorityIcon priority={"medium"} />
-                              <span>Medium</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="Low">
-                            <div className="flex items-center">
-                              <PriorityIcon priority={"low"} />
-                              <span>Low</span>
-                            </div>
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="due_date"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel className="font-bold">Due date</FormLabel>
-                    <Popover modal>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground",
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="z-[100] w-auto p-0"
-                        align="start"
-                      >
-                        <Calendar
-                          mode="single"
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date < new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        autoComplete="off"
+        className="flex flex-1 flex-col"
+      >
+        <ScrollArea className="grid h-full min-h-0 w-full flex-1">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <div className="flex items-center space-x-2">
+              <h1 className="text-xl font-semibold">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input defaultValue={item.title} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </h1>
+              <Badge
+                className={`rounded-full bg-${PriorityColor(item.priority)}`}
+              >
+                {item.priority}
+              </Badge>
             </div>
+            <div className="flex items-center space-x-2">
+              <AlertButton
+                submitLabel="Delete"
+                description="This action cannot be undone. This will permanently delete task and remove data from servers."
+                onSubmit={async () => await deleteTask(item.id)}
+              >
+                <AlertDialogTrigger>
+                  <Button size={"icon"}>
+                    <Trash2 size={18} />
+                  </Button>
+                </AlertDialogTrigger>
+              </AlertButton>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={async () => {
+                  try {
+                    const res = await navigator.clipboard.writeText(
+                      document.location.origin + "/task?task_id=" + item.id,
+                    );
+                    toast({
+                      title: "Copied to clipboard",
+                    });
+                  } catch {
+                    toast({
+                      title: "Error",
+                      description: "Failed to copy",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+              >
+                <Share2 className="h-4 w-4" />
+              </Button>
+              <Button type="button" variant="ghost" size="icon">
+                <Edit className="h-4 w-4" />
+              </Button>
+              <DialogClose asChild>
+                <Button type="button" variant="ghost" size="icon">
+                  <X className="h-4 w-4" />
+                </Button>
+              </DialogClose>
+            </div>
+          </CardHeader>
+          <CardContent className="grid h-full min-h-0 grid-cols-3 gap-6">
+            <div className="grid min-h-0 flex-col space-y-6 md:col-span-2">
+              {/* <div className="flex space-x-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center"
+                >
+                  <Paperclip className="mr-2 h-4 w-4" />
+                  Attachments
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center"
+                >
+                  <CheckSquare className="mr-2 h-4 w-4" />
+                  Checklists
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center"
+                >
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  Comments
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center"
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  PDF
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center"
+                >
+                  <Mail className="mr-2 h-4 w-4" />
+                  Email
+                </Button>
+              </div> */}
 
-            <div className="flex-1 space-y-2">
-              <h2 className="mb-4 font-semibold">History</h2>
-              <div className="rounded-lg bg-muted/50 p-3">
-                <div className="flex items-center justify-between">
-                  <Badge
-                    className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
-                  >
-                    {item.status.replaceAll("_", " ")}
-                  </Badge>
-                  <span className="text-sm text-muted-foreground">Nov 22</span>
-                </div>
-                <p className="mt-2 text-sm text-muted-foreground">2 hours</p>
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="priority"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-bold">Priority</FormLabel>
+                      <FormControl>
+                        <Select
+                          {...field}
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                          }}
+                        >
+                          <SelectTrigger className="w-fit">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="High">
+                              <div className="flex items-center">
+                                <PriorityIcon priority={"high"} />
+                                <span>High</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="Medium">
+                              <div className="flex w-full items-center justify-between">
+                                <PriorityIcon priority={"medium"} />
+                                <span>Medium</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="Low">
+                              <div className="flex items-center">
+                                <PriorityIcon priority={"low"} />
+                                <span>Low</span>
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="due_date"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel className="font-bold">Due date</FormLabel>
+                      <Popover modal>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-[240px] pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground",
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="z-[100] w-auto p-0"
+                          align="start"
+                        >
+                          <Calendar
+                            mode="single"
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date < new Date() || date < new Date("1900-01-01")
+                            }
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-              {/* <div className="rounded-lg bg-muted/50 p-3">
+
+              <Tabs defaultValue="history" className="h-full flex-col">
+                <TabsList>
+                  <TabsTrigger value="history">History</TabsTrigger>
+                  <TabsTrigger value="comment">Comments</TabsTrigger>
+                </TabsList>
+                <TabsContent value="history" className="flex-1 space-y-2">
+                  <TaskComment task_id={item.id} />
+                </TabsContent>
+                {/* <div className="rounded-lg bg-muted/50 p-3">
                 <div className="flex items-center justify-between">
                   <Badge
                     className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
@@ -403,43 +414,57 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">2 hours</p>
               </div> */}
+              </Tabs>
             </div>
-          </div>
 
-          <div className="flex flex-1 flex-col space-y-6">
-            <div>
-              <div className="mb-4 flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Current phase
-                </span>
-                <Badge
-                  className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
-                >
-                  {item.status.replaceAll("_", " ")}
-                </Badge>
+            <div className="flex flex-1 flex-col space-y-6">
+              <div>
+                <div className="mb-4 flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    Current phase
+                  </span>
+                  <Badge
+                    className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
+                  >
+                    {item.status.replaceAll("_", " ")}
+                  </Badge>
+                </div>
+                <Separator />
               </div>
-              <Separator />
-            </div>
+              <div className="space-y-1">
+                <Label className="font-semibold">Reporter</Label>
+                {/* <Input
+                  disabled
+                  defaultValue={item.created_by_navigation?.name}
+                /> */}
+                {/* <div className="flex gap-2"> */}
+                {/* <Badge>{item.created_by_navigation?.name}</Badge> */}
+                <div className="flex w-fit items-center gap-2 rounded border p-2 px-4">
+                  <MyAvatar user={item.created_by_navigation} />
+                  {item.created_by_navigation?.name}
+                </div>
+                {/* </div> */}
+              </div>
 
-            {item.status != "Done" && (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  {item.status != "In_Preview" ? (
-                    <TaskRequirePreview task_id={item.id} />
-                  ) : (
-                    <TaskRequirePreview task_id={item.id} />
-                  )}
+              {item.status != "Done" && (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    {item.status != "In_preview" ? (
+                      <TaskRequirePreview task_id={item.id} />
+                    ) : (
+                      <PreviewFile file_id={item.file_id} />
+                    )}
 
-                  {/* <Button variant="ghost" className="w-full justify-between">
+                    {/* <Button variant="ghost" className="w-full justify-between">
                   Archived
                   <ChevronRight className="h-4 w-4" />
                 </Button> */}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            <div className="space-y-4">
-              {/* <h3 className="font-medium">Assignee</h3>
+              <div className="space-y-4">
+                {/* <h3 className="font-medium">Assignee</h3>
               <Button
                 type="button"
                 variant="ghost"
@@ -448,24 +473,24 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 <Plus className="mr-2 h-4 w-4" />
                 Add assignee
               </Button> */}
-              {/* <FormField
+                {/* <FormField
                 control={form.control}
                 render={({ field }) => ( */}
-              <FormItem>
-                <FormLabel>Assign to</FormLabel>
-                <FormControl>
-                  <AddAssignee
-                    task_id={item.id}
-                    task_user={item?.task_users || []}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-              {/* )} */}
-              {/* /> */}
-            </div>
+                <FormItem>
+                  <FormLabel>Assign to</FormLabel>
+                  <FormControl>
+                    <AddAssignee
+                      task_id={item.id}
+                      task_user={item?.task_users || []}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+                {/* )} */}
+                {/* /> */}
+              </div>
 
-            {/* <div className="space-y-4">
+              {/* <div className="space-y-4">
               <h3 className="font-medium">Activities</h3>
               <div className="flex gap-2">
                 <MyAvatar className="h-8 w-8" />
@@ -475,24 +500,22 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 />
               </div>
             </div> */}
-          </div>
-          <TaskComment task_id={item.id} />
-          <div className="flex gap-2">
-            <Button
-              type="submit"
-              className=""
-              disabled={!form.formState.isDirty || saveLoading}
-            >
-              Save
-              {saveLoading && (
-                <Loader2 className="ml-2 animate-spin" size={14} />
-              )}
-            </Button>
-            <Button variant="ghost" type="reset" onClick={() => form.reset()}>
-              Reset
-            </Button>
-          </div>
-        </CardContent>
+            </div>
+          </CardContent>
+        </ScrollArea>
+        <CardFooter className="mb-auto flex gap-2">
+          <Button
+            type="submit"
+            className=""
+            disabled={!form.formState.isDirty || saveLoading}
+          >
+            Save
+            {saveLoading && <Loader2 className="ml-2 animate-spin" size={14} />}
+          </Button>
+          <Button variant="ghost" type="reset" onClick={() => form.reset()}>
+            Reset
+          </Button>
+        </CardFooter>
       </form>
     </Form>
   );

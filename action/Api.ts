@@ -17,6 +17,7 @@ export const enum ApiRoutes {
   TaskUser = "/taskUser",
   TaskComment = "/taskComment",
   TaskComplete = "/taskComplete",
+  File = "/file",
 }
 
 export interface GetProps {
@@ -28,7 +29,7 @@ export class ApiAuth {
   protected route;
   public baseUrl = baseUrl;
 
-  constructor(route?: ApiRoutes) {
+  constructor(route?: ApiRoutes | string) {
     this.token = getAccessToken();
     this.route = baseUrl + route;
   }

@@ -11,9 +11,13 @@ interface Props {
 export default function ToggleFilter({ onChange, label }: Props) {
   const [value, setValue] = useState(false);
   useEffect(() => onChange(value), [value, onChange]);
-  const iconClassName = `${label && "ml-2"}`;
+  const iconClassName = `${label && "ml-2"} w-4 h-4`;
   return (
-    <Button variant="ghost" className="w-fit" onClick={() => setValue(!value)}>
+    <Button
+      variant="outline"
+      className="w-fit"
+      onClick={() => setValue(!value)}
+    >
       {label}
       {value ? (
         <ArrowDownNarrowWide className={iconClassName} />
