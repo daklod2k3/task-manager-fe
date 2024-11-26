@@ -47,7 +47,7 @@ export default function LoadPeople(
         {showName && <span className="ml-2 text-sm font-medium">{person.name}</span>}
       </div>
       <div className="flex items-center justify-center">
-        {showPosition && 
+        {showPosition &&
         <Select>
           <SelectTrigger className="text-primary w-fit">
             <SelectValue placeholder={Owner} />

@@ -39,9 +39,9 @@ function AlertButton({
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dialogRef.current && !dialogRef.current.contains(event.target)) {
-        closeDialog();
-      }
+      // if (dialogRef.current && !dialogRef.current.contains(event.target)) {
+      //   closeDialog();
+      // }
     };
 
     if (isOpen) {

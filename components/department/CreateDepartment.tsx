@@ -54,7 +54,7 @@ import { Tables } from "@/entity/database.types";
 
 export default function CreateDepartment() {
   const [open, setOpen] = useState(false);
-  const {departmentFetch} = useDepartmentContext();
+  const {departmentAllFetch} = useDepartmentContext();
   const {toast} = useToast();
   const { data: peoples, isLoading: peopleLoading } = usePeople();
   const [assigneeSelect, setAssigneeSelect] = useState<Tables<"profiles">[]>([]);
@@ -106,7 +106,7 @@ export default function CreateDepartment() {
           const res = await addDepartmentUser(deptUser);
         })
         
-        departmentFetch.mutate();
+        departmentAllFetch.mutate();
         toast({
           description: "successfully add department",
         })
@@ -170,10 +170,9 @@ export default function CreateDepartment() {
                       ))}
                     </div>
                     <SearchSelect
-                      disable
                       isLoading={peopleLoading}
                       placeholder="Add members"
-                      ItemRender={PeopleSearchItem}
+                      // ItemRender={PeopleSearchItem}
                       modal={true}
                       onSelectedValueChange={(x) => {
                         console.log("click");

@@ -220,12 +220,12 @@ export default function TableDepartment() {
                           ? dept.task_departments.map((task, idx) => (
                               <React.Fragment key={task.task_id}>
                                 {idx !== 0 && <span className="text-xl h-[40px] mx-0.5">,</span>}
-                                <LoadTask 
+                                {/* <LoadTask 
                                   className="w-fit truncate" 
                                   showLoading={idx < 0} 
                                   id={task.task_id} 
                                   showName={true && idx < 5} 
-                                />
+                                /> */}
                               </React.Fragment>
                             ))
                           : "Chưa có công việc"}

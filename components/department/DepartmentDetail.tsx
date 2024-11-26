@@ -27,7 +27,7 @@ import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import LoadTask from "./LoadTask";
-import AddPeopleForDept from "./AddPeopleForDept";
+// import AddPeopleForDept from "./AddPeopleForDept";
 
 interface SettingDepartmentProps {
     id: number;
@@ -105,7 +105,7 @@ export default function DepartmentDetail({ idDepartment }: { idDepartment: numbe
           <aside className="w-fit h-full p-4 bg-white border-r">
             <h1 className="text-xl font-bold mb-4">{deptName}</h1>
             <div className="flex items-center mb-4">
-              <AddPeopleForDept idDert={idDepartment}/>
+              {/* <AddPeopleForDept idDert={idDepartment}/> */}
               <div className="ml-2"></div>
               <SettingDepartment id={idDepartment} />
             </div>

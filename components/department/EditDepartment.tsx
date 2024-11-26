@@ -31,7 +31,7 @@ import {
 
 function EditDepartment({idDepartment}:{idDepartment:number}) {
   const [open, setOpen] = useState(false);
-  const {departmentFetch} = useDepartmentContext();
+  const {departmentAllFetch} = useDepartmentContext();
   const {toast} = useToast();
 
   const teamSchema = z.object({
@@ -59,7 +59,7 @@ function EditDepartment({idDepartment}:{idDepartment:number}) {
           }
         ];
         await updateDepartment(idDepartment, data);
-        departmentFetch.mutate();
+        departmentAllFetch.mutate();
         toast({
           description: "successfully add department",
         })
