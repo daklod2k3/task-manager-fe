@@ -168,7 +168,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
             </Badge>
           ))}
 
-          <div className="flex items-center space-x-2">
+          <div className="ml-auto flex items-center space-x-2">
             <AlertButton
               submitLabel="Delete"
               description="This action cannot be undone. This will permanently delete task and remove data from servers."
