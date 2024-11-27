@@ -159,78 +159,65 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
         autoComplete="off"
-        className="grid min-h-0 flex-1"
+        className="flex min-h-0 flex-1 flex-col"
       >
-        <ScrollArea className="grid h-full min-h-0 w-full flex-1">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <div className="flex items-center space-x-2">
-              <h1 className="text-xl font-semibold">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input defaultValue={item.title} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </h1>
-              <Badge
-                className={`rounded-full bg-${PriorityColor(item.priority)}`}
-              >
-                {item.priority}
-              </Badge>
-            </div>
-            <div className="flex items-center space-x-2">
-              <AlertButton
-                submitLabel="Delete"
-                description="This action cannot be undone. This will permanently delete task and remove data from servers."
-                onSubmit={async () => await deleteTask(item.id)}
-              >
-                <AlertDialogTrigger>
-                  <Button size={"icon"}>
-                    <Trash2 size={18} />
-                  </Button>
-                </AlertDialogTrigger>
-              </AlertButton>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={async () => {
-                  try {
-                    const res = await navigator.clipboard.writeText(
-                      document.location.origin + "/task?task_id=" + item.id,
-                    );
-                    toast({
-                      title: "Copied to clipboard",
-                    });
-                  } catch {
-                    toast({
-                      title: "Error",
-                      description: "Failed to copy",
-                      variant: "destructive",
-                    });
-                  }
-                }}
-              >
-                <Share2 className="h-4 w-4" />
-              </Button>
-              <Button type="button" variant="ghost" size="icon">
-                <Edit className="h-4 w-4" />
-              </Button>
-              <DialogClose asChild>
-                <Button type="button" variant="ghost" size="icon">
-                  <X className="h-4 w-4" />
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+          {item.task_departments?.map((x) => (
+            <Badge className="w-fit" key={x.id}>
+              {x.department_id}
+            </Badge>
+          ))}
+
+          <div className="flex items-center space-x-2">
+            <AlertButton
+              submitLabel="Delete"
+              description="This action cannot be undone. This will permanently delete task and remove data from servers."
+              onSubmit={async () => await deleteTask(item.id)}
+            >
+              <AlertDialogTrigger>
+                <Button size={"icon"}>
+                  <Trash2 size={18} />
                 </Button>
-              </DialogClose>
-            </div>
-          </CardHeader>
-          <CardContent className="grid h-full min-h-0 grid-cols-3 gap-6 overflow-hidden">
-            <div className="grid h-full min-h-0 grid-rows-[auto,1fr] space-y-6 overflow-y-auto md:col-span-2">
+              </AlertDialogTrigger>
+            </AlertButton>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={async () => {
+                try {
+                  const res = await navigator.clipboard.writeText(
+                    document.location.origin + "/task?task_id=" + item.id,
+                  );
+                  toast({
+                    title: "Copied to clipboard",
+                  });
+                } catch {
+                  toast({
+                    title: "Error",
+                    description: "Failed to copy",
+                    variant: "destructive",
+                  });
+                }
+              }}
+            >
+              <Share2 className="h-4 w-4" />
+            </Button>
+            <Button type="button" variant="ghost" size="icon">
+              <Edit className="h-4 w-4" />
+            </Button>
+            <DialogClose asChild>
+              <Button type="button" variant="ghost" size="icon">
+                <X className="h-4 w-4" />
+              </Button>
+            </DialogClose>
+          </div>
+        </CardHeader>
+
+        <CardContent className="flex min-h-0">
+          {/* <ScrollArea className="min-h-0 w-full flex-1"> */}
+          <div className="grid min-h-0 w-full grid-cols-3 gap-6 overflow-hidden">
+            <div className="grid min-h-0 grid-rows-[auto,1fr] space-y-6 overflow-y-auto md:col-span-2">
               {/* <div className="flex space-x-4">
                 <Button
                   variant="outline"
@@ -275,6 +262,27 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
               </div> */}
 
               <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <h1 className="text-xl font-semibold">
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input defaultValue={item.title} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </h1>
+                  <Badge
+                    className={`rounded-full bg-${PriorityColor(item.priority)}`}
+                  >
+                    {item.priority}
+                  </Badge>
+                </div>
                 <FormField
                   control={form.control}
                   name="priority"
@@ -518,8 +526,9 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
               </div>
             </div> */}
             </div>
-          </CardContent>
-        </ScrollArea>
+          </div>
+          {/* </ScrollArea> */}
+        </CardContent>
         <CardFooter className="mt-auto flex gap-2">
           <Button
             type="submit"

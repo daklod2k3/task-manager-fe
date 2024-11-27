@@ -111,7 +111,9 @@ const Kanban = () => {
   const {
     taskFetch: { data: taskList, isLoading: taskLoading, mutate, error },
   } = useTaskContext();
-  const [columns, setColumns] = useState(dataToColumn(taskList || []));
+  const [columns, setColumns] = useState<ReturnType<typeof dataToColumn> | []>(
+    [],
+  );
 
   const [loading, setLoading] = useState(false);
 
@@ -126,90 +128,87 @@ const Kanban = () => {
     setLoading((l) => l && taskLoading);
   }, [taskLoading]);
 
-  const onDragEnd = useCallback(
-    async (result: any, columns: any, setColumn: any, setLoading: any) => {
-      // console.log(result, columns, setColumn);
+  const onDragEnd = async (
+    result: any,
+    columns: any,
+    setColumn: any,
+    setLoading: any,
+  ) => {
+    // console.log(result, columns, setColumn);
 
-      if (!result.destination) return;
-      const { source, destination } = result;
-      if (
-        destination.droppableId == "Done" ||
-        destination.droppableId == "In_Preview"
-      ) {
-        toast({
-          title: "Action can't be done",
-          description: "Please open task detail for this action",
-          variant: "destructive",
-        });
-        return;
-      }
+    if (!result.destination) return;
+    const { source, destination } = result;
+    if (
+      destination.droppableId == "Done" ||
+      destination.droppableId == "In_Preview"
+    ) {
+      toast({
+        title: "Action can't be done",
+        description: "Please open task detail for this action",
+        variant: "destructive",
+      });
+      return;
+    }
 
-      setLoading(true);
-      // updateTask()
-      // mutate(undefined, { revalidate: true });
-      if (source.droppableId !== destination.droppableId) {
-        const sourceColumn = columns[source.droppableId];
-        const destColumn = columns[destination.droppableId];
-        const sourceItems = [...sourceColumn.items];
-        const destItems = [...destColumn.items];
-        const [removed] = sourceItems.splice(source.index, 1);
+    setLoading(true);
+    // updateTask()
+    // mutate(undefined, { revalidate: true });
+    if (source.droppableId !== destination.droppableId) {
+      const sourceColumn = columns[source.droppableId];
+      const destColumn = columns[destination.droppableId];
+      const sourceItems = [...sourceColumn.items];
+      const destItems = [...destColumn.items];
+      const [removed] = sourceItems.splice(source.index, 1);
 
-        destItems.splice(destination.index, 0, removed);
+      destItems.splice(destination.index, 0, removed);
+      await setColumn({
+        ...columns,
+        [source.droppableId]: {
+          ...sourceColumn,
+          items: sourceItems,
+        },
+        [destination.droppableId]: {
+          ...destColumn,
+          items: sortData(destItems),
+        },
+      });
+
+      const result = await updateStatus(removed.id, destination.droppableId);
+      console.log(result);
+      if (result.status != 200) {
         await setColumn({
           ...columns,
-          [source.droppableId]: {
-            ...sourceColumn,
-            items: sourceItems,
-          },
-          [destination.droppableId]: {
-            ...destColumn,
-            items: sortData(destItems),
-          },
         });
-
-        const result = await updateStatus(removed.id, destination.droppableId);
-        console.log(result);
-        if (result.status != 200) {
-          await setColumn({
-            ...columns,
-          });
-        }
-        setLoading(false);
       }
-      //  else {
-      //   const column = columns[source.droppableId];
-      //   const copiedItems = [...column.items];
-      //   const [removed] = copiedItems.splice(source.index, 1);
-      //   copiedItems.splice(destination.index, 0, removed);
-      //   const result = await updateTask({
-      //     ...removed,
-      //     status: destination.droppableId,
-      //   });
-      //   if (!result) {
-      //     setLoading(false);
-      //   }
-      //   await setColumn({
-      //     ...columns,
-      //     [source.droppableId]: {
-      //       ...column,
-      //       items: sortData(copiedItems),
-      //     },
-      //   });
-      // }
-    },
-    [],
-  );
+      setLoading(false);
+    }
+    //  else {
+    //   const column = columns[source.droppableId];
+    //   const copiedItems = [...column.items];
+    //   const [removed] = copiedItems.splice(source.index, 1);
+    //   copiedItems.splice(destination.index, 0, removed);
+    //   const result = await updateTask({
+    //     ...removed,
+    //     status: destination.droppableId,
+    //   });
+    //   if (!result) {
+    //     setLoading(false);
+    //   }
+    //   await setColumn({
+    //     ...columns,
+    //     [source.droppableId]: {
+    //       ...column,
+    //       items: sortData(copiedItems),
+    //     },
+    //   });
+    // }
+  };
 
   if (taskList?.length == 0) return <span>No tasks found</span>;
 
   if (taskLoading) return <Loading />;
 
-  if (error)
-    toast({
-      title: "Can't load task",
-      description: error,
-      variant: "destructive",
-    });
+  if (error) return <span>{error.message}</span>;
 
   return (
     <>

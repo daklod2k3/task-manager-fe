@@ -48,9 +48,8 @@ export function TaskDialog() {
         // className="mx-auto flex max-h-[calc(100vh-10rem)] min-h-0 w-full max-w-7xl p-2"
         // className="m-2 mx-auto box- flex h-screen min-h-0 w-screen min-w-full"
         className={cn(
-          "flex flex-col p-3",
-          taskFetch &&
-            "h-full max-h-[calc(100vh-120px)] max-w-[calc(100vw-220px)]",
+          "flex flex-col p-1",
+          taskFetch && "h-full max-h-[calc(100vh-120px)] max-w-7xl",
         )}
       >
         {isLoading && <Loading />}

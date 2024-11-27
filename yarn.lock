@@ -718,9 +718,16 @@
     "@babel/runtime" "^7.13.10"
     "@radix-ui/react-compose-refs" "1.0.1"
 
-"@radix-ui/react-slot@1.1.0", "@radix-ui/react-slot@^1.1.0":
+"@radix-ui/react-slot@1.1.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@radix-ui/react-slot/-/react-slot-1.1.0.tgz"
+  integrity sha512-FUCf5XMfmW4dtYl69pdS4DbxKy8nj4M7SafBgPllysxmdachynNflAdp/gCsnYWNDnge6tI9onzMp5ARYc1KNw==
+  dependencies:
+    "@radix-ui/react-compose-refs" "1.1.0"
+
+"@radix-ui/react-slot@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-slot/-/react-slot-1.1.0.tgz#7c5e48c36ef5496d97b08f1357bb26ed7c714b84"
   integrity sha512-FUCf5XMfmW4dtYl69pdS4DbxKy8nj4M7SafBgPllysxmdachynNflAdp/gCsnYWNDnge6tI9onzMp5ARYc1KNw==
   dependencies:
     "@radix-ui/react-compose-refs" "1.1.0"
@@ -1544,7 +1551,7 @@ client-only@0.0.1, client-only@^0.0.1:
     "@supabase/supabase-js" "^2.46.1"
     "@types/uuid" "^10.0.0"
     class-variance-authority "^0.7.0"
-    client "file:../../../../Library/Caches/Yarn/v6/npm-client-0.1.0-9a99c1c9-e872-4940-a055-892c0be9e4cb-1732583544009/node_modules/client"
+    client "file:../../../../Library/Caches/Yarn/v6/npm-client-0.1.0-1d06d8ee-0f94-48a8-ad88-3684c790d463-1732697930032/node_modules/client"
     clsx "^2.1.1"
     cmdk "1.0.0"
     date-fns "^4.1.0"

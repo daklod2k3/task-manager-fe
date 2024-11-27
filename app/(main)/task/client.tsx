@@ -1,6 +1,7 @@
 "use client";
 
 import { Filter, FilterOperators, RootFilter } from "@/action/Api";
+import BuildBreadcrumb from "@/components/build-breadcrumb";
 import HoverInfo from "@/components/HoverInfo";
 import Loading from "@/components/Loading";
 import SearchSelect from "@/components/search-select";
@@ -63,20 +64,14 @@ const FormSchema = z.object({
   }),
 });
 
-export default function Client() {
-  // const { data, error, isLoading } = usePeople();
+interface Props {
+  department_id?: number;
+}
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      items: ["recents", "home"],
-    },
-  });
-
-  const { data: peoples, isLoading: peopleLoading } = usePeople();
+export default function ClientTask({ department_id }: Props) {
   const {
-    taskFilter: [filter, setFilter],
-    taskFetch: { isLoading, mutate },
+    taskFilter: [, setFilter],
+    taskFetch: { mutate },
   } = useTaskContext();
 
   const timeoutRef = useRef<NodeJS.Timeout>();
@@ -186,6 +181,7 @@ export default function Client() {
 
   return (
     <div className="flex max-h-full min-h-0 min-w-0 flex-col gap-5 p-4 pb-0 text-foreground">
+      <BuildBreadcrumb />
       <h1 className="text-lg font-bold">Your task</h1>
       <div className="flex w-full items-center gap-3">
         <SearchInput

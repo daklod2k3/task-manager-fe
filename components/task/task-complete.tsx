@@ -128,10 +128,10 @@ interface PreviewFileProps {
 
 export function PreviewFile({ file_id }: PreviewFileProps) {
   const [open, setOpen] = useState(false);
-  const { data: file } = useFile(file_id);
+  const { data: file, error } = useFile(open ? file_id : undefined);
 
   const onSubmit = () => {};
-  console.log(file?.type);
+  console.log(error);
 
   const renderPreview = useCallback((file: FileWithPreview) => {
     const className = "w-full h-auto max-h-[70vh] object-contain";
@@ -174,12 +174,11 @@ export function PreviewFile({ file_id }: PreviewFileProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          variant="outline"
           role="combobox"
-          className="h-10 w-full justify-between border-dashed border-purple-500 text-purple-500"
+          className="h-10 w-fit justify-between border-dashed bg-green-500 font-bold"
           type="button"
         >
-          Show preview
+          Preview for complete
           <ChevronRight />
         </Button>
       </DialogTrigger>
@@ -188,12 +187,19 @@ export function PreviewFile({ file_id }: PreviewFileProps) {
         <DialogHeader>
           <DialogTitle>Preview to complete task</DialogTitle>
         </DialogHeader>
+        {error && (
+          <span className="text-red-500">
+            {error.message || "Server error"}
+          </span>
+        )}
         {file &&
           renderPreview(
             Object.assign(file, { preview: URL.createObjectURL(file) }),
           )}
         <DialogFooter className="mt-auto">
-          <Button onClick={onSubmit}>Complete task</Button>
+          <Button onClick={onSubmit} className="bg-green-500">
+            Complete task
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -80,37 +80,6 @@ export default function TaskComment({ task_id }: Props) {
 
   return (
     <div className="grid min-h-0 flex-1 flex-col gap-2">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(send)} className="space-y-4">
-          <div className="flex w-full gap-2">
-            <FormField
-              control={form.control}
-              name="comment"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormControl>
-                    <Textarea
-                      onChange={field.onChange}
-                      placeholder="Write your comment..."
-                      className="flex-1"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* <MyAvatar className="h-8 w-8" /> */}
-            <Button
-              className="gap-1"
-              disabled={sendLoad}
-              type="button"
-              onClick={form.handleSubmit(send)}
-            >
-              Send {sendLoad && <Loader2 size={14} className="animate-spin" />}
-            </Button>
-          </div>
-        </form>
-      </Form>
       <ToggleFilter onChange={() => console.log()} label="Created date" />
       {/* <ScrollArea className="flex-1"> */}
       <div className="flex max-h-full min-h-0 flex-col space-y-4 pr-4">

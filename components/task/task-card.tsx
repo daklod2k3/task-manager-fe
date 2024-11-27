@@ -48,7 +48,7 @@ const TaskCard = ({ item, index }: { item: TaskEntity; index: number }) => {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           onClick={onClick}
-          className="mb-2 flex min-w-0 flex-col gap-2 rounded-sm bg-white p-3 text-sm text-[hsl(0,0%,3.9%)] hover:ring"
+          className="mb-2 flex min-w-0 flex-col gap-1 rounded border border-gray-300 bg-white p-3 text-sm text-[hsl(0,0%,3.9%)] hover:ring"
         >
           {/* <div className="mb-3 text-base font-bold">
             <p className="break-all">{item.title}</p>

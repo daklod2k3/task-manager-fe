@@ -14,14 +14,16 @@ const fetcher = async (path: string) => {
         "Bearer " + (await sp.auth.getSession()).data.session?.access_token,
     },
   });
-  if (!rs.ok) return;
+  if (!rs.ok) {
+    throw Error((await rs.json()).error);
+  }
   const blob = await rs.blob();
   return new File([blob], "preview", { type: blob.type });
 };
 
 export function useFile(id?: number) {
   const { data, error, isLoading, mutate } = useSWR(
-    ApiRoutes.File + "/" + id,
+    id ? ApiRoutes.File + "/" + id : null,
     fetcher,
     {
       revalidateOnMount: true,
