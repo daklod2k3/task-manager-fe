@@ -1,11 +1,11 @@
+"use client";
 import { DepartmentProvider } from "@/context/department-context";
-import React from "react";
-import Client from "./client";
+import ClientDept from '@/components/department/ClientDept'
 
 export default function Page() {
   return (
     <DepartmentProvider >
-      <Client />
+      <ClientDept />
     </DepartmentProvider>
   );
 }

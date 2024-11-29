@@ -1,68 +1,100 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from "react";
 import { usePeople } from "@/hooks/use-people";
-import Avatar from "@/components/Avatar";
-import Loading from '../Loading';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import MyAvatar from '@/components/Avatar';
+import { Button } from "@/components/ui/button"
+import { Trash2 } from 'lucide-react'
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Button } from "@/components/ui/button";
-import { X } from 'lucide-react';
+type DepartmentUser = {
+  id: number;
+  created_at: string;
+  department_id: number;
+  owner_type: string;
+  user_id: string;
+};
 
-export default function LoadPeople(
-  { id,Owner, className="", showName = false, showAvt = false, showPosition = false, showDelete=false, showLoading=true } : 
-  { id: string, onDetele?: (id?:number) => void, showDelete?:boolean, Owner?:string, className?:string, showName?: boolean, showAvt?: boolean, showPosition?: boolean,showLoading?: boolean}
-) {
-  const userFetch = usePeople();
-  const [person, setPerson] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+type LoadOwnerProps = {
+  showOwner: boolean;
+  departmentUsers: DepartmentUser[];
+};
+
+const LoadPeople: React.FC<LoadOwnerProps> = ({ departmentUsers, showOwner }) => {
+  const { data: people, isLoading } = usePeople();
+  const [userOwner, setUserOwner] = useState<any>(null);
+  const [userData, setUserData] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchPerson = async () => {
-      if (userFetch.data) {
-        const foundPerson = userFetch.data.find((p: any) => p.id === id);
-        setPerson(foundPerson || null);
-        setLoading(false); 
-      }
-    };
-    fetchPerson();
-  }, [userFetch.data, id]);
+    if (people && departmentUsers.length > 0) {
+      const ownerUser = departmentUsers
+        .filter((user) => user.owner_type === "Owner")
+        .map((user) => {
+          return people.find((person: any) => person.id === user.user_id);
+        })
+        .find((user) => user !== undefined); 
 
-  if (loading && showLoading) return <Loading/>;
-  if (loading && !showLoading) return;
-  if (!person) return <div>Không tìm thấy người dùng</div>;
+      setUserOwner(ownerUser || null);
+
+      const users = departmentUsers
+        .map((user) => {
+          return people.find((person: any) => person.id === user.user_id);
+        })
+        .filter((user) => user !== undefined);
+
+      setUserData(users || []); 
+    }
+  }, [people, departmentUsers]);
+
+  if (isLoading) {
+    return <div>Loading user details...</div>;
+  }
+
+  // Nếu không có owner
+  if (!userOwner) {
+    return <div>No owner</div>;
+  }
+
+  if (showOwner) {
+    return (
+      <span className="text-primary font-bold text-base capitalize">
+        {userOwner.name}
+      </span>
+    );
+  }
 
   return (
-    <div className={className}>
-      <div className="flex items-center justify-center">
-        {showAvt && <Avatar user={person} />}
-        {showName && <span className="ml-2 text-sm font-medium">{person.name}</span>}
-      </div>
-      <div className="flex items-center justify-center">
-        {showPosition &&
-        <Select>
-          <SelectTrigger className="text-primary w-fit">
-            <SelectValue placeholder={Owner} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Position</SelectLabel>
-              <SelectItem value="apple">owner</SelectItem>
-              <SelectItem value="banana">user</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        }
-        {showDelete && <Button className="ml-2"><X/></Button>}
-      </div>
+    <div>
+      {userData.length > 0 ? (
+        userData.map((user) => (
+          <li key={user.id} className="flex items-center justify-between bg-secondary/50 p-2 rounded-md">
+            <div className="flex items-center space-x-2">
+              <MyAvatar />
+              <span className="font-medium">{user.name}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Select
+                value={user.position}
+              >
+                <SelectTrigger className="w-[100px]">
+                  <SelectValue placeholder="Select position" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="member">Member</SelectItem>
+                  <SelectItem value="owner">Owner</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button variant="destructive" size="icon">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </li>
+        ))
+      ) : (
+        <span>No other users</span>
+      )}
     </div>
   );
-}
+};
+
+export default LoadPeople;

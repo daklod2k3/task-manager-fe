@@ -1,9 +1,16 @@
-"use client"; 
+"use client";
 import { createContext, useContext, ReactNode, useState } from "react";
-import {useAllDepartment} from "@/hooks/use-department";
+import { useAllDepartment, useDepartment } from "@/hooks/use-department";
+import { deleteDepartment, createDepartment, updateDepartment } from "@/action/Department";
+import { useToast } from "@/hooks/use-toast";
 
 interface IDepartmentContext {
-  departmentAllFetch: ReturnType<typeof useAllDepartment>;
+  deptAllFetch: ReturnType<typeof useAllDepartment>;
+  deptId: typeof useDepartment;
+  deleteDept: typeof deleteDepartment;
+  createDept: typeof createDepartment;
+  updateDept: typeof updateDepartment;
+  toast: ReturnType<typeof useToast>["toast"];
   mount: boolean;
   setMount: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -15,12 +22,21 @@ interface DepartmentProviderProps {
 }
 
 export function DepartmentProvider({ children }: DepartmentProviderProps) {
-  const departmentAllFetch = useAllDepartment();
+  const deptAllFetch = useAllDepartment();
+  const deptId = useDepartment;
+  const deleteDept = deleteDepartment;
+  const createDept = createDepartment;
+  const updateDept = updateDepartment;
+  const {toast} = useToast();
   const [mount, setMount] = useState(false);
-  
-  console.log(departmentAllFetch.data);
+
   const value = {
-    departmentAllFetch,
+    deptAllFetch,
+    deptId,
+    deleteDept,
+    createDept,
+    updateDept,
+    toast,
     mount,
     setMount,
   };

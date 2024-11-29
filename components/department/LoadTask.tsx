@@ -1,49 +1,50 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useTask,useAllTask } from "@/hooks/use-task";
-import Avatar from "@/components/Avatar";
-import Loading from '../Loading';
+import { useAllTask } from "@/hooks/use-task";
+import React, { useEffect, useState } from "react";
+import { Progress } from "@/components/ui/progress"
 
-export default function LoadTask(
-  { id, className="", showName = false, showDesc = false, showDoing = false,showIcon=false, showLoading=true } : 
-  { id: number, 
-    className?:string, 
-    showName?: boolean, 
-    showDesc?: boolean, 
-    showDoing?: boolean,
-    showIcon?: boolean,
-    showLoading?: boolean}
-) {
-  const taskFetch = useTask(id);
-  const [task, setTask] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+const LoadTask = ({ taskDepartments, showProgress= false, showPercent=false, showDetail=false }
+    :{
+        taskDepartments:any,
+        showProgress?:boolean,
+        showPercent?: boolean,
+        showDetail?: boolean
+    }) => {
+  const { data: tasks, isLoading } = useAllTask();
+  const [completedTaskCount, setCompletedTaskCount] = useState<number>(0);
+  const [total, setTotal] = useState<number>(0);
 
   useEffect(() => {
-    const fetchTask = async () => {
-      if (taskFetch.data) {
-        console.log(taskFetch.data)
-        setTask(taskFetch.data[0]);
-        setLoading(false);
-      }
-    };
-    fetchTask();
-  }, [taskFetch.data]);
+    if (tasks && taskDepartments.length > 0) {
+      // Lấy các task ids từ taskDepartments
+      const taskIds = taskDepartments.map((taskDepartment) => taskDepartment.task_id);
 
-  if (loading && showLoading) return <Loading/>;
-  if (loading && !showLoading) return;
-  if (!setTask) return <div>Không tìm thấy công việc</div>;
+      // Tính toán số lượng task đã hoàn thành
+      const completedTasks = tasks.filter(
+        (task: any) => taskIds.includes(task.id) && task.status === "Done"
+      );
+
+      // Cập nhật số lượng task đã hoàn thành vào state
+      setCompletedTaskCount(completedTasks.length);
+      setTotal(completedTasks.length/taskDepartments.length)
+    }
+  }, [tasks, taskDepartments]);
+
+  if (isLoading) {
+    return <div>Loading tasks...</div>; // Trả về loading nếu dữ liệu chưa tải xong
+  }
 
   return (
-    <div className={className}>
-        {showIcon && <div className="mr-3 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-            <span className="text-blue-600">📄</span>
-        </div>}
-        <div>
-          {showName && <p className="font-medium w-fit max-h-[20px] h-[20px]">{task.title}</p>}
-          {showDesc && task.description && <p className="text-sm text-gray-500">{task.description}</p>}
-        </div>
-        {showDoing && <h1 className="ml-2">| Complete: <span className="text-primary">100%</span></h1>}
-    </div>
+    <>
+    {showProgress && <Progress 
+                        value={total * 100} 
+                        className="h-2"
+                      />}
+    {showPercent && <span>{total * 100}% Complete</span>}
+    {showDetail && <span>{completedTaskCount}/{taskDepartments.length} tasks</span>}
+    </> 
   );
-}
+};
+
+export default LoadTask;

@@ -6,9 +6,9 @@ import useSWR from "swr";
 const fetcher = async (path: string) => {
   console.log(path);
 
-  const id = path.replace("/departmemt", "").split("/")[1];
+  const id = path.replace("/department", "").split("/")[1];
 
-  const search = new URLSearchParams(path.replace("/task", "").split("?")[1]);
+  const search = new URLSearchParams(path.replace("/department", "").split("?")[1]);
   console.log(search);
 
   const result = await getDepartment({ id: Number(id), search: search.toString() });
