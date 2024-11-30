@@ -48,6 +48,9 @@ const formDeptSchema = z.object({
 export default function FormCreateDept({onClose}:{onClose: () => void}) {
   const { data: peopleFetch, isLoading } = usePeople();
   const [peoples, setPeoples] = useState<Tables<"profiles">[]>([]);
+  const [peoplesNoOwner, setPeoplesNoOwner] = useState<Tables<"profiles">[]>([]);
+  const [peoplesHasOwner, setPeoplesHasOwner] = useState<Tables<"profiles">[]>([]);
+
   const {createDept,deptAllFetch,toast} = useDepartmentContext();
   const [deptMember, setDeptMember] = useState<Tables<"profiles">[]>([]);
 
@@ -61,18 +64,34 @@ export default function FormCreateDept({onClose}:{onClose: () => void}) {
     },
   });
 
+  const filterOwner = (id: string) => {
+    const filteredPeoples = peoples.filter(person => person.id !== id);
+    const filteredPeoplesHasOwner = filteredPeoples.filter(
+      person => !deptMember.some(member => member.id === person.id)
+    );
+  
+    console.log(filteredPeoplesHasOwner);
+    setPeoplesNoOwner(filteredPeoplesHasOwner);
+  };
+
   useEffect(() => {
     if(peopleFetch) {
       setPeoples(peopleFetch);
+      setPeoplesNoOwner(peopleFetch)
+      setPeoplesHasOwner(peopleFetch)
     }
   }, [peopleFetch]);
 
   const removeAssignee = (x) => {
+    setPeoplesHasOwner((prev) => [...prev, x])
+    setPeoplesNoOwner((prev) => [...prev, x])
     setDeptMember((prev) => prev.filter((value) => value.id !== x.id));
   };
 
   const addAssignee = (x) => {
     if (deptMember.filter((item) => item.id == x.id).length > 0) return;
+    setPeoplesHasOwner((prev) => prev.filter((value) => value.id !== x.id))
+    setPeoplesNoOwner((prev) => prev.filter((value) => value.id !== x.id))
     setDeptMember((prev) => [...prev, x]);
   };
 
@@ -120,6 +139,7 @@ export default function FormCreateDept({onClose}:{onClose: () => void}) {
                   onValueChange={(value) => {
                     const updatedMembers = field.value || [];
                     const newOwner = { user_id: value, owner_type: "owner" };
+                    filterOwner(newOwner.user_id)
                     field.onChange([...updatedMembers.filter((m) => m.owner_type !== "owner"), newOwner]);
                   }}
                   value={field.value?.find((m) => m.owner_type === "owner")?.user_id || ""}
@@ -130,7 +150,7 @@ export default function FormCreateDept({onClose}:{onClose: () => void}) {
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Members</SelectLabel>
-                      {peoples.map((item) => (
+                      {peoplesHasOwner.map((item) => (
                         <SelectItem key={item.id} value={item.id}>
                           <div className="flex w-full items-center">
                             <MyAvatar user={item}/>
@@ -175,7 +195,7 @@ export default function FormCreateDept({onClose}:{onClose: () => void}) {
                       onSelectedValueChange={(x) => {
                         addAssignee(x);
                       }}
-                      items={peopleToSearch(peoples || [])}
+                      items={peopleToSearch(peoplesNoOwner || [])}
                     />
                 </>
               </FormControl>
@@ -208,6 +228,7 @@ export default function FormCreateDept({onClose}:{onClose: () => void}) {
               const updatedUsers = [...currentUsers, ...newMembers];
 
               form.setValue("department_users", updatedUsers);
+              onClose();
             }}>Submit</Button>
           </div>
       </form>
