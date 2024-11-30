@@ -28,7 +28,8 @@ export async function updateTask(task: Tables<"tasks">) {
 export async function getTask({ id, search }: GetProps) {
   // console.log(id);
 
-  const includes = "TaskUsers.User,TaskDepartments,CreatedByNavigation";
+  const includes =
+    "TaskUsers.User,TaskDepartments.Department,CreatedByNavigation";
   const params = new URLSearchParams(search);
   params.append("includes", includes);
   // if (id) {

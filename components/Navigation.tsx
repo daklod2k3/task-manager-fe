@@ -8,6 +8,7 @@ import {
   ChevronDown,
   ChevronRight,
   ChevronUp,
+  ClipboardList,
   CreditCard,
   Home,
   Icon,
@@ -87,7 +88,7 @@ export function Navigation({}) {
         title="Home"
       />
       <NavigationButton
-        Icon={CalendarDays}
+        Icon={ClipboardList}
         base_path="/task"
         current_path={path}
         title="Task"

@@ -9,7 +9,6 @@ import SearchInput from "@/components/SearchInput";
 import CreateTaskDialog from "@/components/task/create-task";
 import Kanban from "@/components/task/kanban";
 import { TaskDialog } from "@/components/task/task-detail";
-import UserItem from "@/components/task/user-item";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 

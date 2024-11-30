@@ -45,7 +45,7 @@ export default function MyAvatar({
         )}
         {isLoading && <Loader2 className="animate-spin" />}
 
-        <AvatarFallback>{data?.name || "User not found"}</AvatarFallback>
+        <AvatarFallback>{data?.name}</AvatarFallback>
       </Avatar>
       {includeInfo && (
         <div className="grid gap-1 font-semibold text-primary">

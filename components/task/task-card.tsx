@@ -16,7 +16,6 @@ import {
 import MyAvatar from "../Avatar";
 import HoverInfo from "../HoverInfo";
 import { Badge } from "../ui/badge";
-import UserItem from "./user-item";
 import { DueDateRender, PriorityIcon } from "./utils";
 
 export const PriorityColor = (priority: string) => {

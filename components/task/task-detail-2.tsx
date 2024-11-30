@@ -22,7 +22,7 @@ import { useAllTask, useTask } from "@/hooks/use-task";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import {
   CalendarIcon,
   CheckSquare,
@@ -40,6 +40,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -47,6 +48,7 @@ import AlertButton from "../alert-button";
 import MyAvatar from "../Avatar";
 import Loading from "../Loading";
 import SearchSelect, { PeopleSearchItem } from "../search-select";
+import ToggleFilter from "../toggle-filter";
 import { AlertDialogTrigger } from "../ui/alert-dialog";
 import { Calendar } from "../ui/calendar";
 import {
@@ -74,7 +76,9 @@ import {
 } from "../ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import AddAssignee from "./add-assignee";
+import CommentInput from "./comment-input";
 import { createTaskSchema } from "./create-task";
+import DepartmentLink from "./department-info";
 import { ColumnTitles } from "./kanban";
 import { PriorityColor } from "./task-card";
 import TaskComment from "./task-comment";
@@ -112,6 +116,8 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
 
   // Component state
   const [saveLoading, setSaveLoading] = useState(false);
+
+  const [order, setOrder] = useState(true);
 
   const [assigneeSelect, setAssigneeSelect] = useState<Tables<"profiles">[]>(
     item.task_users?.map((x) => x.user || { id: x.user_id }) || [],
@@ -162,11 +168,33 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
         className="flex min-h-0 flex-1 flex-col"
       >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          {item.task_departments?.map((x) => (
-            <Badge className="w-fit" key={x.id}>
-              {x.department_id}
-            </Badge>
-          ))}
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center space-x-2">
+              <h1 className="text-xl font-semibold">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          className="text-2xl"
+                          defaultValue={item.title}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </h1>
+              <Badge
+                className={`rounded-full bg-${PriorityColor(item.priority)}`}
+              >
+                {item.priority}
+              </Badge>
+            </div>
+          </div>
 
           <div className="ml-auto flex items-center space-x-2">
             <AlertButton
@@ -215,10 +243,10 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
         </CardHeader>
 
         <CardContent className="flex min-h-0">
-          {/* <ScrollArea className="min-h-0 w-full flex-1"> */}
           <div className="grid min-h-0 w-full grid-cols-3 gap-6 overflow-hidden">
-            <div className="grid min-h-0 grid-rows-[auto,1fr] space-y-6 overflow-y-auto md:col-span-2">
-              {/* <div className="flex space-x-4">
+            <ScrollArea className="col-span-2 min-h-0 w-full">
+              <div className="grid min-h-0 grid-rows-[auto,1fr] space-y-6">
+                {/* <div className="flex space-x-4">
                 <Button
                   variant="outline"
                   size="sm"
@@ -261,8 +289,8 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 </Button>
               </div> */}
 
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2">
+                <div className="space-y-4">
+                  {/* <div className="flex items-center space-x-2">
                   <h1 className="text-xl font-semibold">
                     <FormField
                       control={form.control}
@@ -282,120 +310,130 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                   >
                     {item.priority}
                   </Badge>
+                </div> */}
+                  <FormField
+                    control={form.control}
+                    name="priority"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-bold">PRIORITY</FormLabel>
+                        <FormControl>
+                          <Select
+                            {...field}
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                            }}
+                          >
+                            <SelectTrigger className="w-fit">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="High">
+                                <div className="flex items-center">
+                                  <PriorityIcon priority={"high"} />
+                                  <span>High</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="Medium">
+                                <div className="flex w-full items-center justify-between">
+                                  <PriorityIcon priority={"medium"} />
+                                  <span>Medium</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="Low">
+                                <div className="flex items-center">
+                                  <PriorityIcon priority={"low"} />
+                                  <span>Low</span>
+                                </div>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="due_date"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel className="font-bold">DUE DATE</FormLabel>
+                        <Popover modal>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-[240px] pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground",
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="z-[100] w-auto p-0"
+                            align="start"
+                          >
+                            <Calendar
+                              mode="single"
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date < new Date() ||
+                                date < new Date("1900-01-01")
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
-                <FormField
-                  control={form.control}
-                  name="priority"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-bold">Priority</FormLabel>
-                      <FormControl>
-                        <Select
-                          {...field}
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                          }}
-                        >
-                          <SelectTrigger className="w-fit">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="High">
-                              <div className="flex items-center">
-                                <PriorityIcon priority={"high"} />
-                                <span>High</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="Medium">
-                              <div className="flex w-full items-center justify-between">
-                                <PriorityIcon priority={"medium"} />
-                                <span>Medium</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="Low">
-                              <div className="flex items-center">
-                                <PriorityIcon priority={"low"} />
-                                <span>Low</span>
-                              </div>
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="due_date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel className="font-bold">Due date</FormLabel>
-                      <Popover modal>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-[240px] pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground",
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="z-[100] w-auto p-0"
-                          align="start"
-                        >
-                          <Calendar
-                            mode="single"
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date < new Date() || date < new Date("1900-01-01")
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
 
-              <Tabs defaultValue="history" className="">
-                <TabsList>
-                  <TabsTrigger value="history">History</TabsTrigger>
-                  <TabsTrigger value="comment">Comments</TabsTrigger>
-                </TabsList>
-                <TabsContent value="history" className="space-y-2">
-                  <div className="rounded-lg bg-muted/50 p-3">
-                    <div className="flex items-center justify-between">
-                      <Badge
-                        className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
-                      >
-                        {item.status.replaceAll("_", " ")}
-                      </Badge>
-                      <span className="text-sm text-muted-foreground">
-                        Nov 22
-                      </span>
-                    </div>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      2 hours
-                    </p>
+                <CommentInput task_id={item.id} />
+
+                <Tabs defaultValue="history" className="min-h-0 w-full">
+                  <div className="flex">
+                    <TabsList>
+                      <TabsTrigger value="history">History</TabsTrigger>
+                      <TabsTrigger value="comment">Comments</TabsTrigger>
+                    </TabsList>
+                    <ToggleFilter
+                      className="ml-auto"
+                      onValueChange={setOrder}
+                      label={(order ? "Newest" : "Oldest") + " first"}
+                    />
                   </div>
-                </TabsContent>
-                <TabsContent value="comment" className="space-y-2">
-                  <TaskComment task_id={item.id} />
-                </TabsContent>
-                {/* <div className="rounded-lg bg-muted/50 p-3">
+                  <TabsContent value="history" className="space-y-2">
+                    <div className="rounded-lg bg-muted/50 p-3">
+                      <div className="flex items-center justify-between">
+                        <Badge
+                          className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
+                        >
+                          {item.status.replaceAll("_", " ")}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">
+                          Nov 22
+                        </span>
+                      </div>
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        2 hours
+                      </p>
+                    </div>
+                  </TabsContent>
+                  <TabsContent value="comment" className="min-h-0 space-y-2">
+                    <TaskComment task_id={item.id} />
+                  </TabsContent>
+                  {/* <div className="rounded-lg bg-muted/50 p-3">
                 <div className="flex items-center justify-between">
                   <Badge
                     className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
@@ -439,57 +477,72 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">2 hours</p>
               </div> */}
-              </Tabs>
-            </div>
-
-            <div className="flex flex-1 flex-col space-y-6">
-              <div>
-                <div className="mb-4 flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    Current phase
-                  </span>
-                  <Badge
-                    className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
-                  >
-                    {item.status.replaceAll("_", " ")}
-                  </Badge>
-                </div>
-                <Separator />
+                </Tabs>
               </div>
-              <div className="space-y-1">
-                <Label className="font-semibold">Reporter</Label>
-                {/* <Input
+            </ScrollArea>
+
+            <ScrollArea className="min-h-0">
+              <div className="flex flex-1 flex-col space-y-6">
+                <div>
+                  <div className="mb-4 flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      Current phase
+                    </span>
+                    <Badge
+                      className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
+                    >
+                      {item.status.replaceAll("_", " ")}
+                    </Badge>
+                  </div>
+                  <Separator />
+                </div>
+                <div className="space-y-1">
+                  <Label className="font-semibold">DEPARTMENT REPORTER</Label>
+                  {/* <Input
                   disabled
                   defaultValue={item.created_by_navigation?.name}
                 /> */}
-                {/* <div className="flex gap-2"> */}
-                {/* <Badge>{item.created_by_navigation?.name}</Badge> */}
-                <div className="flex w-fit items-center gap-2 rounded border p-2 px-4">
-                  <MyAvatar user={item.created_by_navigation} />
-                  {item.created_by_navigation?.name}
-                </div>
-                {/* </div> */}
-              </div>
-
-              {item.status != "Done" && (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    {item.status != "In_preview" ? (
-                      <TaskRequirePreview task_id={item.id} />
-                    ) : (
-                      <PreviewFile file_id={item.file_id} />
+                  {/* <div className="flex gap-2"> */}
+                  {/* <Badge>{item.created_by_navigation?.name}</Badge> */}
+                  <div className="flex flex-wrap gap-2">
+                    {(!item.task_departments ||
+                      item.task_departments.length < 1) && (
+                      <span className="text-muted-foreground">
+                        Not assigned
+                      </span>
                     )}
+                    {item.task_departments &&
+                      item.task_departments.map((td) => {
+                        return (
+                          <DepartmentLink
+                            key={td.department_id}
+                            department_id={Number(td.department_id)}
+                          />
+                        );
+                      })}
+                  </div>
+                  {/* </div> */}
+                </div>
 
-                    {/* <Button variant="ghost" className="w-full justify-between">
+                {item.status != "Done" && (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      {item.status != "In_preview" ? (
+                        <TaskRequirePreview task_id={item.id} />
+                      ) : (
+                        <PreviewFile file_id={item.file_id} />
+                      )}
+
+                      {/* <Button variant="ghost" className="w-full justify-between">
                   Archived
                   <ChevronRight className="h-4 w-4" />
                 </Button> */}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              <div className="space-y-4">
-                {/* <h3 className="font-medium">Assignee</h3>
+                <div className="space-y-4">
+                  {/* <h3 className="font-medium">Assignee</h3>
               <Button
                 type="button"
                 variant="ghost"
@@ -498,24 +551,24 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 <Plus className="mr-2 h-4 w-4" />
                 Add assignee
               </Button> */}
-                {/* <FormField
+                  {/* <FormField
                 control={form.control}
                 render={({ field }) => ( */}
-                <FormItem>
-                  <FormLabel>Assign to</FormLabel>
-                  <FormControl>
-                    <AddAssignee
-                      task_id={item.id}
-                      task_user={item?.task_users || []}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-                {/* )} */}
-                {/* /> */}
-              </div>
+                  <FormItem>
+                    <FormLabel>Assign to</FormLabel>
+                    <FormControl>
+                      <AddAssignee
+                        task_id={item.id}
+                        task_user={item?.task_users || []}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                  {/* )} */}
+                  {/* /> */}
+                </div>
 
-              {/* <div className="space-y-4">
+                {/* <div className="space-y-4">
               <h3 className="font-medium">Activities</h3>
               <div className="flex gap-2">
                 <MyAvatar className="h-8 w-8" />
@@ -525,9 +578,9 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 />
               </div>
             </div> */}
-            </div>
+              </div>
+            </ScrollArea>
           </div>
-          {/* </ScrollArea> */}
         </CardContent>
         <CardFooter className="mt-auto flex gap-2">
           <Button

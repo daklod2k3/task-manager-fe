@@ -6,7 +6,7 @@ export interface IApiResponse<T> {
   error: string;
 }
 
-const baseUrl = String(process.env.API_URL);
+const baseUrl = String(process.env.API_URL) || "/api";
 export const enum ApiRoutes {
   User = "/user",
   Task = "/task",
@@ -23,6 +23,7 @@ export const enum ApiRoutes {
 export interface GetProps {
   id?: number;
   search?: string;
+  includes?: string;
 }
 export class ApiAuth {
   public token;
@@ -34,9 +35,14 @@ export class ApiAuth {
     this.route = baseUrl + route;
   }
 
-  async get({ id, search }: GetProps) {
-    const path = id ? `${this.route}/${id}` : this.route;
-    return fetch(path + "?" + search, {
+  async get({ id, search, includes }: GetProps) {
+    let path = this.route + (id ? `/${id}` : "");
+    const params = new URLSearchParams(search);
+    if (includes) params.append("includes", includes);
+    if (search || params.size > 0) path += `?${params.toString()}`;
+    console.log(path);
+
+    return fetch(path, {
       headers: {
         Authorization: `Bearer ${await this.token}`,
       },

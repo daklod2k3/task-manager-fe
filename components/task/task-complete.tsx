@@ -178,7 +178,7 @@ export function PreviewFile({ file_id }: PreviewFileProps) {
           className="h-10 w-fit justify-between border-dashed bg-green-500 font-bold"
           type="button"
         >
-          Preview for complete
+          Preview complement
           <ChevronRight />
         </Button>
       </DialogTrigger>

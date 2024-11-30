@@ -1,7 +1,7 @@
 "use server";
 import { Tables } from "@/entity/database.types";
-import { ApiAuth, ApiRoutes, GetProps, IApiResponse } from "./Api";
 import { createClient } from "@/utils/supabase/server";
+import { ApiAuth, ApiRoutes, GetProps, IApiResponse } from "./Api";
 
 export async function createDepartment(department: Tables<"departments">) {
   try {
@@ -10,7 +10,7 @@ export async function createDepartment(department: Tables<"departments">) {
     return (await res.json()) as IApiResponse<Tables<"departments">>;
   } catch (e) {
     console.log(e);
-    throw Error()
+    throw Error();
   }
 }
 
@@ -21,7 +21,7 @@ export async function deleteDepartment(departmentId: number) {
     return (await res.json()) as IApiResponse<Tables<"departments">>;
   } catch (e) {
     console.log(e);
-    throw Error()
+    throw Error();
   }
 }
 
@@ -31,15 +31,12 @@ export async function updateDepartment(id: number, data: object) {
     return (await res.json()) as IApiResponse<Tables<"departments">>;
   } catch (e) {
     console.log(e);
-    throw Error()
+    throw Error();
   }
 }
 
-export async function getDepartment(id?: number) {
-  const supabase = createClient();
-  let filter = supabase.from("departments").select();
-  if (id) filter = filter.eq("id", id);
-  return filter;
+export async function getDepartment(props: GetProps) {
+  return (await new ApiAuth(ApiRoutes.Department).get(props)).json();
 }
 
 export async function getUserByDepartment(departmentId?: number) {
