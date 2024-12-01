@@ -3,36 +3,42 @@
 import { useAllTask } from "@/hooks/use-task";
 import React, { useEffect, useState } from "react";
 import { Progress } from "@/components/ui/progress"
+import { Pencil, Plus, Trash2, ArrowLeft, Users, Briefcase, CheckCircle, AlertCircle, UserPlus } from 'lucide-react'
 
-const LoadTask = ({ taskDepartments, showProgress= false, showPercent=false, showDetail=false }
+const LoadTask = ({ taskDepartments, showProgress= false, showPercent=false, showDetail=false, showOverView=false }
     :{
         taskDepartments:any,
         showProgress?:boolean,
         showPercent?: boolean,
-        showDetail?: boolean
+        showDetail?: boolean,
+        showOverView?: boolean,
     }) => {
   const { data: tasks, isLoading } = useAllTask();
   const [completedTaskCount, setCompletedTaskCount] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
+  const [taskData, setTaskData] = useState<any[]>([]);
 
   useEffect(() => {
     if (tasks && taskDepartments.length > 0) {
-      // Lấy các task ids từ taskDepartments
       const taskIds = taskDepartments.map((taskDepartment) => taskDepartment.task_id);
 
-      // Tính toán số lượng task đã hoàn thành
       const completedTasks = tasks.filter(
         (task: any) => taskIds.includes(task.id) && task.status === "Done"
       );
 
-      // Cập nhật số lượng task đã hoàn thành vào state
+      const filteredTasks = tasks.filter((task) =>
+        taskDepartments.some((taskDept) => taskDept.task_id === task.id)
+      );
+      console.log(filteredTasks)
+      setTaskData(filteredTasks)
+
       setCompletedTaskCount(completedTasks.length);
       setTotal(completedTasks.length/taskDepartments.length)
     }
   }, [tasks, taskDepartments]);
 
   if (isLoading) {
-    return <div>Loading tasks...</div>; // Trả về loading nếu dữ liệu chưa tải xong
+    return <div>Loading tasks...</div>;
   }
 
   return (
@@ -43,6 +49,23 @@ const LoadTask = ({ taskDepartments, showProgress= false, showPercent=false, sho
                       />}
     {showPercent && <span>{total * 100}% Complete</span>}
     {showDetail && <span>{completedTaskCount}/{taskDepartments.length} tasks</span>}
+    {showOverView && taskData.map((task) => (
+                      <li key={task.id} className="bg-secondary/50 p-3 rounded-md">
+                        <h4 className="font-semibold flex items-center">
+                          {task.progress === 100 ? (
+                            <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                          ) : (
+                            <AlertCircle className="mr-2 h-4 w-4 text-yellow-500" />
+                          )}
+                          {task.title}
+                        </h4>
+                        <p className="text-sm text-muted-foreground">{task.description}</p>
+                        <div className="flex items-center mt-2">
+                          <span className="ml-2 text-sm font-medium">Status: </span>
+                          <span className="ml-2 text-sm font-medium text-primary">{task.status}</span>
+                        </div>
+                      </li>
+                    ))}
     </> 
   );
 };

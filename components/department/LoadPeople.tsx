@@ -108,7 +108,6 @@ const LoadPeople: React.FC<LoadOwnerProps> = ({ departmentUsers, showOwner,setDe
         })
         .filter((user) => user !== undefined); 
         setUserData(users || []);
-        console.log(users)
     }
   }, [people, departmentUsers]);
 

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Pencil, Trash2, Users, Briefcase } from 'lucide-react'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useDepartmentContext } from "@/context/department-context"
-import LoadOwner from './LoadPeople'
+import LoadPeople from './LoadPeople'
 import LoadTask from './LoadTask'
 import AlertButton from '@/components/department/AlertButton'
 import { ToastAction } from '../ui/toast'
@@ -56,7 +56,7 @@ export function DepartmentList({ searchTerm }: {searchTerm:string}) {
       {depa.length === 0 ? (
         <p className="text-center text-muted-foreground">No departments found.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-6">
           {filteredDepartments.map(dept => (
           <div key={dept} className="group">
             <div className="p-6 bg-white rounded-xl shadow hover:shadow-md transition-all duration-200 border-l-4 border-l-blue-500 hover:border-green-500">
@@ -86,7 +86,7 @@ export function DepartmentList({ searchTerm }: {searchTerm:string}) {
                 <div className="flex items-center text-gray-600">
                   <span className="font-medium mr-2">Owner:</span>
                   <span className="text-gray-800">
-                    <LoadOwner showOwner={true} departmentUsers={dept.department_users} />
+                    <LoadPeople showOwner={true} departmentUsers={dept.department_users} />
                   </span>
                 </div>
                 <div className="flex items-center text-gray-600">

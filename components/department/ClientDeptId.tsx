@@ -8,14 +8,12 @@ import { useDepartment } from '@/hooks/use-department'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import LoadPeople from '@/components/department/LoadPeople'
 import { useDepartmentContext } from "@/context/department-context";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Pencil, Plus, Trash2, ArrowLeft, Users, Briefcase, CheckCircle, AlertCircle, UserPlus } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import MyAvatar from '@/components/Avatar';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Pencil, Plus, ArrowLeft, Users, Briefcase } from 'lucide-react'
 import { ToastAction } from '../ui/toast'
 import AddDeptUser from './AddDeptUser'
+import Link from 'next/link'
+import LoadTask from './LoadTask'
 
 export default function ClientDeptId({id}:{id:number}) {
   const router = useRouter()
@@ -23,12 +21,10 @@ export default function ClientDeptId({id}:{id:number}) {
   const [isEditingName, setIsEditingName] = useState(false)
   const [newName, setNewName] = useState<string>("")
   const [deptName, setDeptName] = useState<string>("")
-  const {data: departmentUserData, isLoading} = useDepartment(id)
+  const {data: departmentUserData} = useDepartment(id)
   const {deptAllFetch,toast,updateNameDept} = useDepartmentContext();
   const [deptUser, setDeptUser] = useState<any[]>([]);
   const [deptTask, setDeptTask] = useState<any[]>([]);
-  const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false)
-  const [selectedEmployees, setSelectedEmployees] = useState<any[]>([])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,7 +32,8 @@ export default function ClientDeptId({id}:{id:number}) {
         setDepartment(departmentUserData)
         setNewName(departmentUserData.name)
         setDeptName(departmentUserData.name)
-        setDeptTask(departmentUserData.task_departmemts)
+        console.log(departmentUserData.task_departments)
+        setDeptTask(departmentUserData.task_departments)
         setDeptUser(departmentUserData.department_users);
       }
     };
@@ -73,49 +70,6 @@ export default function ClientDeptId({id}:{id:number}) {
     }
   };
 
-  // const handleAddEmployees = () => {
-  //   setDepartment({
-  //     ...department,
-  //     employees: [...department.employees, ...selectedEmployees]
-  //   })
-  //   setSelectedEmployees([])
-  //   setIsAddEmployeeDialogOpen(false)
-  // }
-
-  // const handleDeleteEmployee = (id: number) => {
-  //   setDepartment({ ...department, employees: department.employees.filter(emp => emp.id !== id) })
-  // }
-
-  // const handleEmployeePositionChange = (employeeId: number, newPosition: 'member' | 'owner') => {
-  //   setDepartment({
-  //     ...department,
-  //     employees: department.employees.map(emp =>
-  //       emp.id === employeeId ? { ...emp, position: newPosition } : emp
-  //     ),
-  //   })
-  // }
-
-  // const handleAddTask = () => {
-  //   const newTask: Task = {
-  //     id: Date.now(),
-  //     name: 'New Task',
-  //     description: 'Task description',
-  //     progress: 0,
-  //   }
-  //   setDepartment({ ...department, tasks: [...department.tasks, newTask] })
-  // }
-
-  // const handleSelectEmployee = (employeeId: string) => {
-  //   const employee = allEmployees.find(emp => emp.id.toString() === employeeId)
-  //   if (employee && !selectedEmployees.some(e => e.id === employee.id)) {
-  //     setSelectedEmployees([...selectedEmployees, employee])
-  //   }
-  // }
-
-  // const handleRemoveSelectedEmployee = (id: number) => {
-  //   setSelectedEmployees(selectedEmployees.filter(emp => emp.id !== id))
-  // }
-
   return (
     <div className="w-full p-4">
       <Button variant="ghost" onClick={() => router.push('/department')} className="mb-4">
@@ -151,8 +105,8 @@ export default function ClientDeptId({id}:{id:number}) {
                 <Users className="h-4 w-4 text-blue-500" />
               </CardHeader>
               <CardContent>
-                <ScrollArea className="h-[400px]">
-                  <ul className="space-y-4 pr-4">
+                <ScrollArea className="h-[400px] mb-4">
+                  <ul className="space-y-4 pr-4 ">
                     <LoadPeople setDeptUser={setDeptUser} showOwner={false} departmentUsers={deptUser}/>
                   </ul>
                 </ScrollArea>
@@ -167,28 +121,14 @@ export default function ClientDeptId({id}:{id:number}) {
               <CardContent>
                 <ScrollArea className="h-[400px]">
                   <ul className="space-y-4 pr-4">
-                    {/* {department.tasks.map((task) => (
-                      <li key={task.id} className="bg-secondary/50 p-3 rounded-md">
-                        <h4 className="font-semibold flex items-center">
-                          {task.progress === 100 ? (
-                            <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
-                          ) : (
-                            <AlertCircle className="mr-2 h-4 w-4 text-yellow-500" />
-                          )}
-                          {task.name}
-                        </h4>
-                        <p className="text-sm text-muted-foreground">{task.description}</p>
-                        <div className="flex items-center mt-2">
-                          <span className="ml-2 text-sm font-medium">Status: </span>
-                          <span className="ml-2 text-sm font-medium text-primary">Done</span>
-                        </div>
-                      </li>
-                    ))} */}
+                    <LoadTask showOverView={true} taskDepartments={deptTask} />
                   </ul>
                 </ScrollArea>
-                {/* <Button onClick={handleAddTask} className="mt-4 w-full bg-green-500 hover:bg-green-600">
-                  <Plus className="mr-2 h-4 w-4" /> Add Task
-                </Button> */}
+                <Link href={`/task`}>
+                  <Button className="mt-4 w-full bg-green-500 hover:bg-green-600">
+                    <Plus className="mr-2 h-4 w-4" /> Add Task
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </div>
