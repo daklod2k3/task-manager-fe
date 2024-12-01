@@ -25,7 +25,23 @@ export async function deleteDepartmentUser(departmentUserId: number) {
   }
 }
 
-export async function updateDepartmentUser(id: number, data: object) {
+export async function updateDepartmentUser(departmentUser: Tables<"department_user">) {
+  try {
+    const res = await new ApiAuth(ApiRoutes.DepartmentUser).put(departmentUser);
+    return await res.json();
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export async function updateOwner(id: number, value: string) {
+  const data = [
+    {
+      op: "replace", 
+      path: "/ownerType", 
+      value: value,
+    }
+  ];
   try {
     const res = await new ApiAuth(ApiRoutes.DepartmentUser).patch(id, data);
     return (await res.json()) as IApiResponse<Tables<"department_user">>;

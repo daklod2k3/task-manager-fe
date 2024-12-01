@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useDepartment } from '@/hooks/use-department'
 import { ScrollArea } from "@/components/ui/scroll-area"
-import LoadOwner from '@/components/department/LoadPeople'
+import LoadPeople from '@/components/department/LoadPeople'
 import { useDepartmentContext } from "@/context/department-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -152,7 +152,7 @@ export default function ClientDeptId({id}:{id:number}) {
               <CardContent>
                 <ScrollArea className="h-[400px]">
                   <ul className="space-y-4 pr-4">
-                    <LoadOwner showOwner={false} departmentUsers={deptUser}/>
+                    <LoadPeople showOwner={false} departmentUsers={deptUser}/>
                   </ul>
                 </ScrollArea>
                 <Dialog open={isAddEmployeeDialogOpen} onOpenChange={setIsAddEmployeeDialogOpen}>

@@ -6,6 +6,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import MyAvatar from '@/components/Avatar';
 import { Button } from "@/components/ui/button"
 import { Trash2 } from 'lucide-react'
+import { ToastAction } from '../ui/toast'
+import { updateOwner,deleteDepartmentUser } from "@/action/DepartmentUser";
+import { useDepartmentContext } from "@/context/department-context";
+import AlertButton from "./AlertButton";
+import SelectPosition from "./SelectPosition";
 
 type DepartmentUser = {
   id: number;
@@ -22,8 +27,55 @@ type LoadOwnerProps = {
 
 const LoadPeople: React.FC<LoadOwnerProps> = ({ departmentUsers, showOwner }) => {
   const { data: people, isLoading } = usePeople();
+  const {deptAllFetch,toast} = useDepartmentContext();
   const [userOwner, setUserOwner] = useState<any>(null);
   const [userData, setUserData] = useState<any[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedValue, setSelectedValue] = useState<string>();
+
+  const HandleOwner = async (id:number, name:string) => {
+    try {
+      console.log(id, name);
+      const res = await updateOwner(id, name);
+      console.log(res)
+      deptAllFetch.mutate();
+      toast({
+        description: "successfully edit owner type",
+      })
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "add department error",
+        description: String(error),
+        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
+      })
+    }
+  }
+
+  const handleDeleteDeptUser = async (id:number) => {
+    try {
+      const res = await deleteDepartmentUser(id);
+      deptAllFetch.mutate();
+      toast({
+        description: "successfully delete",
+      })
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "add department error",
+        description: String(error),
+        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
+      })
+    }
+  }
+
+  const handleDeleteUi = (id: number) => {
+    setUserData((prev) => prev.filter((user) => user.id !== id));
+  };
+
+  const handleSelectChange = (value) => {
+    setSelectedValue(value);
+  };
 
   useEffect(() => {
     if (people && departmentUsers.length > 0) {
@@ -42,7 +94,8 @@ const LoadPeople: React.FC<LoadOwnerProps> = ({ departmentUsers, showOwner }) =>
           if (person) {
             
             return {
-              id: person.id,
+              id: user.id,
+              id_user: person.id,
               name: person.name,
               owner_type: user.owner_type, 
             };
@@ -75,30 +128,28 @@ const LoadPeople: React.FC<LoadOwnerProps> = ({ departmentUsers, showOwner }) =>
     <div>
       {userData.length > 0 ? (
         userData.map((user) => (
-          <li key={user.id} className="flex items-center justify-between bg-secondary/50 p-2 rounded-md">
+          <li key={user.id_user} className="flex items-center justify-between bg-secondary/50 p-2 rounded-md">
             <div className="flex items-center space-x-2">
               <MyAvatar />
               <span className="font-medium">{user.name}</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Select>
-                <SelectTrigger className="w-[100px]">
-                  <SelectValue placeholder={user.owner_type}/>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="member">Member</SelectItem>
-                  <SelectItem value="owner">Owner</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button variant="destructive" size="icon">
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              <SelectPosition user={user} HandleOwner={HandleOwner} />
+              <AlertButton title="delete user in department" onAction={() => {
+                  handleDeleteDeptUser(user.id)
+                  handleDeleteUi(user.id)
+                }}>
+                <Button variant="destructive" size="icon">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertButton>
             </div>
           </li>
         ))
       ) : (
         <span>No other users</span>
       )}
+      
     </div>
   );
 };
