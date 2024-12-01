@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext, ReactNode, useState } from "react";
 import { useAllDepartment, useDepartment } from "@/hooks/use-department";
-import { deleteDepartment, createDepartment, updateDepartment } from "@/action/Department";
+import { deleteDepartment, createDepartment, updateDepartment,updateName } from "@/action/Department";
 import { useToast } from "@/hooks/use-toast";
 
 interface IDepartmentContext {
@@ -10,6 +10,7 @@ interface IDepartmentContext {
   deleteDept: typeof deleteDepartment;
   createDept: typeof createDepartment;
   updateDept: typeof updateDepartment;
+  updateNameDept: typeof updateName;
   toast: ReturnType<typeof useToast>["toast"];
   mount: boolean;
   setMount: React.Dispatch<React.SetStateAction<boolean>>;
@@ -26,6 +27,7 @@ export function DepartmentProvider({ children }: DepartmentProviderProps) {
   const deptId = useDepartment;
   const deleteDept = deleteDepartment;
   const createDept = createDepartment;
+  const updateNameDept = updateName;
   const updateDept = updateDepartment;
   const {toast} = useToast();
   const [mount, setMount] = useState(false);
@@ -36,6 +38,7 @@ export function DepartmentProvider({ children }: DepartmentProviderProps) {
     deleteDept,
     createDept,
     updateDept,
+    updateNameDept,
     toast,
     mount,
     setMount,

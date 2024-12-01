@@ -24,7 +24,16 @@ export async function deleteDepartment(departmentId: number) {
   }
 }
 
-export async function updateDepartment(id: number, data: object) {
+export async function updateDepartment(department: Tables<"departments">) {
+  try {
+    const res = await new ApiAuth(ApiRoutes.Department).put(department);
+    return await res.json();
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export async function updateName(id: number, data: object) {
   try {
     const res = await new ApiAuth(ApiRoutes.Department).patch(id, data);
     return (await res.json()) as IApiResponse<Tables<"departments">>;

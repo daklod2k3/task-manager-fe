@@ -22,10 +22,11 @@ type DepartmentUser = {
 
 type LoadOwnerProps = {
   showOwner: boolean;
+  setDeptUser?: React.Dispatch<React.SetStateAction<any[]>>;
   departmentUsers: DepartmentUser[];
 };
 
-const LoadPeople: React.FC<LoadOwnerProps> = ({ departmentUsers, showOwner }) => {
+const LoadPeople: React.FC<LoadOwnerProps> = ({ departmentUsers, showOwner,setDeptUser }) => {
   const { data: people, isLoading } = usePeople();
   const {deptAllFetch,toast} = useDepartmentContext();
   const [userOwner, setUserOwner] = useState<any>(null);
@@ -71,6 +72,9 @@ const LoadPeople: React.FC<LoadOwnerProps> = ({ departmentUsers, showOwner }) =>
 
   const handleDeleteUi = (id: number) => {
     setUserData((prev) => prev.filter((user) => user.id !== id));
+    if(setDeptUser) {
+      setDeptUser((prev) => prev.filter((user) => user.id !== id));
+    }
   };
 
   const handleSelectChange = (value) => {

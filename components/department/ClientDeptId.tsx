@@ -15,15 +15,16 @@ import { Pencil, Plus, Trash2, ArrowLeft, Users, Briefcase, CheckCircle, AlertCi
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import MyAvatar from '@/components/Avatar';
 import { ToastAction } from '../ui/toast'
+import AddDeptUser from './AddDeptUser'
 
 export default function ClientDeptId({id}:{id:number}) {
   const router = useRouter()
   const [department, setDepartment] = useState<any[]>([])
   const [isEditingName, setIsEditingName] = useState(false)
-  const [newName, setNewName] = useState<string>()
-  const [deptName, setDeptName] = useState<string>()
+  const [newName, setNewName] = useState<string>("")
+  const [deptName, setDeptName] = useState<string>("")
   const {data: departmentUserData, isLoading} = useDepartment(id)
-  const {updateDept,deptAllFetch,toast} = useDepartmentContext();
+  const {deptAllFetch,toast,updateNameDept} = useDepartmentContext();
   const [deptUser, setDeptUser] = useState<any[]>([]);
   const [deptTask, setDeptTask] = useState<any[]>([]);
   const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false)
@@ -57,7 +58,7 @@ export default function ClientDeptId({id}:{id:number}) {
           value: newName,
         }
       ];
-      await updateDept(id, data);
+      await updateNameDept(id, data);
       deptAllFetch.mutate();
       toast({
         description: "successfully add department",
@@ -152,59 +153,10 @@ export default function ClientDeptId({id}:{id:number}) {
               <CardContent>
                 <ScrollArea className="h-[400px]">
                   <ul className="space-y-4 pr-4">
-                    <LoadPeople showOwner={false} departmentUsers={deptUser}/>
+                    <LoadPeople setDeptUser={setDeptUser} showOwner={false} departmentUsers={deptUser}/>
                   </ul>
                 </ScrollArea>
-                <Dialog open={isAddEmployeeDialogOpen} onOpenChange={setIsAddEmployeeDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button onClick={() => setIsAddEmployeeDialogOpen(true)} className="mt-4 w-full bg-blue-500 hover:bg-blue-600">
-                      <UserPlus className="mr-2 h-4 w-4" /> Add Employee
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Add Employees</DialogTitle>
-                    </DialogHeader>
-                    <div className="mt-4">
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select an employee" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {/* {department.map((employee) => (
-                              <SelectItem key={employee.id} value={employee.id.toString()}>
-                                {employee.name}
-                              </SelectItem>
-                            ))} */}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <ScrollArea className="h-[200px] mt-4">
-                      <div className="space-y-2">
-                        {selectedEmployees.map((employee) => (
-                          <Card key={employee.id} className="bg-secondary/50">
-                            <CardContent className="flex items-center justify-between p-2">
-                              <div className="flex items-center space-x-2">
-                                <Avatar>
-                                  <AvatarImage src={employee.avatar} alt={employee.name} />
-                                  <AvatarFallback>{employee.name.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <span className="font-medium">{employee.name}</span>
-                              </div>
-                              {/* <Button variant="ghost" size="icon" onClick={() => handleRemoveSelectedEmployee(employee.id)}>
-                                <Trash2 className="h-4 w-4 text-red-500" />
-                              </Button> */}
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                    <div className="flex justify-end space-x-2 mt-4">
-                      <Button variant="outline" onClick={() => setIsAddEmployeeDialogOpen(false)}>Cancel</Button>
-                      {/* <Button onClick={handleAddEmployees} disabled={selectedEmployees.length === 0}>Add Selected</Button> */}
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                <AddDeptUser setDeptUser={setDeptUser} idDept={id} nameDept={deptName} departmentUsers={deptUser}/>
               </CardContent>
             </Card>
             <Card className="border-l-4 border-l-green-500">
