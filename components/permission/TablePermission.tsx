@@ -60,25 +60,21 @@ export default function TablePermission() {
               <TableRow key={index} className="border-b last:border-b-0 hover:bg-muted/10">
                 <TableCell className="px-4 py-2">{permission.name}</TableCell>
                 <TableCell className="px-4 py-2 text-center">
-                  <Checkbox defaultChecked={permission.canView} />
+                  <Checkbox defaultChecked={permission.canView} disabled/>
                 </TableCell>
                 <TableCell className="px-4 py-2 text-center">
-                  <Checkbox defaultChecked={permission.canEdit} />
+                  <Checkbox defaultChecked={permission.canEdit} disabled/>
                 </TableCell>
                 <TableCell className="px-4 py-2 text-center">
-                  <Checkbox defaultChecked={permission.canCreate} />
+                  <Checkbox defaultChecked={permission.canCreate} disabled/>
                 </TableCell>
                 <TableCell className="px-4 py-2 text-center">
-                  <Checkbox defaultChecked={permission.canDelete} />
+                  <Checkbox defaultChecked={permission.canDelete} disabled/>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
-        <div className="flex justify-end space-x-2 pt-4">
-          <Button variant="outline">Xóa</Button>
-          <Button>Lưu</Button>
-        </div>
       </CardContent>
     </Card>
   )

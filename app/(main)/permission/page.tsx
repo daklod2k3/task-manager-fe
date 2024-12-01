@@ -1,8 +1,8 @@
 import React from "react";
-import Client from "./client";
+import ClientPermission from "@/components/permission/clientPermission";
 
 export default function Page() {
     return (
-        <Client />
+        <ClientPermission />
     );
 }

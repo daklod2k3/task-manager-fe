@@ -3,7 +3,7 @@ export default function NavPermission({onSwitch}:{onSwitch: (name:string) => voi
     <div className="w-64 border-r p-4 space-y-4">
       <div className="font-medium">Category</div>
       <nav className="space-y-2">
-        {["Role Management", "Administrator"].map(
+        {["Role Management", "Administrator", "Resoucre"].map(
           (item) => (
             <div
               key={item}
