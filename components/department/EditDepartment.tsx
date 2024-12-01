@@ -50,7 +50,6 @@ function EditDepartment({idDepartment}:{idDepartment:number}) {
 
     const onSubmit = async (formData) => {
       try {
-        console.log(formData.name)
         const data = [
           {
             op: "replace", 

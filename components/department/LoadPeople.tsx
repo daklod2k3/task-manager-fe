@@ -38,11 +38,20 @@ const LoadPeople: React.FC<LoadOwnerProps> = ({ departmentUsers, showOwner }) =>
 
       const users = departmentUsers
         .map((user) => {
-          return people.find((person: any) => person.id === user.user_id);
+          const person = people.find((person: any) => person.id === user.user_id);
+          if (person) {
+            
+            return {
+              id: person.id,
+              name: person.name,
+              owner_type: user.owner_type, 
+            };
+          }
+          return undefined;
         })
-        .filter((user) => user !== undefined);
-
-      setUserData(users || []); 
+        .filter((user) => user !== undefined); 
+        setUserData(users || []);
+        console.log(users)
     }
   }, [people, departmentUsers]);
 
@@ -50,7 +59,6 @@ const LoadPeople: React.FC<LoadOwnerProps> = ({ departmentUsers, showOwner }) =>
     return <div>Loading user details...</div>;
   }
 
-  // Nếu không có owner
   if (!userOwner) {
     return <div>No owner</div>;
   }
@@ -73,11 +81,9 @@ const LoadPeople: React.FC<LoadOwnerProps> = ({ departmentUsers, showOwner }) =>
               <span className="font-medium">{user.name}</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Select
-                value={user.position}
-              >
+              <Select>
                 <SelectTrigger className="w-[100px]">
-                  <SelectValue placeholder="Select position" />
+                  <SelectValue placeholder={user.owner_type}/>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="member">Member</SelectItem>
