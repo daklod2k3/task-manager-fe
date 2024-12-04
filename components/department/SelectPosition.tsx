@@ -22,7 +22,7 @@ const SelectPosition = ({ user, HandleOwner }) => {
       open={isSelectOpen}
       onOpenChange={(open) => setIsSelectOpen(open)}
     >
-      <SelectTrigger className="w-[100px]">
+      <SelectTrigger className="w-[100px] capitalize">
         <SelectValue placeholder={selectedValue} />
       </SelectTrigger>
       <SelectContent>

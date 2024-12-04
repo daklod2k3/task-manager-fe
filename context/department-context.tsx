@@ -12,6 +12,8 @@ interface IDepartmentContext {
   updateDept: typeof updateDepartment;
   updateNameDept: typeof updateName;
   toast: ReturnType<typeof useToast>["toast"];
+  deptDetail: any[];
+  setDeptDetail: React.Dispatch<React.SetStateAction<any[]>>;
   mount: boolean;
   setMount: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -29,6 +31,7 @@ export function DepartmentProvider({ children }: DepartmentProviderProps) {
   const createDept = createDepartment;
   const updateNameDept = updateName;
   const updateDept = updateDepartment;
+  const [deptDetail, setDeptDetail] = useState<any[]>([])
   const {toast} = useToast();
   const [mount, setMount] = useState(false);
 
@@ -39,6 +42,8 @@ export function DepartmentProvider({ children }: DepartmentProviderProps) {
     createDept,
     updateDept,
     updateNameDept,
+    deptDetail,
+    setDeptDetail,
     toast,
     mount,
     setMount,

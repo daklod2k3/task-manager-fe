@@ -115,7 +115,7 @@ const LoadPeople: React.FC<LoadOwnerProps> = ({ departmentUsers, showOwner,setDe
     return <div>Loading user details...</div>;
   }
 
-  if (!userOwner) {
+  if (!userOwner && showOwner) {
     return <div>No owner</div>;
   }
 

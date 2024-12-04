@@ -1,13 +1,6 @@
-import { useEffect,useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+'use client'
+
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Table,
   TableBody,
@@ -16,112 +9,144 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ChevronLeft, ChevronRight, Home, Plus, Settings } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { KeyRound, Trash2,Pencil } from 'lucide-react'
 import { usePeople } from "@/hooks/use-people"
+import { useEffect, useState } from "react"
 import { Tables } from "@/entity/database.types"
-import Avatar from "@/components/Avatar"
+import MyAvatar from "../Avatar"
 
-export default function UserPermission() {
-  const userFetch = usePeople();
-  const [users, setUsers] = useState<Tables<"profiles">[]>([]);
+interface User {
+  id: string
+  name: string
+  email: string
+  role: 'Super Admin' | 'Admin' | 'Contributor'
+  groups: string[]
+  status: 'Active' | 'Inactive'
+  avatarUrl: string
+}
+
+const users: User[] = [
+  {
+    id: '1',
+    name: 'Ian Chesnut',
+    email: 'ian.chesnut@gmail.com',
+    role: 'Super Admin',
+    groups: ['Falcons', 'Stallions'],
+    status: 'Active',
+    avatarUrl: '/placeholder.svg'
+  },
+  {
+    id: '2',
+    name: 'Zeki Mokharzada',
+    email: 'zeki@gmail.com',
+    role: 'Admin',
+    groups: ['Falcons', 'Stallions'],
+    status: 'Inactive',
+    avatarUrl: '/placeholder.svg'
+  },
+  // Add more users as needed
+]
+
+export default function UserTable() {
+  const {data:peopleFetch, isLoading} = usePeople();
+  const [peoples, setPeoples] = useState<Tables<"profiles">[]>([]);
 
   useEffect(() => {
-    if (userFetch.data) {
-      console.log(userFetch.data)
-      setUsers(userFetch.data);
+    if(peopleFetch) {
+      console.log(peopleFetch)
+      setPeoples(peopleFetch);
     }
-  }, [userFetch.data]);
+  }, [peopleFetch]);
 
   return (
-    <div className="w-full">
-      <header className="border-b">
-        <div className="flex h-16 items-center px-4 gap-4">
-          <h1 className="text-xl font-semibold">Administrator</h1>
+    <div className="w-full p-4">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-semibold">All Users</h1>
+          <Badge variant="secondary" className="rounded-full">{peoples.length}</Badge>
         </div>
-      </header>
-      <div className="p-4">
-        <div className="flex items-center mb-4">
-          {/* <div className="flex items-center gap-2">
-            Show
-            <Select defaultValue="10">
-              <SelectTrigger className="w-20">
-                <SelectValue placeholder="Entries" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="25">25</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-                <SelectItem value="100">100</SelectItem>
-              </SelectContent>
-            </Select>
-            entries
-          </div> */}
-          <div className="flex items-center gap-2">
-            Search:
-            <Input type="search" className="w-64" />
-          </div>
-        </div>
+        <Button>+ Add New User</Button>
+      </div>
+      <div className="border rounded-lg">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-12">
-                <Input type="checkbox" className="h-4 w-4" />
+                <Checkbox />
               </TableHead>
-              <TableHead>User ID</TableHead>
-              <TableHead>Fullname</TableHead>
-              <TableHead>Avatar</TableHead>
-              <TableHead>Bio</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead>NAME</TableHead>
+              <TableHead>ROLE</TableHead>
+              <TableHead>BIO</TableHead>
+              <TableHead>ACTIONS</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((user, idx) => (
-              idx <= 7 && (
+            {peoples.map((user) => (
               <TableRow key={user.id}>
                 <TableCell>
-                  <Input type="checkbox" className="h-4 w-4" />
+                  <Checkbox />
                 </TableCell>
-                <TableCell>{user.id}</TableCell>
-                <TableCell>{user.name}</TableCell>
                 <TableCell>
-                  <Avatar />
+                  <div className="flex items-center gap-3">
+                    <MyAvatar user={user}/>
+                    <div className="flex flex-col">
+                      <span className="font-medium">{user.name}</span>
+                    </div>
+                  </div>
                 </TableCell>
-                <TableCell>{user.bio || "không có"}</TableCell>
-                <TableCell>user</TableCell>
                 <TableCell>
-                  <div className="flex gap-2">
-                    <Button size="sm">
-                      Chỉnh sửa
+                  <Badge 
+                    variant={user.role_id === "1" ? 'secondary' : 'outline'}
+                    className="font-normal"
+                  >
+                    {user.role_id == "1" ? "User" : "Admin"}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                    <span className="text-sm">{user.bio || "không có"}</span>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Button size="icon">
+                      <KeyRound className="w-4 h-4" />
+                    </Button>
+                    <Button size="icon">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                    <Button size="icon">
+                      <Pencil className="w-4 h-4"/>
                     </Button>
                   </div>
                 </TableCell>
               </TableRow>
-            )))}
+            ))}
           </TableBody>
         </Table>
-        <div className="flex items-center justify-between mt-4">
-          <div className="text-sm text-muted-foreground">
-            Showing 1 to 7 of 1 entries
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" disabled>
-              <ChevronLeft className="h-4 w-4" />
-              Previous
-            </Button>
-            <Button size="sm">
-              1
-            </Button>
-            <Button size="sm">
-              2
-            </Button>
-            <Button variant="outline" size="sm" disabled>
-              Next
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
       </div>
+      {/* <div className="flex items-center justify-between px-2 py-4">
+        <Button variant="ghost" disabled>
+          Prev
+        </Button>
+        <div className="flex items-center gap-1">
+          <Button size="icon" className="w-8 h-8">
+            1
+          </Button>
+          {[2, 3, 4, 5].map((page) => (
+            <Button key={page} variant="ghost" size="icon" className="w-8 h-8">
+              {page}
+            </Button>
+          ))}
+          <Button variant="ghost" size="icon" className="w-8 h-8">
+            Next
+          </Button>
+        </div>
+        <div className="text-sm text-muted-foreground">
+          Showing 10 of 127
+        </div>
+      </div> */}
     </div>
   )
 }

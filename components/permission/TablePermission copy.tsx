@@ -21,7 +21,6 @@ import { deletePermission, deleteRole } from "@/action/Permission"
 import AlertButton from "../department/AlertButton"
 import { Trash2 } from 'lucide-react'
 import AddPermission from "./AddPermission"
-import EditPermission from "./EditPermission"
 
 
 export default function TablePermission() {
@@ -48,6 +47,10 @@ export default function TablePermission() {
       setRoleData(roleFetch)
     }
   }, [roleFetch])
+
+  const handleValueSelect = (id:number) => {
+
+  }
 
   const deleteRoleById = async (id: number) => {
     try {
@@ -122,8 +125,8 @@ export default function TablePermission() {
               <TableHead className="px-4 py-2 text-left">Permissions</TableHead>
               <TableHead className="px-4 py-2 text-left">Resource</TableHead>
               <TableHead className="px-4 py-2 text-center">View</TableHead>
-              <TableHead className="px-4 py-2 text-center">Create</TableHead>
-              <TableHead className="px-4 py-2 text-center">Update</TableHead>
+              <TableHead className="px-4 py-2 text-center">Edit</TableHead>
+              <TableHead className="px-4 py-2 text-center">Add</TableHead>
               <TableHead className="px-4 py-2 text-center">Delete</TableHead>
               <TableHead className="px-4 py-2 text-center">Action</TableHead>
             </TableRow>
@@ -137,29 +140,21 @@ export default function TablePermission() {
                   <Checkbox defaultChecked={permission.permissions[0].view} disabled/>
                 </TableCell>
                 <TableCell className="px-4 py-2 text-center">
-                  <Checkbox defaultChecked={permission.permissions[0].create} disabled/>
+                  <Checkbox defaultChecked={permission.permissions[0].update} disabled/>
                 </TableCell>
                 <TableCell className="px-4 py-2 text-center">
-                  <Checkbox defaultChecked={permission.permissions[0].update} disabled/>
+                  <Checkbox defaultChecked={permission.permissions[0].create} disabled/>
                 </TableCell>
                 <TableCell className="px-4 py-2 text-center">
                   <Checkbox defaultChecked={permission.permissions[0].delete} disabled/>
                 </TableCell>
                 <TableCell className="px-4 py-2 text-center">
-                  <EditPermission 
-                    mutate={() => {mutateResource()}}
-                    view={permission.permissions[0].view} 
-                    update={permission.permissions[0].update}
-                    create={permission.permissions[0].create}
-                    del={permission.permissions[0].delete}
-                    id={permission.permissions[0].id} 
-                  />
                 <AlertButton 
                   confirmButtonLabel="Delete Permission" 
                   title={`Do you want to delete Permission id ${permission.permissions[0].id}?`}
                   onAction={() => {deletePermissionById(permission.permissions[0].id)}}
                 >
-                  <Button className="ml-2">
+                  <Button>
                     Delete
                   </Button>
                 </AlertButton>

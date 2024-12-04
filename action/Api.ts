@@ -17,6 +17,9 @@ export const enum ApiRoutes {
   TaskUser = "/taskUser",
   TaskComment = "/taskComment",
   TaskComplete = "/taskComplete",
+  Permission = "/permission",
+  Role = "/role",
+  Resource = "/resource",
 }
 
 export interface GetProps {
