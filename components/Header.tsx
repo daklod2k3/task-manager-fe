@@ -18,8 +18,8 @@ import { Input } from "./ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 export default function Header() {
-  const { data: user, isLoading, error } = useUser();
-  const { toast } = useToast();
+  // const { data: user, isLoading, error } = useUser();
+  // const { toast } = useToast();
   // console.log(user);
 
   return (
@@ -27,7 +27,7 @@ export default function Header() {
       <div className="flex flex-1 justify-center">
         <SearchInput />
       </div>
-      {!isLoading && user && (
+      {/* {!isLoading && user && (
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center gap-2 rounded px-3 text-primary-foreground">
             <MyAvatar user={user} size={7} />
@@ -50,7 +50,7 @@ export default function Header() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )}
+      )} */}
     </div>
   );
 }

@@ -386,6 +386,7 @@ export type Database = {
           assigned_to_department: number;
           created_by_navigation?: Tables<"profiles">;
           title: string;
+          file_id: number;
         };
         Insert: {
           created_at?: string;
@@ -396,6 +397,7 @@ export type Database = {
           priority?: Database["public"]["Enums"]["TaskPriority"];
           status?: Database["public"]["Enums"]["TaskStatus"];
           title: string;
+          file_id: number;
         };
         Update: {
           created_at?: string;
@@ -405,6 +407,7 @@ export type Database = {
           id?: number;
           priority?: Database["public"]["Enums"]["TaskPriority"];
           status?: Database["public"]["Enums"]["TaskStatus"];
+          file_id?: number;
           title?: string;
         };
         Relationships: [
@@ -519,19 +522,12 @@ export type Database = {
       TaskPriority: "High" | "Medium" | "Low";
       TaskStatus:
         | "To_do"
-        | "In_Progress"
-        | "In_Preview"
-        | "In_Complete"
-        | "QA"
+        | "In_progress"
+        | "In_preview"
+        | "In_complete"
+        | "Qa"
         | "Done"
-        | "Archived"
-        | "to_do"
-        | "in_progress"
-        | "in_preview"
-        | "in_complete"
-        | "qa"
-        | "done"
-        | "archived";
+        | "Archived";
     };
     CompositeTypes: {
       [_ in never]: never;

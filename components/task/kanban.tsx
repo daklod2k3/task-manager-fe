@@ -1,4 +1,5 @@
 "use client";
+import { Filter } from "@/action/Api";
 import { updateStatus, updateTask } from "@/action/Task";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useTaskContext } from "@/context/task-context";
@@ -109,9 +110,21 @@ const sortData = (taskList: Tables<"tasks">[]) => {
 
 const Kanban = () => {
   const {
-    taskFetch: { data: taskList, isLoading: taskLoading, mutate, error },
+    taskFetch: useTask,
+    taskFilter: [filter],
   } = useTaskContext();
-  const [columns, setColumns] = useState(dataToColumn(taskList || []));
+  const [columns, setColumns] = useState<ReturnType<typeof dataToColumn> | []>(
+    [],
+  );
+
+  const [search, setSearch] = useState(new URLSearchParams());
+
+  const {
+    data: taskList,
+    isLoading: taskLoading,
+    mutate,
+    error,
+  } = useTask({ search: search.toString() });
 
   const [loading, setLoading] = useState(false);
 
@@ -126,89 +139,94 @@ const Kanban = () => {
     setLoading((l) => l && taskLoading);
   }, [taskLoading]);
 
-  const onDragEnd = useCallback(
-    async (result: any, columns: any, setColumn: any, setLoading: any) => {
-      // console.log(result, columns, setColumn);
+  useEffect(() => {
+    if (filter?.filter)
+      search.set("filter", JSON.stringify({ filters: [filter?.filter] }));
+    else search.delete("filter");
+    setSearch(search);
+    // console.log("mutate");
+  }, [filter, search, mutate]);
 
-      if (!result.destination) return;
-      const { source, destination } = result;
-      if (destination.droppableId == "Done") {
-        toast({
-          title: "Task can't be moved to Done",
-          description:
-            "You must open detail and attach some file to mark as Done",
-          variant: "destructive",
-        });
+  const onDragEnd = async (
+    result: any,
+    columns: any,
+    setColumn: any,
+    setLoading: any,
+  ) => {
+    // console.log(result, columns, setColumn);
 
-        return;
-      }
+    if (!result.destination) return;
+    const { source, destination } = result;
+    if (
+      destination.droppableId == "Done" ||
+      destination.droppableId == "In_Preview"
+    ) {
+      toast({
+        title: "Action can't be done",
+        description: "Please open task detail for this action",
+        variant: "destructive",
+      });
+      return;
+    }
 
-      setLoading(true);
-      // updateTask()
-      // mutate(undefined, { revalidate: true });
-      if (source.droppableId !== destination.droppableId) {
-        const sourceColumn = columns[source.droppableId];
-        const destColumn = columns[destination.droppableId];
-        const sourceItems = [...sourceColumn.items];
-        const destItems = [...destColumn.items];
-        const [removed] = sourceItems.splice(source.index, 1);
+    setLoading(true);
+    // updateTask()
+    // mutate(undefined, { revalidate: true });
+    if (source.droppableId !== destination.droppableId) {
+      const sourceColumn = columns[source.droppableId];
+      const destColumn = columns[destination.droppableId];
+      const sourceItems = [...sourceColumn.items];
+      const destItems = [...destColumn.items];
+      const [removed] = sourceItems.splice(source.index, 1);
 
-        destItems.splice(destination.index, 0, removed);
+      destItems.splice(destination.index, 0, removed);
+      await setColumn({
+        ...columns,
+        [source.droppableId]: {
+          ...sourceColumn,
+          items: sourceItems,
+        },
+        [destination.droppableId]: {
+          ...destColumn,
+          items: sortData(destItems),
+        },
+      });
+
+      const result = await updateStatus(removed.id, destination.droppableId);
+      console.log(result);
+      if (result.status != 200) {
         await setColumn({
           ...columns,
-          [source.droppableId]: {
-            ...sourceColumn,
-            items: sourceItems,
-          },
-          [destination.droppableId]: {
-            ...destColumn,
-            items: sortData(destItems),
-          },
         });
-
-        const result = await updateStatus(removed.id, destination.droppableId);
-        console.log(result);
-        if (result.status != 200) {
-          await setColumn({
-            ...columns,
-          });
-        }
-        setLoading(false);
       }
-      //  else {
-      //   const column = columns[source.droppableId];
-      //   const copiedItems = [...column.items];
-      //   const [removed] = copiedItems.splice(source.index, 1);
-      //   copiedItems.splice(destination.index, 0, removed);
-      //   const result = await updateTask({
-      //     ...removed,
-      //     status: destination.droppableId,
-      //   });
-      //   if (!result) {
-      //     setLoading(false);
-      //   }
-      //   await setColumn({
-      //     ...columns,
-      //     [source.droppableId]: {
-      //       ...column,
-      //       items: sortData(copiedItems),
-      //     },
-      //   });
-      // }
-    },
-    [],
-  );
-
-  if (taskList?.length == 0) return <span>No tasks found</span>;
+      setLoading(false);
+    }
+    //  else {
+    //   const column = columns[source.droppableId];
+    //   const copiedItems = [...column.items];
+    //   const [removed] = copiedItems.splice(source.index, 1);
+    //   copiedItems.splice(destination.index, 0, removed);
+    //   const result = await updateTask({
+    //     ...removed,
+    //     status: destination.droppableId,
+    //   });
+    //   if (!result) {
+    //     setLoading(false);
+    //   }
+    //   await setColumn({
+    //     ...columns,
+    //     [source.droppableId]: {
+    //       ...column,
+    //       items: sortData(copiedItems),
+    //     },
+    //   });
+    // }
+  };
 
   if (taskLoading) return <Loading />;
+  if (taskList?.length == 0 || !taskList) return <span>No tasks found</span>;
 
-  if (error)
-    toast({
-      title: "Can't load task",
-      description: error,
-      variant: "destructive",
-    });
+  if (error) return <span>{error.message}</span>;
 
   return (
     <>
@@ -222,7 +240,7 @@ const Kanban = () => {
         }}
       >
         <LoadingDialog open={loading} />
-        <ScrollArea className="grid">
+        <ScrollArea className="grid pb-3 pr-3">
           <div className="grid h-max w-max grid-flow-col gap-5">
             {Object.entries(columns).map(([columnId, column], index) => {
               return (

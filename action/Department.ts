@@ -1,5 +1,6 @@
 "use server";
 import { Tables } from "@/entity/database.types";
+import { createClient } from "@/utils/supabase/server";
 import { ApiAuth, ApiRoutes, GetProps, IApiResponse } from "./Api";
 
 export async function createDepartment(department: Tables<"departments">) {
@@ -9,7 +10,7 @@ export async function createDepartment(department: Tables<"departments">) {
     return (await res.json()) as IApiResponse<Tables<"departments">>;
   } catch (e) {
     console.log(e);
-    throw Error()
+    throw Error();
   }
 }
 
@@ -20,7 +21,7 @@ export async function deleteDepartment(departmentId: number) {
     return (await res.json()) as IApiResponse<Tables<"departments">>;
   } catch (e) {
     console.log(e);
-    throw Error()
+    throw Error();
   }
 }
 
@@ -39,7 +40,7 @@ export async function updateName(id: number, data: object) {
     return (await res.json()) as IApiResponse<Tables<"departments">>;
   } catch (e) {
     console.log(e);
-    throw Error()
+    throw Error();
   }
 }
 

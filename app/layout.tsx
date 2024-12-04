@@ -30,7 +30,7 @@ export default function RootLayout({
       <body
         className={cn(
           `${geistSans.variable} ${geistMono.variable} antialiased`,
-          "*:box-border"
+          "",
         )}
       >
         {children}

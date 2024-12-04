@@ -11,11 +11,15 @@ export const getTaskUser = async ({ id, search }: GetProps) => {
       id,
       search: params.toString(),
     });
-    return await res.json();
+    if (res instanceof Response) {
+      return await res.json();
+    } else {
+      return res;
+    }
   } catch (e) {
     console.log(e);
     return {
-      error: "Server error",
+      error: String(e),
     };
   }
 };
@@ -23,11 +27,15 @@ export const getTaskUser = async ({ id, search }: GetProps) => {
 export const addTaskUser = async (data: any) => {
   try {
     const res = await new ApiAuth(ApiRoutes.TaskUser).post(data);
-    return await res.json();
+    if (res instanceof Response) {
+      return await res.json();
+    } else {
+      return res;
+    }
   } catch (e) {
     console.log(e);
     return {
-      error: "Server error",
+      error: String(e),
     };
   }
 };
@@ -35,11 +43,15 @@ export const addTaskUser = async (data: any) => {
 export const updateTaskUser = async (data: any) => {
   try {
     const res = await new ApiAuth(ApiRoutes.TaskUser).put(data);
-    return await res.json();
+    if (res instanceof Response) {
+      return await res.json();
+    } else {
+      return res;
+    }
   } catch (e) {
     console.log(e);
     return {
-      error: "Server error",
+      error: String(e),
     };
   }
 };
@@ -47,11 +59,15 @@ export const updateTaskUser = async (data: any) => {
 export const deleteTaskUser = async (id: number) => {
   try {
     const res = await new ApiAuth(ApiRoutes.TaskUser).delete(id);
-    return await res.json();
+    if (res instanceof Response) {
+      return await res.json();
+    } else {
+      return res;
+    }
   } catch (e) {
     console.log(e);
     return {
-      error: "Server error",
+      error: String(e),
     };
   }
 };

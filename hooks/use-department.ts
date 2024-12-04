@@ -1,37 +1,35 @@
 "use client";
-import { getDepartment } from "@/action/Department";
 import { ApiRoutes } from "@/action/Api";
+import { Tables } from "@/database.types";
+import { useEffect } from "react";
 import useSWR from "swr";
+import { fetcher, useApiProps } from "./client-api";
+import { useToast } from "./use-toast";
 
-const fetcher = async (path: string) => {
-  const id = path.replace("/department", "").split("/")[1];
+export function useDepartment({ load = true, ...props }: useApiProps) {
+  const { toast } = useToast();
 
-  const search = new URLSearchParams(path.replace("/department", "").split("?")[1]);
-
-  const result = await getDepartment({ id: Number(id), search: search.toString() });
-  if (result.error) throw new Error(result.error);
-  if (id) return result.data;
-  return result.data;
-};
-
-export function useAllDepartment() {
   const { data, error, isLoading, mutate } = useSWR(
-    ApiRoutes.Department,
-    fetcher,
-    {
-      // revalidateOnMount: true,
-    },
-  );
-  return { data, error, isLoading, mutate };
-}
-
-export function useDepartment(id?: number) {
-  const { data, error, isLoading, mutate } = useSWR(
-    ApiRoutes.Department + "/" + id,
+    load
+      ? {
+          url: "/api" + ApiRoutes.Department,
+          arguments: props,
+        }
+      : null,
     fetcher,
     {
       revalidateOnMount: true,
     },
   );
-  return { data, error, isLoading, mutate };
+
+  useEffect(() => {
+    if (error)
+      toast({
+        title: "Fetch data error",
+        description: String(error),
+        variant: "destructive",
+      });
+  }, [error]);
+
+  return { data: data, error, isLoading, mutate };
 }

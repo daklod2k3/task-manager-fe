@@ -1,11 +1,20 @@
-import { completeTask } from "@/action/Task";
+import { markCompleteTask, markPreviewTask } from "@/action/Task";
+import { useTaskContext } from "@/context/task-context";
+import { useTask } from "@/hooks/use-task";
 import { useToast } from "@/hooks/use-toast";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useFile } from "@/hooks/useFile";
 import { ChevronRight } from "lucide-react";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { DropFileInput, FileFormData } from "../drop-file-input";
+import CSVViewer from "../csv-viewer";
+import DocxViewer from "../docx-viewer";
+import {
+  DropFileInput,
+  FileFormData,
+  FileWithPreview,
+} from "../drop-file-input";
+import ExcelViewer from "../excel-viewer";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -16,17 +25,24 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Form } from "../ui/form";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface Props {
   task_id: number;
 }
 
-export default function TaskRequirePreview({ task_id }: Props) {
+export function TaskRequirePreview({ task_id }: Props) {
   const form = useForm<FileFormData>({
     defaultValues: {
       files: [],
     },
   });
+
+  const { taskFetch: useTask } = useTaskContext();
+
+  const { mutate } = useTask({ id: task_id });
+
+  const [open, setOpen] = useState(false);
 
   const { toast } = useToast();
 
@@ -60,26 +76,28 @@ export default function TaskRequirePreview({ task_id }: Props) {
     //     });
     //   });
 
-    completeTask(task_id, data)
+    markPreviewTask(task_id, data)
       .then((res) => {
         console.log(res);
         toast({
           title: "Action success",
-          description: "Marked task as complete",
+          description: "Asked preview to complete",
         });
+        setOpen(false);
+        mutate();
       })
       .catch((e) => {
         console.log(e);
         toast({
           title: "Submit error",
-          description: "Server error",
+          description: String(e) || "Server error",
           variant: "destructive",
         });
       });
   });
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           variant="outline"
@@ -87,7 +105,7 @@ export default function TaskRequirePreview({ task_id }: Props) {
           className="h-10 w-full justify-between border-dashed border-purple-500 text-purple-500"
           type="button"
         >
-          Ask preview to complete
+          Upload preview
           <ChevronRight />
         </Button>
       </DialogTrigger>
@@ -99,11 +117,121 @@ export default function TaskRequirePreview({ task_id }: Props) {
             </DialogHeader>
             <DropFileInput form={form} />
             <DialogFooter>
-              <Button onClick={onSubmit}>Complete task</Button>
+              <Button onClick={onSubmit}>Submit preview</Button>
             </DialogFooter>
           </DialogContent>
         </form>
       </Form>
+    </Dialog>
+  );
+}
+
+interface PreviewFileProps {
+  file_id: number;
+  task_id: number;
+}
+
+export function PreviewFile({ file_id, task_id }: PreviewFileProps) {
+  const [open, setOpen] = useState(false);
+  const { data: file, error } = useFile(open ? file_id : undefined);
+  const { taskFetch: useTask } = useTaskContext();
+  const { mutate } = useTask({ id: task_id });
+  const { toast } = useToast();
+
+  const onSubmit = () => {
+    markCompleteTask(task_id)
+      .then((res) => {
+        console.log(res);
+        toast({
+          title: "Action success",
+          description: "Task completed",
+        });
+        setOpen(false);
+        mutate();
+      })
+      .catch((e) => {
+        console.log(e);
+        toast({
+          title: "Submit error",
+          description: String(e) || "Server error",
+          variant: "destructive",
+        });
+      });
+  };
+
+  const renderPreview = useCallback((file: FileWithPreview) => {
+    const className = "w-full h-auto max-h-[70vh] object-contain";
+
+    if (file.type.startsWith("image/")) {
+      return <img src={file.preview} alt={file.name} className={className} />;
+    } else if (file.type === "application/pdf") {
+      return (
+        <iframe
+          src={file.preview}
+          className="h-[70vh] w-full"
+          title={file.name}
+        />
+      );
+    } else if (file.type === "text/csv") {
+      return <CSVViewer file={file} />;
+    } else if (
+      file.type ===
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ) {
+      return <ExcelViewer file={file} />;
+    } else if (
+      file.type ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      return <DocxViewer file={file} />;
+    } else {
+      return (
+        <div className="flex h-full flex-col items-center justify-center">
+          <p className="mb-2 text-lg font-semibold">File Information</p>
+          <p>Name: {file.name}</p>
+          <p>Type: {file.type || "Unknown"}</p>
+          <p>Size: {(file.size / 1024).toFixed(2)} KB</p>
+        </div>
+      );
+    }
+  }, []);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          role="combobox"
+          className="h-10 w-fit justify-between border-dashed bg-green-500 font-bold"
+          type="button"
+        >
+          Preview complement
+          <ChevronRight />
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent className="flex h-[80vh] flex-col sm:max-w-[80vw]">
+        <DialogHeader>
+          <DialogTitle>Preview to complete task</DialogTitle>
+        </DialogHeader>
+        {error && (
+          <span className="text-red-500">
+            {error.message || "Server error"}
+          </span>
+        )}
+        <ScrollArea>
+          <div>
+            {file &&
+              renderPreview(
+                Object.assign(file, { preview: URL.createObjectURL(file) }),
+              )}
+          </div>
+        </ScrollArea>
+        <DialogFooter className="mt-auto">
+          <Button onClick={onSubmit} className="bg-green-500">
+            Complete task
+          </Button>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   );
 }

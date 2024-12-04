@@ -273,7 +273,7 @@ export function AuthForm({ isLogin = true }) {
           )} */}
         </div>
         <div className="mt-4 text-center text-sm">
-          {isLogin ? (
+          {/* {isLogin ? (
             <>
               <span className="text-black">Không có tài khoản? </span>
               <Link href="/register" className="underline">
@@ -287,7 +287,7 @@ export function AuthForm({ isLogin = true }) {
                 Đăng nhập
               </Link>
             </>
-          )}
+          )} */}
         </div>
       </form>
     </Card>

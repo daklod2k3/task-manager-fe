@@ -1,6 +1,7 @@
 "use client";
 
 import { Filter, FilterOperators, RootFilter } from "@/action/Api";
+import BuildBreadcrumb from "@/components/build-breadcrumb";
 import HoverInfo from "@/components/HoverInfo";
 import Loading from "@/components/Loading";
 import SearchSelect from "@/components/search-select";
@@ -8,8 +9,8 @@ import SearchInput from "@/components/SearchInput";
 import CreateTaskDialog from "@/components/task/create-task";
 import Kanban from "@/components/task/kanban";
 import { TaskDialog } from "@/components/task/task-detail";
-import UserItem from "@/components/task/user-item";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import {
@@ -25,7 +26,7 @@ import { Tables } from "@/entity/database.types";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, PlusCircle } from "lucide-react";
+import { Building, Plus, PlusCircle } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { string, z } from "zod";
@@ -57,27 +58,17 @@ import { string, z } from "zod";
 //   },
 // ] as const;
 
-const FormSchema = z.object({
-  items: z.array(z.string()).refine((value) => value.some((item) => item), {
-    message: "You have to select at least one item.",
-  }),
-});
+interface Props {
+  department_id?: string;
+}
 
-export default function Client() {
-  // const { data, error, isLoading } = usePeople();
-
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      items: ["recents", "home"],
-    },
-  });
-
-  const { data: peoples, isLoading: peopleLoading } = usePeople();
+export default function ClientTask({ department_id }: Props) {
   const {
-    taskFilter: [filter, setFilter],
-    taskFetch: { isLoading, mutate },
+    taskFilter: [, setFilter],
+    taskFetch: useTask,
   } = useTaskContext();
+
+  const { mutate } = useTask({ load: true });
 
   const timeoutRef = useRef<NodeJS.Timeout>();
 
@@ -186,7 +177,15 @@ export default function Client() {
 
   return (
     <div className="flex max-h-full min-h-0 min-w-0 flex-col gap-5 p-4 pb-0 text-foreground">
-      <h1 className="text-lg font-bold">Your task</h1>
+      <BuildBreadcrumb />
+      {!department_id ? (
+        <h1 className="text-lg font-bold">Your task</h1>
+      ) : (
+        <div className="flex items-center gap-2 border-l-2 border-blue-500 px-4 py-2">
+          <Building />
+          <h1 className="text-lg font-bold">DEPARTMENT TASK</h1>
+        </div>
+      )}
       <div className="flex w-full items-center gap-3">
         <SearchInput
           className="bg-white"

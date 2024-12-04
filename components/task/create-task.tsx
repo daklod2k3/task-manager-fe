@@ -71,8 +71,9 @@ export default function CreateTaskDialog({ children }) {
   const { toast } = useToast();
   const {
     taskDetail: [, setDetail],
-    taskFetch: { mutate },
+    taskFetch: useTask,
   } = useTaskContext();
+  const { mutate } = useTask({});
 
   const { data: peoples, isLoading: peopleLoading } = usePeople();
   const [assigneeSelect, setAssigneeSelect] = useState<Tables<"profiles">[]>(

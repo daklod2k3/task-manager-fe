@@ -1,11 +1,16 @@
 "use client";
-import { createContext, useContext, ReactNode, useState } from "react";
-import { useAllDepartment, useDepartment } from "@/hooks/use-department";
-import { deleteDepartment, createDepartment, updateDepartment,updateName } from "@/action/Department";
+import {
+  createDepartment,
+  deleteDepartment,
+  updateDepartment,
+  updateName,
+} from "@/action/Department";
+import { useDepartment } from "@/hooks/use-department";
 import { useToast } from "@/hooks/use-toast";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 interface IDepartmentContext {
-  deptAllFetch: ReturnType<typeof useAllDepartment>;
+  deptAllFetch: ReturnType<typeof useDepartment>;
   deptId: typeof useDepartment;
   deleteDept: typeof deleteDepartment;
   createDept: typeof createDepartment;
@@ -18,21 +23,25 @@ interface IDepartmentContext {
   setMount: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const DepartmentContext = createContext<IDepartmentContext | undefined>(undefined);
+export const DepartmentContext = createContext<IDepartmentContext | undefined>(
+  undefined,
+);
 
 interface DepartmentProviderProps {
   children: ReactNode;
 }
 
 export function DepartmentProvider({ children }: DepartmentProviderProps) {
-  const deptAllFetch = useAllDepartment();
+  const deptAllFetch = useDepartment({
+    includes: "department_users, task_departments",
+  });
   const deptId = useDepartment;
   const deleteDept = deleteDepartment;
   const createDept = createDepartment;
   const updateNameDept = updateName;
   const updateDept = updateDepartment;
-  const [deptDetail, setDeptDetail] = useState<any[]>([])
-  const {toast} = useToast();
+  const [deptDetail, setDeptDetail] = useState<any[]>([]);
+  const { toast } = useToast();
   const [mount, setMount] = useState(false);
 
   const value = {
@@ -49,7 +58,11 @@ export function DepartmentProvider({ children }: DepartmentProviderProps) {
     setMount,
   };
 
-  return <DepartmentContext.Provider value={value}>{children}</DepartmentContext.Provider>;
+  return (
+    <DepartmentContext.Provider value={value}>
+      {children}
+    </DepartmentContext.Provider>
+  );
 }
 
 export function useDepartmentContext() {

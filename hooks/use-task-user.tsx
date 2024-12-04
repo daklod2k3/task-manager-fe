@@ -1,7 +1,6 @@
 "use client";
 import { ApiRoutes } from "@/action/Api";
 import { getTaskUser } from "@/action/TaskUser";
-import { Tables } from "@/entity/database.types";
 import useSWR from "swr";
 
 const fetcher = async (path: string) => {

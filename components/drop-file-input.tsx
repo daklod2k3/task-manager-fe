@@ -14,12 +14,13 @@ import { Download, Eye, Plus, Upload, X } from "lucide-react";
 import dynamic from "next/dynamic";
 import React, { useCallback, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 const CSVViewer = dynamic(() => import("./csv-viewer"), { ssr: false });
 const ExcelViewer = dynamic(() => import("./excel-viewer"), { ssr: false });
 const DocxViewer = dynamic(() => import("./docx-viewer"), { ssr: false });
 
-interface FileWithPreview extends File {
+export interface FileWithPreview extends File {
   preview: string;
 }
 
@@ -58,7 +59,7 @@ export function DropFileInput({ form }: FileContentPreviewProps) {
           preview: URL.createObjectURL(file),
         }),
       );
-      setValue("files", [...files, ...newFiles]);
+      setValue("files", [...newFiles]);
       if (newFiles.length > 0) {
         setActiveTab(newFiles[0].name);
       }
@@ -150,7 +151,6 @@ export function DropFileInput({ form }: FileContentPreviewProps) {
             }}
             className="hidden"
             id="fileInput"
-            multiple
             accept={allowedFileTypes.join(",")}
           />
           <Label htmlFor="fileInput" className="cursor-pointer">
@@ -216,7 +216,12 @@ export function DropFileInput({ form }: FileContentPreviewProps) {
           </TabsList>
           {files.map((file, index) => (
             <TabsContent key={index} value={file.name} className="mt-4">
-              {renderPreview(file)}
+              <Card>
+                <CardHeader>
+                  <CardTitle>File Preview</CardTitle>
+                </CardHeader>
+                <CardContent>{renderPreview(file)}</CardContent>
+              </Card>
             </TabsContent>
           ))}
         </Tabs>

@@ -1,24 +1,38 @@
 "use client";
 import { Tables } from "@/entity/database.types";
 import { TaskEntity } from "@/entity/Entity";
-import { TaskFilter, useAllTask, useTask } from "@/hooks/use-task";
+import { TaskFilter, useTask } from "@/hooks/use-task";
+import useTaskFromDepartment from "@/hooks/use-task-from-department";
+import useTaskFromUser from "@/hooks/use-task-from-user";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface ITaskContext {
-  taskFetch: ReturnType<typeof useAllTask>;
+  taskFetch: typeof useTask;
   taskDetail: ReturnType<typeof useState<TaskEntity>>;
   taskFilter: ReturnType<typeof useState<TaskFilter>>;
   setDetail: (id?: number) => void;
 }
 
 export const TaskContext = createContext<ITaskContext | undefined>(undefined);
+const taskFetchFromType = {
+  department: useTaskFromDepartment,
+  user: useTaskFromUser,
+  all: useTask,
+};
 
-export function TaskProvider({ children }) {
+export function TaskProvider({
+  children,
+  type = "all",
+  department_id,
+}: {
+  children: React.ReactNode;
+  type: keyof typeof taskFetchFromType;
+  department_id?: number;
+}) {
   const taskDetail = useState<TaskEntity>();
   const taskFilter = useState<TaskFilter>();
-
-  const taskFetch = useAllTask(taskFilter[0]);
+  const taskFetch = taskFetchFromType[type];
 
   //
   const pathname = usePathname();
@@ -38,6 +52,8 @@ export function TaskProvider({ children }) {
 
     replace(`${pathname}?${params.toString()}`);
   };
+
+  console.log(taskFilter[0]?.filter);
 
   const value = {
     taskFetch,
