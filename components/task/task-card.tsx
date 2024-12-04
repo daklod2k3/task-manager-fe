@@ -5,7 +5,7 @@ import React from "react";
 
 import { useTaskContext } from "@/context/task-context";
 import { TaskEntity } from "@/entity/Entity";
-import { cn } from "@/lib/utils";
+import { cn, FormatTime } from "@/lib/utils";
 import {
   Building,
   CalendarClock,
@@ -23,7 +23,7 @@ export const PriorityColor = (priority: string) => {
     case "high":
       return "red-500";
     case "medium":
-      return "amber-500";
+      return "orange-400";
     case "low":
       return "green-500";
     default:
@@ -40,14 +40,19 @@ const TaskCard = ({ item, index }: { item: TaskEntity; index: number }) => {
   };
 
   return (
-    <Draggable key={item.id} draggableId={String(item.id)} index={index}>
+    <Draggable
+      key={item.id}
+      isDragDisabled={item.status == "In_preview" || item.status == "Done"}
+      draggableId={String(item.id)}
+      index={index}
+    >
       {(provided: any) => (
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           onClick={onClick}
-          className="mb-2 flex min-w-0 flex-col gap-1 rounded border border-gray-300 bg-white p-3 text-sm text-[hsl(0,0%,3.9%)] hover:ring"
+          className="mb-2 flex min-w-0 flex-col gap-1 rounded bg-white p-3 text-sm text-[hsl(0,0%,3.9%)] hover:ring"
         >
           {/* <div className="mb-3 text-base font-bold">
             <p className="break-all">{item.title}</p>
@@ -65,18 +70,21 @@ const TaskCard = ({ item, index }: { item: TaskEntity; index: number }) => {
             </div>
           </div> */}
           <Badge
-            variant={"outline"}
-            className={`w-fit rounded-none px-2 text-white border-${PriorityColor(item.priority)} bg-${PriorityColor(item.priority)}/20 rounded-full text-${PriorityColor(item.priority)} group`}
+            className={`w-fit rounded-none px-2 text-white bg-${PriorityColor(item.priority)} group text-white`}
           >
             {item.priority}
           </Badge>
 
           <span className="font-semibold text-current">{item.title}</span>
 
-          {item.status.toLocaleLowerCase() != "done" && item.due_date && (
+          {item.status.toLocaleLowerCase() != "done" && (
             <div className="flex items-center gap-2 text-gray-500">
               <CalendarClock size={17} />
-              <DueDateRender date={new Date(item.due_date)} />
+              {item.due_date ? (
+                <DueDateRender date={new Date(item.due_date)} />
+              ) : (
+                <span>No due date</span>
+              )}
             </div>
           )}
 
@@ -108,17 +116,22 @@ const TaskCard = ({ item, index }: { item: TaskEntity; index: number }) => {
             <div className="flex items-center gap-2 text-gray-500">
               <Building size={17} />
               <>
-                <Badge className="rounded-full">Assigned</Badge> to{" "}
-                {item.assigned_to_department} department
+                <Badge
+                  className="rounded-full border-primary bg-primary/20"
+                  variant={"outline"}
+                >
+                  Assigned
+                </Badge>{" "}
+                to {item.assigned_to_department} department
               </>
             </div>
           )}
 
-          <div className="flex gap-2 text-gray-500">
+          {/* <div className="flex gap-2 text-gray-500">
             <PencilLine size={17} />
             <span className="font-semibold text-gray-500">Created:</span>
             {item.created_by_navigation?.name}
-          </div>
+          </div> */}
         </div>
       )}
     </Draggable>

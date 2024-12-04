@@ -1,7 +1,5 @@
 "use client";
-import { ApiAuth, ApiRoutes, Filter } from "@/action/Api";
-import { getTask } from "@/action/Task";
-import { Tables } from "@/entity/database.types";
+import { ApiRoutes } from "@/action/Api";
 import { createClient } from "@/utils/supabase/client";
 import useSWR from "swr";
 
@@ -14,6 +12,8 @@ const fetcher = async (path: string) => {
         "Bearer " + (await sp.auth.getSession()).data.session?.access_token,
     },
   });
+  if (rs.status === 403) throw new Error("Permission denied");
+
   if (!rs.ok) {
     throw Error((await rs.json()).error);
   }

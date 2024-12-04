@@ -17,6 +17,9 @@ export const enum ApiRoutes {
   TaskUser = "/taskUser",
   TaskComment = "/taskComment",
   TaskComplete = "/taskComplete",
+  TaskHistory = "/taskHistory",
+  TaskFromDepartment = "/department/task",
+  TaskFromUser = "/user/task",
   File = "/file",
 }
 
@@ -41,16 +44,17 @@ export class ApiAuth {
     if (includes) params.append("includes", includes);
     if (search || params.size > 0) path += `?${params.toString()}`;
     console.log(path);
-
-    return fetch(path, {
+    const res = fetch(path, {
       headers: {
         Authorization: `Bearer ${await this.token}`,
       },
     });
+    if ((await res).status === 403) throw new Error("Permission denied");
+    return res;
   }
 
   async post(data: any) {
-    return fetch(this.route, {
+    const res = fetch(this.route, {
       headers: {
         Authorization: `Bearer ${await this.token}`,
         Accept: "application/json",
@@ -59,10 +63,12 @@ export class ApiAuth {
       method: "POST",
       body: JSON.stringify(data),
     });
+    if ((await res).status === 403) throw new Error("Permission denied");
+    return res;
   }
 
   async put(data: any) {
-    return fetch(this.route, {
+    const res = fetch(this.route, {
       headers: {
         Authorization: `Bearer ${await this.token}`,
         Accept: "application/json",
@@ -71,10 +77,12 @@ export class ApiAuth {
       method: "PUT",
       body: JSON.stringify(data),
     });
+    if ((await res).status === 403) throw new Error("Permission denied");
+    return res;
   }
 
   async patch(id, data: any) {
-    return fetch(this.route + `/${id}`, {
+    const res = fetch(this.route + `/${id}`, {
       headers: {
         Authorization: `Bearer ${await this.token}`,
         Accept: "application/json",
@@ -83,16 +91,20 @@ export class ApiAuth {
       method: "PATCH",
       body: JSON.stringify(data),
     });
+    if ((await res).status === 403) throw new Error("Permission denied");
+    return res;
   }
 
   // viết tạm
   async delete(id: number) {
-    return fetch(this.route + `/${id}`, {
+    const res = fetch(this.route + `/${id}`, {
       headers: {
         Authorization: `Bearer ${await this.token}`,
       },
       method: "DELETE",
     });
+    if ((await res).status === 403) throw new Error("Permission denied");
+    return res;
   }
 }
 

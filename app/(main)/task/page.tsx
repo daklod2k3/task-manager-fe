@@ -4,7 +4,7 @@ import Client from "./client";
 
 export default function Page() {
   return (
-    <TaskProvider>
+    <TaskProvider type="user">
       <Client />
     </TaskProvider>
   );

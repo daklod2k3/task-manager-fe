@@ -1,4 +1,5 @@
 "use client";
+import { Filter } from "@/action/Api";
 import { updateStatus, updateTask } from "@/action/Task";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useTaskContext } from "@/context/task-context";
@@ -109,11 +110,21 @@ const sortData = (taskList: Tables<"tasks">[]) => {
 
 const Kanban = () => {
   const {
-    taskFetch: { data: taskList, isLoading: taskLoading, mutate, error },
+    taskFetch: useTask,
+    taskFilter: [filter],
   } = useTaskContext();
   const [columns, setColumns] = useState<ReturnType<typeof dataToColumn> | []>(
     [],
   );
+
+  const [search, setSearch] = useState(new URLSearchParams());
+
+  const {
+    data: taskList,
+    isLoading: taskLoading,
+    mutate,
+    error,
+  } = useTask({ search: search.toString() });
 
   const [loading, setLoading] = useState(false);
 
@@ -127,6 +138,14 @@ const Kanban = () => {
   useEffect(() => {
     setLoading((l) => l && taskLoading);
   }, [taskLoading]);
+
+  useEffect(() => {
+    if (filter?.filter)
+      search.set("filter", JSON.stringify({ filters: [filter?.filter] }));
+    else search.delete("filter");
+    setSearch(search);
+    // console.log("mutate");
+  }, [filter, search, mutate]);
 
   const onDragEnd = async (
     result: any,
@@ -204,9 +223,8 @@ const Kanban = () => {
     // }
   };
 
-  if (taskList?.length == 0) return <span>No tasks found</span>;
-
   if (taskLoading) return <Loading />;
+  if (taskList?.length == 0 || !taskList) return <span>No tasks found</span>;
 
   if (error) return <span>{error.message}</span>;
 
@@ -222,7 +240,7 @@ const Kanban = () => {
         }}
       >
         <LoadingDialog open={loading} />
-        <ScrollArea className="grid">
+        <ScrollArea className="grid pb-3 pr-3">
           <div className="grid h-max w-max grid-flow-col gap-5">
             {Object.entries(columns).map(([columnId, column], index) => {
               return (

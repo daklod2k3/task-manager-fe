@@ -1,8 +1,7 @@
 import { addTaskUser, deleteTaskUser } from "@/action/TaskUser";
+import { useTaskContext } from "@/context/task-context";
 import { TaskUsers } from "@/entity/Entity";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
-import { useAllTask, useTask } from "@/hooks/use-task";
-import { useTaskUser } from "@/hooks/use-task-user";
 import { useToast } from "@/hooks/use-toast";
 import { X } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
@@ -17,8 +16,11 @@ interface Props {
 
 export default function AddAssignee({ task_id, task_user }: Props) {
   const { data: peoples, isLoading: peopleLoading } = usePeople();
-  const { mutate: mutateAllTask } = useAllTask();
-  const { mutate: mutateTask } = useTask(task_id);
+  const { taskFetch: useTask } = useTaskContext();
+  const { mutate: mutateTask } = useTask({
+    load: Boolean(task_id),
+    id: task_id,
+  });
   const [select, setSelect] = useState(task_user || []);
   const [loading, setLoading] = useState(false);
 
@@ -35,6 +37,8 @@ export default function AddAssignee({ task_id, task_user }: Props) {
       user_id: user.id,
     });
     setLoading(false);
+    console.log(res);
+
     if (res?.error || !res) {
       toast({
         title: "Failed to add assignee",
@@ -44,7 +48,6 @@ export default function AddAssignee({ task_id, task_user }: Props) {
       return;
     }
     setSelect([...select, { ...res.data, user }]);
-    mutateAllTask();
     mutateTask();
   };
 
@@ -61,7 +64,6 @@ export default function AddAssignee({ task_id, task_user }: Props) {
       return;
     }
     setSelect(select.filter((x) => x.id !== id));
-    mutateAllTask();
     mutateTask();
   };
 

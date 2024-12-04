@@ -18,9 +18,8 @@ import { useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
 import { TaskEntity } from "@/entity/Entity";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
-import { useAllTask, useTask } from "@/hooks/use-task";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
+import { cn, FormatTime } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, set } from "date-fns";
 import {
@@ -43,9 +42,10 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { boolean, z } from "zod";
 import AlertButton from "../alert-button";
 import MyAvatar from "../Avatar";
+import { DateTimePicker } from "../input-date-time";
 import Loading from "../Loading";
 import SearchSelect, { PeopleSearchItem } from "../search-select";
 import ToggleFilter from "../toggle-filter";
@@ -66,7 +66,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { ScrollArea } from "../ui/scroll-area";
+import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -83,6 +83,7 @@ import { ColumnTitles } from "./kanban";
 import { PriorityColor } from "./task-card";
 import TaskComment from "./task-comment";
 import { PreviewFile, TaskRequirePreview } from "./task-complete";
+import TaskHistory from "./task-history";
 import { PriorityIcon } from "./utils";
 
 const updateTaskSchema = createTaskSchema.extend({
@@ -106,11 +107,11 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
 
   // Data fetching
   const { toast } = useToast();
-  const { mutate: mutateList } = useAllTask();
-  const { mutate: mutateDetail } = useTask(item.id);
-  const {
-    taskDetail: [, setDetail],
-  } = useTaskContext();
+  const { setDetail, taskFetch: useTask } = useTaskContext();
+  const { mutate: mutateDetail } = useTask({
+    id: item.id,
+    load: item.id ? true : false,
+  });
 
   // const
 
@@ -119,9 +120,6 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
 
   const [order, setOrder] = useState(true);
 
-  const [assigneeSelect, setAssigneeSelect] = useState<Tables<"profiles">[]>(
-    item.task_users?.map((x) => x.user || { id: x.user_id }) || [],
-  );
   // console.log(assigneeSelect);
 
   // useEffect(() => {}, [taskFetch, task]);
@@ -130,12 +128,11 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
     setSaveLoading(true);
     const res = await updateTask(formData as Tables<"tasks">);
     await mutateDetail();
-    await mutateList();
     setSaveLoading(false);
     if (res.error) {
       toast({
         title: "Error",
-        description: res.error,
+        description: String(res.error),
         variant: "destructive",
       });
       return;
@@ -152,14 +149,18 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
 
   // console.log(form.formState.errors);
 
-  useEffect(() => {
-    form.setValue(
-      "task_users",
-      assigneeSelect.map((x) => ({ user_id: x.id })),
-    );
-  }, [assigneeSelect, form]);
-
-  const deleteTaskSubmit = async () => {};
+  const deleteTaskSubmit = async () => {
+    try {
+      await deleteTask(item.id);
+      setDetail(undefined);
+    } catch (error) {
+      toast({
+        title: "Task delete failed",
+        description: String(error),
+        variant: "destructive",
+      });
+    }
+  };
   return (
     <Form {...form}>
       <form
@@ -200,7 +201,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
             <AlertButton
               submitLabel="Delete"
               description="This action cannot be undone. This will permanently delete task and remove data from servers."
-              onSubmit={async () => await deleteTask(item.id)}
+              onSubmit={deleteTaskSubmit}
             >
               <AlertDialogTrigger>
                 <Button size={"icon"}>
@@ -244,7 +245,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
 
         <CardContent className="flex min-h-0">
           <div className="grid min-h-0 w-full grid-cols-3 gap-6 overflow-hidden">
-            <ScrollArea className="col-span-2 min-h-0 w-full">
+            <ScrollArea className="col-span-2 min-h-0 w-full pr-3">
               <div className="grid min-h-0 grid-rows-[auto,1fr] space-y-6">
                 {/* <div className="flex space-x-4">
                 <Button
@@ -359,7 +360,11 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <FormLabel className="font-bold">DUE DATE</FormLabel>
-                        <Popover modal>
+                        <DateTimePicker
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                        {/* <Popover modal>
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
@@ -392,7 +397,20 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                               initialFocus
                             />
                           </PopoverContent>
-                        </Popover>
+                        </Popover> */}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem className="px-1">
+                        <FormLabel className="font-bold">DESCRIPTION</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="no description" {...field} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -414,21 +432,36 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                     />
                   </div>
                   <TabsContent value="history" className="space-y-2">
-                    <div className="rounded-lg bg-muted/50 p-3">
-                      <div className="flex items-center justify-between">
+                    <div
+                      key={item.id}
+                      className="w-full rounded-lg bg-muted/50 p-3"
+                    >
+                      <div className="flex items-center gap-2">
                         <Badge
-                          className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
+                          // className={`bg-${ColumnTitles.find((x) => x.title.toLowerCase() == item.status.toLowerCase())?.color}`}
+                          className="bg-sky-500"
                         >
-                          {item.status.replaceAll("_", " ")}
+                          {item?.created_by_navigation?.name}
                         </Badge>
+                        {"created task"}
+
                         <span className="text-sm text-muted-foreground">
-                          Nov 22
+                          {item?.created_at &&
+                            new Date(item.created_at).toLocaleDateString(
+                              "en-US",
+                              {
+                                day: "numeric",
+                                month: "short",
+                              },
+                            )}
                         </span>
                       </div>
+
                       <p className="mt-2 text-sm text-muted-foreground">
-                        2 hours
+                        {FormatTime(item?.created_at)}
                       </p>
                     </div>
+                    <TaskHistory task_id={item.id} />
                   </TabsContent>
                   <TabsContent value="comment" className="min-h-0 space-y-2">
                     <TaskComment task_id={item.id} />
@@ -479,6 +512,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
               </div> */}
                 </Tabs>
               </div>
+              <ScrollBar />
             </ScrollArea>
 
             <ScrollArea className="min-h-0">
@@ -530,7 +564,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                       {item.status != "In_preview" ? (
                         <TaskRequirePreview task_id={item.id} />
                       ) : (
-                        <PreviewFile file_id={item.file_id} />
+                        <PreviewFile task_id={item.id} file_id={item.file_id} />
                       )}
 
                       {/* <Button variant="ghost" className="w-full justify-between">

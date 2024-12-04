@@ -59,7 +59,7 @@ export function DropFileInput({ form }: FileContentPreviewProps) {
           preview: URL.createObjectURL(file),
         }),
       );
-      setValue("files", [...files, ...newFiles]);
+      setValue("files", [...newFiles]);
       if (newFiles.length > 0) {
         setActiveTab(newFiles[0].name);
       }
@@ -151,7 +151,6 @@ export function DropFileInput({ form }: FileContentPreviewProps) {
             }}
             className="hidden"
             id="fileInput"
-            multiple
             accept={allowedFileTypes.join(",")}
           />
           <Label htmlFor="fileInput" className="cursor-pointer">

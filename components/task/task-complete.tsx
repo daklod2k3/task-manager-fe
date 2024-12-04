@@ -1,4 +1,5 @@
-import { completeTask } from "@/action/Task";
+import { markCompleteTask, markPreviewTask } from "@/action/Task";
+import { useTaskContext } from "@/context/task-context";
 import { useTask } from "@/hooks/use-task";
 import { useToast } from "@/hooks/use-toast";
 import { useFile } from "@/hooks/useFile";
@@ -24,6 +25,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Form } from "../ui/form";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface Props {
   task_id: number;
@@ -36,7 +38,9 @@ export function TaskRequirePreview({ task_id }: Props) {
     },
   });
 
-  const { mutate } = useTask(task_id);
+  const { taskFetch: useTask } = useTaskContext();
+
+  const { mutate } = useTask({ id: task_id });
 
   const [open, setOpen] = useState(false);
 
@@ -72,7 +76,7 @@ export function TaskRequirePreview({ task_id }: Props) {
     //     });
     //   });
 
-    completeTask(task_id, data)
+    markPreviewTask(task_id, data)
       .then((res) => {
         console.log(res);
         toast({
@@ -86,7 +90,7 @@ export function TaskRequirePreview({ task_id }: Props) {
         console.log(e);
         toast({
           title: "Submit error",
-          description: "Server error",
+          description: String(e) || "Server error",
           variant: "destructive",
         });
       });
@@ -124,14 +128,36 @@ export function TaskRequirePreview({ task_id }: Props) {
 
 interface PreviewFileProps {
   file_id: number;
+  task_id: number;
 }
 
-export function PreviewFile({ file_id }: PreviewFileProps) {
+export function PreviewFile({ file_id, task_id }: PreviewFileProps) {
   const [open, setOpen] = useState(false);
   const { data: file, error } = useFile(open ? file_id : undefined);
+  const { taskFetch: useTask } = useTaskContext();
+  const { mutate } = useTask({ id: task_id });
+  const { toast } = useToast();
 
-  const onSubmit = () => {};
-  console.log(error);
+  const onSubmit = () => {
+    markCompleteTask(task_id)
+      .then((res) => {
+        console.log(res);
+        toast({
+          title: "Action success",
+          description: "Task completed",
+        });
+        setOpen(false);
+        mutate();
+      })
+      .catch((e) => {
+        console.log(e);
+        toast({
+          title: "Submit error",
+          description: String(e) || "Server error",
+          variant: "destructive",
+        });
+      });
+  };
 
   const renderPreview = useCallback((file: FileWithPreview) => {
     const className = "w-full h-auto max-h-[70vh] object-contain";
@@ -192,10 +218,14 @@ export function PreviewFile({ file_id }: PreviewFileProps) {
             {error.message || "Server error"}
           </span>
         )}
-        {file &&
-          renderPreview(
-            Object.assign(file, { preview: URL.createObjectURL(file) }),
-          )}
+        <ScrollArea>
+          <div>
+            {file &&
+              renderPreview(
+                Object.assign(file, { preview: URL.createObjectURL(file) }),
+              )}
+          </div>
+        </ScrollArea>
         <DialogFooter className="mt-auto">
           <Button onClick={onSubmit} className="bg-green-500">
             Complete task

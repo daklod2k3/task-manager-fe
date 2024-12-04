@@ -1,7 +1,6 @@
 import { useTaskContext } from "@/context/task-context";
 import { Database, Tables } from "@/entity/database.types";
 import { TaskEntity } from "@/entity/Entity";
-import { useTask } from "@/hooks/use-task";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -12,15 +11,23 @@ import TaskDetail2 from "./task-detail-2";
 
 export function TaskDialog() {
   const {
+    taskFetch: useTask,
     taskDetail: [detail, setDetail],
     setDetail: setOpenDetail,
   } = useTaskContext();
   const [open, setOpen] = useState(false);
 
-  const { data: taskFetch, error, isLoading } = useTask(detail?.id);
+  const {
+    data: taskFetch,
+    error,
+    isLoading,
+  } = useTask({
+    load: Boolean(detail?.id),
+    id: detail?.id,
+    includes: "CreatedByNavigation",
+  });
+  const { mutate } = useTask({ load: true });
 
-  const pathname = usePathname();
-  const { replace } = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -30,15 +37,19 @@ export function TaskDialog() {
 
   useEffect(() => {
     if (detail?.id) setOpen(true);
+    else {
+      setOpen(false);
+      mutate();
+    }
   }, [detail]);
 
-  console.log(taskFetch);
+  // console.log(taskFetch);
 
   return (
     <Dialog
       open={open}
       onOpenChange={(x) => {
-        console.log(x);
+        if (!x) mutate();
         setOpen(false);
         if (!x && detail) setOpenDetail();
       }}

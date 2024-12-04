@@ -80,13 +80,9 @@ export async function updateStatus(
   id: Tables<"tasks">["id"],
   status: Tables<"tasks">["status"],
 ) {
-  const res = await new ApiAuth(ApiRoutes.Task).patch(id, [
-    {
-      op: "replace",
-      path: "status",
-      value: status,
-    },
-  ]);
+  const res = await new ApiAuth(
+    ApiRoutes.Task + "/replace/status/" + status + "?id=" + id,
+  ).get({});
 
   return await res.json();
 }
@@ -96,14 +92,30 @@ export async function deleteTask(id: number) {
   return await res.json();
 }
 
-export async function completeTask(id: number, formData) {
+export async function markPreviewTask(id: number, formData) {
   const api = new ApiAuth();
-  const res = await fetch(api.baseUrl + "/taskComplete/" + id, {
+  const res = await fetch(api.baseUrl + "/taskComplete/preview/" + id, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${await api.token}`,
     },
     body: formData,
   });
+  if (res.status === 403) throw new Error("Permission denied");
+  console.log(res);
+
+  return await res.json();
+}
+
+export async function markCompleteTask(id: number) {
+  const api = new ApiAuth();
+  const res = await fetch(api.baseUrl + "/taskComplete/complete/" + id, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${await api.token}`,
+    },
+  });
+  if (res.status === 403) throw new Error("Permission denied");
+
   return await res.json();
 }
