@@ -33,7 +33,7 @@ interface DepartmentProviderProps {
 
 export function DepartmentProvider({ children }: DepartmentProviderProps) {
   const deptAllFetch = useDepartment({
-    includes: "department_users, task_departments",
+    includes: "DepartmentUsers,TaskDepartments",
   });
   const deptId = useDepartment;
   const deleteDept = deleteDepartment;
@@ -43,7 +43,7 @@ export function DepartmentProvider({ children }: DepartmentProviderProps) {
   const [deptDetail, setDeptDetail] = useState<any[]>([]);
   const { toast } = useToast();
   const [mount, setMount] = useState(false);
-
+  
   const value = {
     deptAllFetch,
     deptId,

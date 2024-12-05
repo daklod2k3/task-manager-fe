@@ -1,6 +1,5 @@
 "use server";
 import { Tables } from "@/entity/database.types";
-import { createClient } from "@/utils/supabase/server";
 import { ApiAuth, ApiRoutes, GetProps, IApiResponse } from "./Api";
 
 export async function createDepartment(department: Tables<"departments">) {
@@ -62,3 +61,28 @@ export async function getDepartment({ id, search }: GetProps) {
     };
   }
 }
+
+// export async function getDepartmentComplete(id: number) {
+//   try {
+//     const params = new URLSearchParams();
+//     params.append("id", id.toString());
+//     params.append("includeCompletionPercentage", "true");
+
+//     const res = await new ApiAuth(ApiRoutes.Department).get({
+//       search: params.toString(),
+//     });
+
+//     const data = await res.json();
+
+//     return {
+//       success: true,
+//       completionPercentage: data.data.completionPercentage,
+//       department: data.data.department,
+//     };
+//   } catch (e) {
+//     console.log("Server error:", e);
+//     return {
+//       error: "Server error",
+//     };
+//   }
+// }

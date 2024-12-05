@@ -57,11 +57,10 @@ const FormAddDeptUser: React.FC<LoadOwnerProps> = ({ departmentUsers,onClose,nam
   const { data: peopleFetch, isLoading } = usePeople();
   const [peoples, setPeoples] = useState<Tables<"profiles">[]>([]);
   const [peoplesNoOwner, setPeoplesNoOwner] = useState<Tables<"profiles">[]>([]);
-  const [peoplesHasOwner, setPeoplesHasOwner] = useState<Tables<"profiles">[]>([]);
 
-  const {updateDept,deptAllFetch,toast, deptId} = useDepartmentContext();
+  const {updateDept,deptAllFetch,toast} = useDepartmentContext();
   const [deptMember, setDeptMember] = useState<Tables<"profiles">[]>([]);
-
+  
   type FormDeptType = z.infer<typeof formDeptSchema>;
 
   const form = useForm<FormDeptType>({
@@ -85,30 +84,29 @@ const FormAddDeptUser: React.FC<LoadOwnerProps> = ({ departmentUsers,onClose,nam
 
   useEffect(() => {
     if(peopleFetch) {
+      setDeptUser(departmentUsers)
       setPeoples(peopleFetch);
       const userDeptNo = peopleFetch.filter(person =>
         !departmentUsers.some(deptUser => deptUser.user_id === person.id)
       );
       setPeoplesNoOwner(userDeptNo)
-      setPeoplesHasOwner(peopleFetch)
     }
   }, [peopleFetch]);
 
   const removeAssignee = (x) => {
-    setPeoplesHasOwner((prev) => [...prev, x])
     setPeoplesNoOwner((prev) => [...prev, x])
     setDeptMember((prev) => prev.filter((value) => value.id !== x.id));
   };
 
   const addAssignee = (x) => {
     if (deptMember.filter((item) => item.id == x.id).length > 0) return;
-    setPeoplesHasOwner((prev) => prev.filter((value) => value.id !== x.id))
     setPeoplesNoOwner((prev) => prev.filter((value) => value.id !== x.id))
     setDeptMember((prev) => [...prev, x]);
   };
 
   const onSubmit = async (formData) => {
     try {
+      console.log(formData)
       const resDept = await updateDept(formData);
       console.log(resDept);
       deptAllFetch.mutate();
@@ -187,7 +185,7 @@ const FormAddDeptUser: React.FC<LoadOwnerProps> = ({ departmentUsers,onClose,nam
                   owner_type: "member",
               }));
               setDeptUser([...departmentUsers, ...newMembers]);
-              const updatedUsers = [...currentUsers, ...newMembers];
+              const updatedUsers = [...departmentUsers, ...newMembers];
 
               form.setValue("department_users", updatedUsers);
               onClose();

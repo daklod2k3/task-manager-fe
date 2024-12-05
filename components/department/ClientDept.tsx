@@ -10,7 +10,7 @@ export default function ClientDept() {
   const [searchTerm, setSearchTerm] = useState("");
 
   return (
-    <div className="flex min-h-0 w-full flex-col p-4">
+    <div className="flex h-screen w-full flex-col p-4">
       <h1 className="mb-10 text-4xl font-bold text-primary">
         Department Management
       </h1>

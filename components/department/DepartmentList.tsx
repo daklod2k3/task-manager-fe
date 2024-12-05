@@ -10,7 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 import Loading from "../Loading";
 import { ToastAction } from "../ui/toast";
 import LoadPeople from "./LoadPeople";
-import LoadTask from "./LoadTask";
+import { Progress } from "@/components/ui/progress";
 
 export function DepartmentList({ searchTerm }: { searchTerm: string }) {
   const { deptAllFetch, toast, deleteDept } = useDepartmentContext();
@@ -18,13 +18,14 @@ export function DepartmentList({ searchTerm }: { searchTerm: string }) {
 
   useEffect(() => {
     if (deptAllFetch.data) {
+      console.log(deptAllFetch.data)
       setDepa(deptAllFetch.data);
     }
   }, [deptAllFetch.data]);
 
   const filteredDepartments = useMemo(() => {
     return depa.filter((dept) =>
-      dept.name.toLowerCase().includes(searchTerm.toLowerCase()),
+      dept.department.name.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [depa, searchTerm]);
 
@@ -47,27 +48,27 @@ export function DepartmentList({ searchTerm }: { searchTerm: string }) {
   };
 
   return (
-    <div className="min-h-0 w-full rounded-xl p-6">
+    <div className="h-screen w-full rounded-xl">
       {deptAllFetch.isLoading ? (
         <Loading />
       ) : (
-        <ScrollArea className="min-h-0 px-2">
+        <ScrollArea className="min-h-[calc(100vh-200px)] h-[calc(100vh-200px)] px-2">
           <div>
-            {depa.length === 0 ? (
+            {filteredDepartments.length === 0 ? (
               <p className="text-center text-muted-foreground">
                 No departments found.
               </p>
             ) : (
               <div className="grid grid-cols-1 gap-4 pb-6 md:grid-cols-2">
                 {filteredDepartments.map((dept) => (
-                  <div key={dept} className="group">
+                  <div key={dept.department.id} className="group">
                     <div className="rounded-xl border-l-4 border-l-blue-500 bg-white p-6 shadow transition-all duration-200 hover:border-green-500 hover:shadow-md">
                       <div className="mb-4 flex items-center justify-between">
                         <h3 className="text-xl font-semibold text-pink-700 group-hover:text-pink-800">
-                          {dept.name}
+                          {dept.department.name}
                         </h3>
                         <div className="flex space-x-3 opacity-0 transition-opacity group-hover:opacity-100">
-                          <Link href={`/department/${dept.id}`}>
+                          <Link href={`/department/${dept.department.id}`}>
                             <Button
                               variant="ghost"
                               size="icon"
@@ -80,7 +81,7 @@ export function DepartmentList({ searchTerm }: { searchTerm: string }) {
                             confirmButtonLabel="Delete"
                             title="Do you want to delete this department?"
                             onAction={() => {
-                              deleteDepaById(dept.id);
+                              deleteDepaById(dept.department.id);
                             }}
                           >
                             <Button size="icon">
@@ -96,32 +97,23 @@ export function DepartmentList({ searchTerm }: { searchTerm: string }) {
                           <span className="text-gray-800">
                             <LoadPeople
                               showOwner={true}
-                              departmentUsers={dept.department_users}
+                              departmentUsers={dept.department.department_users}
                             />
                           </span>
                         </div>
                         <div className="flex items-center text-gray-600">
                           <Users className="mr-2 h-4 w-4 text-pink-500" />
-                          <span>{dept.department_users.length} members</span>
+                          <span>{dept.department.department_users.length} members</span>
                         </div>
                         <div className="flex items-center text-gray-600">
                           <Briefcase className="mr-2 h-4 w-4 text-pink-500" />
-                          <LoadTask
-                            taskDepartments={dept.task_departments}
-                            showDetail={true}
-                          />
+                          <span>{dept.department.task_departments.length} tasks</span>
                         </div>
                         <div className="flex items-center font-medium text-gray-800">
-                          <LoadTask
-                            taskDepartments={dept.task_departments}
-                            showPercent={true}
-                          />
+                        <span>{dept.completion_percentage}% Complete</span>
                         </div>
                       </div>
-                      <LoadTask
-                        taskDepartments={dept.task_departments}
-                        showProgress={true}
-                      />
+                      <Progress value={dept.completion_percentage} className="h-2" />
                     </div>
                   </div>
                 ))}
