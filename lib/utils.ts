@@ -1,3 +1,4 @@
+import { createClient } from "@/utils/supabase/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -57,3 +58,8 @@ export const FormatTime = (
   return postTime.toDateString();
   // console.log(postTime.toLocaleString("vi"));
 };
+
+export async function getUserId() {
+  const sp = createClient();
+  return (await sp.auth.getUser()).data.user?.id;
+}

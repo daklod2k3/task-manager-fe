@@ -8,9 +8,9 @@ export interface IApiResponse<T> {
 
 const baseUrl = String(process.env.API_URL) || "/api";
 export const enum ApiRoutes {
-  User = "/user",
+  User = "/auth/user",
   Task = "/task",
-  People = "/people",
+  People = "/user",
   Channel = "/channel",
   Department = "/department",
   DepartmentUser = "/departmentUser",
@@ -21,13 +21,16 @@ export const enum ApiRoutes {
   Role = "/role",
   Resource = "/resource",
   TaskHistory = "/taskHistory",
-  TaskFromDepartment = "/department/task",
-  TaskFromUser = "/user/task",
+  TaskFromDepartment = "/auth/department/task",
+  TaskFromUser = "/auth/user/task",
+  ChannelFromUser = "/auth/user/channel",
   File = "/file",
+  Profile = "/profile",
+  DirectMessage = "/message",
 }
 
 export interface GetProps {
-  id?: number;
+  id?: string;
   search?: string;
   includes?: string;
 }

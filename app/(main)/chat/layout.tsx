@@ -1,4 +1,4 @@
-import ChannelList from "@/components/channel/Channel.List";
+import ChannelList from "@/components/chat/channel-list";
 import React from "react";
 
 const Layout = ({

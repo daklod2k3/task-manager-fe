@@ -2,6 +2,7 @@
 import { GetProps } from "@/action/Api";
 
 export interface useApiProps extends GetProps {
+  mode?: "user" | "all";
   load?: boolean;
 }
 

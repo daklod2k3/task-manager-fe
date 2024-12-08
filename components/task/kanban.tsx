@@ -224,9 +224,9 @@ const Kanban = () => {
   };
 
   if (taskLoading) return <Loading />;
+  if (error)
+    return <span className="font-bold text-red-500">{error.message}</span>;
   if (taskList?.length == 0 || !taskList) return <span>No tasks found</span>;
-
-  if (error) return <span>{error.message}</span>;
 
   return (
     <>
