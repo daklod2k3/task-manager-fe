@@ -75,7 +75,7 @@ export default function CreateTaskDialog({ children }) {
   } = useTaskContext();
   const { mutate } = useTask({});
 
-  const { data: peoples, isLoading: peopleLoading } = usePeople();
+  const { data: peoples, isLoading: peopleLoading } = usePeople({});
   const [assigneeSelect, setAssigneeSelect] = useState<Tables<"profiles">[]>(
     [],
   );

@@ -5,7 +5,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { Tables } from "@/database.types";
+import { Tables } from "@/entity/database.types";
 import { usePeople } from "@/hooks/use-people";
 import React, { ReactElement } from "react";
 import MyAvatar from "./Avatar";
@@ -21,7 +21,6 @@ interface Props {
 }
 
 export default function HoverInfo({ children, user }: Props) {
-  const {} = usePeople();
   return (
     <HoverCard>
       <HoverCardTrigger>{children}</HoverCardTrigger>

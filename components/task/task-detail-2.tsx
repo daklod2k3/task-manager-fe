@@ -17,7 +17,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
 import { TaskEntity } from "@/entity/Entity";
-import { peopleToSearch, usePeople } from "@/hooks/use-people";
 import { useToast } from "@/hooks/use-toast";
 import { cn, FormatTime } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -109,7 +108,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
   const { toast } = useToast();
   const { setDetail, taskFetch: useTask } = useTaskContext();
   const { mutate: mutateDetail } = useTask({
-    id: item.id,
+    id: String(item.id),
     load: item.id ? true : false,
   });
 

@@ -40,7 +40,7 @@ export function TaskRequirePreview({ task_id }: Props) {
 
   const { taskFetch: useTask } = useTaskContext();
 
-  const { mutate } = useTask({ id: task_id });
+  const { mutate } = useTask({ id: String(task_id) });
 
   const [open, setOpen] = useState(false);
 
@@ -135,7 +135,7 @@ export function PreviewFile({ file_id, task_id }: PreviewFileProps) {
   const [open, setOpen] = useState(false);
   const { data: file, error } = useFile(open ? file_id : undefined);
   const { taskFetch: useTask } = useTaskContext();
-  const { mutate } = useTask({ id: task_id });
+  const { mutate } = useTask({ id: task_id + "" });
   const { toast } = useToast();
 
   const onSubmit = () => {

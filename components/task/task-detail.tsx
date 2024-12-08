@@ -23,7 +23,7 @@ export function TaskDialog() {
     isLoading,
   } = useTask({
     load: Boolean(detail?.id),
-    id: detail?.id,
+    id: String(detail?.id),
     includes: "CreatedByNavigation",
   });
   const { mutate } = useTask({ load: true });
