@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tables } from "@/entity/database.types";
 import useChannel from "@/hooks/use-channel";
 import useDirectMessage from "@/hooks/use-direct-message";
+import { peopleToSearch, usePeople } from "@/hooks/use-people";
 import { cn } from "@/lib/utils";
 import {
   Building,
@@ -24,7 +25,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import MyAvatar from "../Avatar";
 import Loading from "../Loading";
+import SearchSelect from "../search-select";
 import SearchInput from "../SearchInput";
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 
 interface IChannelSelect extends IChannelButton {
   channel?: Tables<"channels">;
@@ -86,16 +89,25 @@ export default function ChannelList({
 }: React.HTMLAttributes<HTMLDivElement>): React.ReactNode {
   // const [channel]
 
-  const { data, isLoading: channelLoading } = useChannel({});
+  const {
+    data,
+    isLoading: channelLoading,
+    error: channelsError,
+  } = useChannel({});
   const channels = data as Tables<"channels">[];
-  const { data: dmData, isLoading: dmLoading } = useDirectMessage({
+  const {
+    data: dmData,
+    isLoading: dmLoading,
+    error: dmError,
+  } = useDirectMessage({
     mode: "user",
   });
   const directMessages = dmData as Tables<"user_message">[];
 
-  const pathname = usePathname();
+  const { data: peoples, isLoading: peopleLoading } = usePeople({});
 
-  const form = useForm();
+  const pathname = usePathname();
+  const { push } = useRouter();
 
   useEffect(() => {
     // setActiveChat()
@@ -124,13 +136,18 @@ export default function ChannelList({
                 channel={channel}
               />
             ))}
+
+            {channels && channels.length == 0 && (
+              <span className="text-muted-foreground">No channel found</span>
+            )}
+
             {/* <ChannelButton
             title="Add channel"
             Icon={Plus}
             className="h-8 w-fit border border-primary bg-primary/20 shadow"
           /> */}
           </div>
-          <div className="">
+          <div className="flex flex-col gap-1">
             <ChannelHeader title="Direct Messages" />
             {directMessages &&
               directMessages.map((dm) => (
@@ -148,11 +165,27 @@ export default function ChannelList({
                   {dm.send_to?.name}
                 </ChannelButton>
               ))}
-            <ChannelButton
-              link="#"
-              title="Add chat"
-              Icon={Plus}
-              className="mt-2 h-8 w-fit border border-primary bg-primary/20 shadow"
+            {dmError && <span>{String(dmError)}</span>}
+            {directMessages && directMessages.length == 0 && (
+              <span className="text-muted-foreground">No chat found</span>
+            )}
+            {/* <Dialog>
+              <DialogTrigger className="mt-2 h-8 w-fit rounded border border-primary bg-primary/20 px-2 shadow">
+                Add chat
+              </DialogTrigger>
+              <DialogContent
+            </Dialog> */}
+            {/* <ChannelButton link="#" title="Add chat" Icon={Plus} /> */}
+            <SearchSelect
+              disable={peopleLoading}
+              isLoading={peopleLoading}
+              placeholder="Add chat"
+              variant="people"
+              modal={true}
+              onSelectedValueChange={(x: any) => {
+                push("/chat/dm/" + x.id);
+              }}
+              items={peopleToSearch(peoples || [])}
             />
           </div>
         </ScrollArea>

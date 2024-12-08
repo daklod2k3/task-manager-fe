@@ -1,3 +1,4 @@
+"use client";
 import { ApiRoutes } from "@/action/Api";
 import { Tables } from "@/entity/database.types";
 import { useEffect } from "react";
@@ -5,20 +6,21 @@ import useSWR from "swr";
 import { fetcher, useApiProps } from "./client-api";
 import { useToast } from "./use-toast";
 
-export default function useTaskFromDepartment({
+export default function useChannelMessage<T = Tables<"channel_message">[]>({
   load = true,
+  mode = "user",
   ...props
-}: useApiProps & { department_id?: number }) {
+}: useApiProps) {
   const { toast } = useToast();
 
   const { data, error, isLoading, mutate } = useSWR(
     load
       ? {
-          url: "/api" + ApiRoutes.Department,
-          arguments: {
-            ...props,
-            includes: "TaskDepartments",
-          },
+          url:
+            "/api" +
+            (mode == "user" ? "/auth/user" : "") +
+            ApiRoutes.ChannelMessage,
+          arguments: props,
         }
       : null,
     fetcher,
@@ -35,7 +37,6 @@ export default function useTaskFromDepartment({
         variant: "destructive",
       });
   }, [error]);
-  console.log(data);
 
-  return { data: data && data.task_departments, error, isLoading, mutate };
+  return { data: data as T, error, isLoading, mutate };
 }

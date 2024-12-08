@@ -1,5 +1,5 @@
-import ClientTask from "@/app/(main)/task/client";
 import { TaskProvider } from "@/context/task-context";
+import ClientTask from "./client";
 
 export default async function Page({
   params,
