@@ -105,12 +105,12 @@ export function Navigation({}) {
         Icon={MessageCircleMoreIcon}
         title="Chat"
       />
-      <NavigationButton
+      {/* <NavigationButton
         Icon={Bell}
         base_path="/activity"
         current_path={path}
         title="Activity"
-      />
+      /> */}
       <NavigationButton
         Icon={NotepadText}
         base_path="/report"
