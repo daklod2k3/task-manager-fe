@@ -1,10 +1,11 @@
 import { ApiRoutes } from "@/action/Api";
+import { Tables } from "@/entity/database.types";
 import { useEffect } from "react";
 import useSWR from "swr";
 import { fetcher, useApiProps } from "./client-api";
 import { useToast } from "./use-toast";
 
-export default function useChannel({
+export default function useChannel<T = Tables<"channels">[]>({
   load = true,
   mode = "user",
   ...props
@@ -35,5 +36,5 @@ export default function useChannel({
       });
   }, [error]);
 
-  return { data: data, error, isLoading, mutate };
+  return { data: data as T, error, isLoading, mutate };
 }

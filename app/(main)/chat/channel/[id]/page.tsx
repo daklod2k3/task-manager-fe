@@ -1,5 +1,5 @@
 "use client";
-import { sendDirectMessage } from "@/action/Message";
+import { sendChannelMessage } from "@/action/Message";
 import MyAvatar from "@/components/Avatar";
 import Loading from "@/components/Loading";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tables } from "@/entity/database.types";
 import useChannel from "@/hooks/use-channel";
-import useDirectMessage from "@/hooks/use-direct-message";
 import { usePeople } from "@/hooks/use-people";
 import { useToast } from "@/hooks/use-toast";
 import useUser from "@/hooks/use-user";
@@ -22,27 +21,12 @@ import { cn, getUserId } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createBrowserClient } from "@supabase/ssr";
-import { Loader2, Send } from "lucide-react";
+import { Hash, Loader2, Send } from "lucide-react";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-async function getChannels() {
-  // In a real app, this would be an API call
-  return [
-    { id: "general", name: "General" },
-    { id: "random", name: "Random" },
-    { id: "work", name: "Work Stuff" },
-  ];
-}
-
-function ChatMessage({
-  message,
-  to_id,
-}: {
-  message: Tables<"user_message">;
-  to_id: string;
-}) {
+function ChatMessage({ message }: { message: Tables<"channel_message"> }) {
   const date = new Date(message.created_at);
   const now = new Date();
   // if (date.getFullYear() == date.getFullYear() && date.getMonth() == now.getMonth() && date.getDate() == now.getDate())
@@ -50,22 +34,13 @@ function ChatMessage({
   const scrollRef = useChatScroll(message);
 
   return (
-    <div
-      ref={scrollRef}
-      className={cn(
-        "flex items-start gap-2 p-4",
-        message.to_id == to_id && "flex-row-reverse",
-      )}
-    >
-      <MyAvatar user={message.from} />
+    <div ref={scrollRef} className={cn("flex items-start gap-2 p-4")}>
+      <MyAvatar user={message.created_by_navigation} />
       <div>
-        <div
-          className={cn(
-            "flex items-center gap-2",
-            message.to_id == to_id && "flex-row-reverse",
-          )}
-        >
-          <span className="text-sm font-semibold">{message.from.name}</span>
+        <div className={cn("flex items-center gap-2")}>
+          <span className="text-sm font-semibold">
+            {message.created_by_navigation?.name}
+          </span>
           <span className="text-xs text-gray-500">
             {date.toDateString() == now.toDateString()
               ? date.toLocaleTimeString()
@@ -75,7 +50,6 @@ function ChatMessage({
         <p
           className={cn(
             "mt-1 w-fit break-all rounded-[18px] bg-primary px-4 py-1 text-white",
-            message.to_id == to_id && "ml-auto",
           )}
         >
           {message.content}
@@ -104,19 +78,20 @@ export default function ChatPage({
     id: string;
   };
 }) {
-  const { data: sender } = usePeople({ id: id, includes: "Role" });
-
   const {
-    data: messages,
+    data: channel,
     mutate,
     isLoading,
-  } = useDirectMessage({
+  } = useChannel<Tables<"channels">>({
     id: id,
+    includes: "Department,ChannelMessages.CreatedByNavigation",
   });
+  const messages = channel?.channel_messages;
+  console.log(messages);
 
   const sendMessSchema = z.object({
-    from_id: z.string(),
-    to_id: z.string(),
+    channel_id: z.string(),
+    created_by: z.string(),
     content: z.string(),
   });
 
@@ -129,8 +104,8 @@ export default function ChatPage({
   const form = useForm<z.infer<typeof sendMessSchema>>({
     resolver: zodResolver(sendMessSchema),
     defaultValues: {
-      from_id: id,
-      to_id: id,
+      channel_id: id,
+      created_by: "a2766a49-b01f-4a7a-8b60-8e3627a33c22",
       content: "",
     },
   });
@@ -143,7 +118,7 @@ export default function ChatPage({
       .channel("public:user_messages")
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "user_message" },
+        { event: "INSERT", schema: "public", table: "channel_message" },
         (payload) => {
           mutate();
           console.log(payload);
@@ -151,7 +126,7 @@ export default function ChatPage({
       )
       .on(
         "postgres_changes",
-        { event: "DELETE", schema: "public", table: "user_message" },
+        { event: "DELETE", schema: "public", table: "channel_message" },
         (payload) => mutate(),
       )
       .subscribe();
@@ -160,7 +135,7 @@ export default function ChatPage({
       .channel("public:users")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "user_message" },
+        { event: "*", schema: "public", table: "channel_message" },
         (payload) => mutate(),
       )
       .subscribe();
@@ -188,7 +163,7 @@ export default function ChatPage({
 
   const onSendMess = async (data: z.infer<typeof sendMessSchema>) => {
     setSendLoading(true);
-    const res = await sendDirectMessage(data);
+    const res = await sendChannelMessage(data);
     console.log(res);
 
     if (res.error) {
@@ -205,11 +180,14 @@ export default function ChatPage({
 
   if (isLoading) return <Loading />;
 
+  if (!(channel && messages))
+    return <span className="font-bold text-red-500">Unknown error</span>;
+
   return (
     <div className="flex h-full min-h-0 flex-col">
       <header className="border-b p-4 text-primary shadow-lg">
         <h1 className="text-xl font-semibold">
-          <MyAvatar user={sender} includeInfo />
+          {channel?.department?.name || channel.name}
         </h1>
       </header>
 
@@ -217,7 +195,7 @@ export default function ChatPage({
         <ScrollArea className="flex-grow bg-white" ref={scrollRef}>
           <Suspense fallback={<div>Loading messages...</div>}>
             {messages.map((message) => (
-              <ChatMessage to_id={id} key={message.id} message={message} />
+              <ChatMessage key={message.id} message={message} />
             ))}
           </Suspense>
         </ScrollArea>

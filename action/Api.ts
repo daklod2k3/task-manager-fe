@@ -27,6 +27,7 @@ export const enum ApiRoutes {
   File = "/file",
   Profile = "/profile",
   DirectMessage = "/message",
+  ChannelMessage = "/channelMessage",
 }
 
 export interface GetProps {

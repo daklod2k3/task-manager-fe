@@ -15,7 +15,9 @@ export type Database = {
           created_at: string;
           created_by: string | null;
           file_id: number | null;
+          content: string;
           id: number;
+          created_by_navigation?: Tables<"profiles">;
         };
         Insert: {
           channel_id?: number | null;
@@ -99,6 +101,7 @@ export type Database = {
           name: string;
           department_id: number | null;
           department?: Tables<"departments">;
+          channel_messages?: Tables<"channel_message">[];
         };
         Insert: {
           created_at?: string;
