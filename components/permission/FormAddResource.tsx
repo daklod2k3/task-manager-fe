@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ToastAction } from "@/components/ui/toast"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { usePermissionContext } from "@/context/permission-context"
 
 import {
   Form,
@@ -16,9 +17,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { addResource } from "@/action/Permission";
-import { useToast } from "@/hooks/use-toast";
-import { useResource } from "@/hooks/use-permission"
 
 const formDeptSchema = z.object({
   name: z.string(),
@@ -26,8 +24,8 @@ const formDeptSchema = z.object({
 });
 
 export default function FormAddRole({onClose}:{onClose: () => void}) {
-  const {mutate} = useResource();
-    const {toast} = useToast();
+  const {resourceFetch,toast,addReso} =  usePermissionContext();
+
   type FormDeptType = z.infer<typeof formDeptSchema>;
 
   const form = useForm<FormDeptType>({
@@ -40,9 +38,9 @@ export default function FormAddRole({onClose}:{onClose: () => void}) {
 
   const onSubmit = async (formData) => {
     try {
-      const res = await addResource(formData)
+      const res = await addReso(formData)
       console.log(res);
-      mutate()
+      resourceFetch.mutate()
       onClose();
       toast({
         description: "successfully add department",

@@ -1,12 +1,12 @@
 "use client";
-
 import { useState,useEffect } from "react";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui/button";
+import { z } from "zod";
 import { ToastAction } from "@/components/ui/toast"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Checkbox } from "@/components/ui/checkbox"
+import { usePermissionContext } from "@/context/permission-context"
 
 import {
   Form,
@@ -20,17 +20,11 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
 
-import { Checkbox } from "@/components/ui/checkbox"
-import { addPermission } from "@/action/Permission";
-import { useToast } from "@/hooks/use-toast";
-import { useResource } from "@/hooks/use-permission"
 
 const formDeptSchema = z.object({
   view: z.boolean(),
@@ -41,17 +35,18 @@ const formDeptSchema = z.object({
   role_id: z.number(),
 });
 
-export default function FormAddRole({onClose,roleId}:{onClose: () => void,roleId:number}) {
-  const {data:resourceFetch, isLoading:loadResource, mutate} = useResource();
+export default function FormAddRole({onClose,roleId,resoCurr}:{onClose: () => void,roleId:number,resoCurr:any[]}) {
+  const {resourceFetch,toast,addPerm} =  usePermissionContext();
   const [resource, setResource] = useState<any[]>([]);
-  const {toast} = useToast();
     
   useEffect(() => {
-    if(resourceFetch) {
-      console.log(resourceFetch)
-      setResource(resourceFetch)
+    if (resourceFetch.data) {
+      const filteredResources = resourceFetch.data.filter(
+        (resource) => !resoCurr.some((curr) => curr.id === resource.id)
+      );
+      setResource(filteredResources);
     }
-  }, [resourceFetch])
+  }, [resourceFetch.data, resoCurr]);
 
   type FormDeptType = z.infer<typeof formDeptSchema>;
 
@@ -69,8 +64,8 @@ export default function FormAddRole({onClose,roleId}:{onClose: () => void,roleId
 
   const onSubmit = async (formData) => {
     try {
-      const res = await addPermission(formData)
-      mutate()
+      const res = await addPerm(formData)
+      resourceFetch.mutate()
       onClose();
       console.log(res);
       toast({

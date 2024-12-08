@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ToastAction } from "@/components/ui/toast"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useRole } from "@/hooks/use-permission"
+import { usePermissionContext } from "@/context/permission-context"
 
 import {
   Form,
@@ -17,16 +17,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { addRole } from "@/action/Permission";
-import { useToast } from "@/hooks/use-toast";
 
 const formDeptSchema = z.object({
   name: z.string().min(1, "Department name is required"),
 });
 
 export default function FormAddRole({onClose}:{onClose: () => void}) {
-  const {mutate:mutateRole} = useRole();
-    const {toast} = useToast();
+  const {toast,roleFetch,addRol} =  usePermissionContext();
+
   type FormDeptType = z.infer<typeof formDeptSchema>;
 
   const form = useForm<FormDeptType>({
@@ -38,9 +36,9 @@ export default function FormAddRole({onClose}:{onClose: () => void}) {
 
   const onSubmit = async (formData) => {
     try {
-      const res = await addRole(formData)
+      const res = await addRol(formData)
       onClose();
-      mutateRole()
+      roleFetch.mutate()
       console.log(res);
       toast({
         description: "successfully add department",

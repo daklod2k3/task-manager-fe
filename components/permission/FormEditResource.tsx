@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ToastAction } from "@/components/ui/toast"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { usePermissionContext } from "@/context/permission-context"
 
 import {
   Form,
@@ -16,8 +17,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { updateResource } from "@/action/Permission";
-import { useToast } from "@/hooks/use-toast";
 
 const formDeptSchema = z.object({
   id: z.number(),
@@ -26,7 +25,7 @@ const formDeptSchema = z.object({
 });
 
 export default function FormEditResource({onClose,idResource,name,path}:{onClose: () => void,idResource: number,name:string,path:string}) {
-    const {toast} = useToast();
+  const {toast,resourceFetch,updateReso} =  usePermissionContext();
   type FormDeptType = z.infer<typeof formDeptSchema>;
 
   const form = useForm<FormDeptType>({
@@ -40,7 +39,8 @@ export default function FormEditResource({onClose,idResource,name,path}:{onClose
 
   const onSubmit = async (formData) => {
     try {
-      const res = await updateResource(formData)
+      const res = await updateReso(formData)
+      resourceFetch.mutate()
       console.log(res);
       onClose();
       toast({

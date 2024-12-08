@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import ShowDialog from "@/components/department/ShowDialog";
 import FormAddPermission from "./FormAddPermission";
 
-export default function AddPermission({roleId}:{roleId:number}) {
+export default function AddPermission({roleId,resoCurr}:{roleId:number,resoCurr:any[]}) {
   const [open, setOpen] = useState(false);
 
   const handleOpenChange = (isOpen: boolean) => {
@@ -18,7 +18,7 @@ export default function AddPermission({roleId}:{roleId:number}) {
       open={open}
       onOpenChange={handleOpenChange}
     >
-      <FormAddPermission roleId={roleId} onClose={() => setOpen(false)} />
+      <FormAddPermission resoCurr={resoCurr} roleId={roleId} onClose={() => setOpen(false)} />
     </ShowDialog>
   );
 }

@@ -17,38 +17,8 @@ import { usePeople } from "@/hooks/use-people"
 import { useEffect, useState } from "react"
 import { Tables } from "@/entity/database.types"
 import MyAvatar from "../Avatar"
-
-interface User {
-  id: string
-  name: string
-  email: string
-  role: 'Super Admin' | 'Admin' | 'Contributor'
-  groups: string[]
-  status: 'Active' | 'Inactive'
-  avatarUrl: string
-}
-
-const users: User[] = [
-  {
-    id: '1',
-    name: 'Ian Chesnut',
-    email: 'ian.chesnut@gmail.com',
-    role: 'Super Admin',
-    groups: ['Falcons', 'Stallions'],
-    status: 'Active',
-    avatarUrl: '/placeholder.svg'
-  },
-  {
-    id: '2',
-    name: 'Zeki Mokharzada',
-    email: 'zeki@gmail.com',
-    role: 'Admin',
-    groups: ['Falcons', 'Stallions'],
-    status: 'Inactive',
-    avatarUrl: '/placeholder.svg'
-  },
-  // Add more users as needed
-]
+import { ScrollArea } from "@/components/ui/scroll-area"
+import AddResource from "./AddResource"
 
 export default function UserTable() {
   const {data:peopleFetch, isLoading} = usePeople();
@@ -62,21 +32,83 @@ export default function UserTable() {
   }, [peopleFetch]);
 
   return (
-    <div className="w-full p-4">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <h1 className="text-xl font-semibold">All Users</h1>
-          <Badge variant="secondary" className="rounded-full">{peoples.length}</Badge>
-        </div>
-        <Button>+ Add New User</Button>
+    // <div className="w-full p-4">
+    //   <div className="flex items-center justify-between mb-4">
+    //     <div className="flex items-center gap-2">
+    //       <h1 className="text-xl font-semibold">All Users</h1>
+    //       <Badge variant="secondary" className="rounded-full">{peoples.length}</Badge>
+    //     </div>
+    //     <Button>+ Add New User</Button>
+    //   </div>
+    //   <div className="border rounded-lg">
+    //     <Table>
+    //       <TableHeader>
+    //         <TableRow>
+    //           <TableHead className="w-12">
+    //             <Checkbox />
+    //           </TableHead>
+              // <TableHead>NAME</TableHead>
+              // <TableHead>ROLE</TableHead>
+              // <TableHead>BIO</TableHead>
+              // <TableHead>ACTIONS</TableHead>
+    //         </TableRow>
+    //       </TableHeader>
+    //       <TableBody>
+    //         {peoples.map((user) => (
+    //           <TableRow key={user.id}>
+    //             <TableCell>
+    //               <Checkbox />
+    //             </TableCell>
+    //             <TableCell>
+    //               <div className="flex items-center gap-3">
+    //                 <MyAvatar user={user}/>
+    //                 <div className="flex flex-col">
+    //                   <span className="font-medium">{user.name}</span>
+    //                 </div>
+    //               </div>
+    //             </TableCell>
+    //             <TableCell>
+    //               <Badge 
+    //                 variant={user.role_id === "1" ? 'secondary' : 'outline'}
+    //                 className="font-normal"
+    //               >
+    //                 {user.role_id == "1" ? "User" : "Admin"}
+    //               </Badge>
+    //             </TableCell>
+    //             <TableCell>
+    //                 <span className="text-sm">{user.bio || "không có"}</span>
+    //             </TableCell>
+    //             <TableCell>
+    //               <div className="flex items-center gap-2">
+    //                 <Button size="icon">
+    //                   <KeyRound className="w-4 h-4" />
+    //                 </Button>
+    //                 <Button size="icon">
+    //                   <Trash2 className="w-4 h-4" />
+    //                 </Button>
+    //                 <Button size="icon">
+    //                   <Pencil className="w-4 h-4"/>
+    //                 </Button>
+    //               </div>
+    //             </TableCell>
+    //           </TableRow>
+    //         ))}
+    //       </TableBody>
+    //     </Table>
+    //   </div>
+    // </div>
+    <div className="w-full p-6 space-y-4">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-primary flex items-center">All Users 
+          <Badge variant="secondary" className="ml-2 rounded-full">{peoples.length}</Badge>
+        </h1>
+        <AddResource/>
       </div>
-      <div className="border rounded-lg">
+      <ScrollArea className="max-h-[80vh] h-[800px] rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-12">
-                <Checkbox />
-              </TableHead>
+              <TableHead>ID</TableHead>
               <TableHead>NAME</TableHead>
               <TableHead>ROLE</TableHead>
               <TableHead>BIO</TableHead>
@@ -87,7 +119,7 @@ export default function UserTable() {
             {peoples.map((user) => (
               <TableRow key={user.id}>
                 <TableCell>
-                  <Checkbox />
+                  <span>{user.id}</span>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-3">
@@ -110,9 +142,9 @@ export default function UserTable() {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Button size="icon">
+                    {/* <Button size="icon">
                       <KeyRound className="w-4 h-4" />
-                    </Button>
+                    </Button> */}
                     <Button size="icon">
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -125,28 +157,7 @@ export default function UserTable() {
             ))}
           </TableBody>
         </Table>
-      </div>
-      {/* <div className="flex items-center justify-between px-2 py-4">
-        <Button variant="ghost" disabled>
-          Prev
-        </Button>
-        <div className="flex items-center gap-1">
-          <Button size="icon" className="w-8 h-8">
-            1
-          </Button>
-          {[2, 3, 4, 5].map((page) => (
-            <Button key={page} variant="ghost" size="icon" className="w-8 h-8">
-              {page}
-            </Button>
-          ))}
-          <Button variant="ghost" size="icon" className="w-8 h-8">
-            Next
-          </Button>
-        </div>
-        <div className="text-sm text-muted-foreground">
-          Showing 10 of 127
-        </div>
-      </div> */}
+      </ScrollArea>
     </div>
   )
 }

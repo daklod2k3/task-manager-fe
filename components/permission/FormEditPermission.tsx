@@ -3,10 +3,11 @@
 import { useState,useEffect } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ToastAction } from "@/components/ui/toast"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Checkbox } from "@/components/ui/checkbox"
+import { usePermissionContext } from "@/context/permission-context"
 
 import {
   Form,
@@ -17,20 +18,6 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-
-import { Checkbox } from "@/components/ui/checkbox"
-import { updatePermission } from "@/action/Permission";
-import { useToast } from "@/hooks/use-toast";
-import { useResource } from "@/hooks/use-permission"
 
 const formDeptSchema = z.object({
   view: z.boolean(),
@@ -39,8 +26,8 @@ const formDeptSchema = z.object({
   delete: z.boolean(),
 });
 
-export default function FormEditPermission({mutate,onClose,idPermission,view,create,update,del}:{mutate: () => void,onClose: () => void,idPermission:number,view: boolean,create: boolean,update: boolean,del: boolean}) {
-  const {toast} = useToast();
+export default function FormEditPermission({onClose,idPermission,view,create,update,del}:{onClose: () => void,idPermission:number,view: boolean,create: boolean,update: boolean,del: boolean}) {
+  const {toast,resourceFetch,updatePerm} =  usePermissionContext();
 
   type FormDeptType = z.infer<typeof formDeptSchema>;
 
@@ -56,8 +43,8 @@ export default function FormEditPermission({mutate,onClose,idPermission,view,cre
 
   const onSubmit = async (formData) => {
     try {
-      const res = await updatePermission(idPermission,formData)
-      mutate()
+      const res = await updatePerm(idPermission,formData)
+      resourceFetch.mutate()
       onClose();
       console.log(res);
       toast({

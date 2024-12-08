@@ -7,36 +7,33 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDepartmentContext } from "@/context/department-context";
 import { useDepartment } from "@/hooks/use-department";
-import { ArrowLeft, Briefcase, Pencil, Plus, Users } from "lucide-react";
+import { ArrowLeft, Briefcase, Building, Pencil, Plus, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ToastAction } from "../ui/toast";
 import AddDeptUser from "./AddDeptUser";
 import LoadTask from "./LoadTask";
+import Loading from "../Loading";
 
 export default function ClientDeptId({ id }: { id: number }) {
   const router = useRouter();
-  const [department, setDepartment] = useState<any[]>([]);
-  const [isEditingName, setIsEditingName] = useState(false);
+  const [department, setDepartment] = useState<any>({});
   const [newName, setNewName] = useState<string>("");
   const [deptName, setDeptName] = useState<string>("");
-  const { data: departmentUserData } = useDepartment({
+  const [isEditingName, setIsEditingName] = useState(false);
+  const { data: departmentUserData, isLoading,mutate } = useDepartment({
     id,
     includes: "DepartmentUsers,TaskDepartments",
   });
-  const { deptAllFetch, toast, updateNameDept } = useDepartmentContext();
-  const [deptUser, setDeptUser] = useState<any[]>([]);
-  const [deptTask, setDeptTask] = useState<any[]>([]);
+  const {toast, updateNameDept } = useDepartmentContext();
 
   useEffect(() => {
     const fetchData = async () => {
       if (departmentUserData) {
-        console.log(departmentUserData.department)
-        setNewName(departmentUserData.department.name);
-        setDeptName(departmentUserData.department.name);
-        setDeptTask(departmentUserData.department.task_departments);
-        setDeptUser(departmentUserData.department.department_users);
+        console.log(departmentUserData[0].department_users)
+        setDepartment(departmentUserData[0])
+        setNewName(departmentUserData[0].name);
       }
     };
     fetchData();
@@ -58,7 +55,7 @@ export default function ClientDeptId({ id }: { id: number }) {
         },
       ];
       await updateNameDept(id, data);
-      deptAllFetch.mutate();
+      mutate();
       toast({
         description: "successfully add department",
       });
@@ -81,7 +78,7 @@ export default function ClientDeptId({ id }: { id: number }) {
       >
         <ArrowLeft className="mr-2 h-4 w-4" /> Back to Department
       </Button>
-      <Card className="h-auto bg-gradient-to-br from-primary/10 to-secondary/10">
+      <Card className="h-auto border-0">
         <CardHeader>
           <div className="flex items-center justify-between">
             {isEditingName ? (
@@ -89,13 +86,14 @@ export default function ClientDeptId({ id }: { id: number }) {
                 <Input
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="max-w-sm"
+                  className="max-w-sm text-3xl font-bold text-primary py-4"
                 />
                 <Button onClick={handleNameEdit}>Save</Button>
               </div>
             ) : (
-              <CardTitle className="text-3xl font-bold text-primary">
-                {deptName}
+              <CardTitle className="text-3xl font-bold text-primary flex items-center">
+                <Building size={26}/>
+                {isLoading ? <Loading/> : <span>{department.name}</span>}
               </CardTitle>
             )}
             {!isEditingName && (
@@ -120,17 +118,17 @@ export default function ClientDeptId({ id }: { id: number }) {
                 <ScrollArea className="mb-4 min-h-[calc(100vh-400px)] h-[calc(100vh-400px)]">
                   <ul className="space-y-4 pr-4">
                     <LoadPeople
-                      setDeptUser={setDeptUser}
-                      showOwner={false}
-                      departmentUsers={deptUser}
+                      mutate={mutate}
+                      isLoading={isLoading}
+                      departmentUsers={department.department_users || []}
                     />
                   </ul>
                 </ScrollArea>
                 <AddDeptUser
-                  setDeptUser={setDeptUser}
                   idDept={id}
-                  nameDept={deptName}
-                  departmentUsers={deptUser}
+                  mutate={mutate}
+                  nameDept={department.name || ""}
+                  departmentUsers={department.department_users || []}
                 />
               </CardContent>
             </Card>
@@ -142,7 +140,7 @@ export default function ClientDeptId({ id }: { id: number }) {
               <CardContent>
                 <ScrollArea className="min-h-[calc(100vh-400px)] h-[calc(100vh-400px)]">
                   <ul className="space-y-4 pr-4">
-                    <LoadTask showOverView={true} taskDepartments={deptTask} />
+                    <LoadTask taskDepartments={department.task_departments || []} />
                   </ul>
                 </ScrollArea>
                 <Link href={`/department/${id}/task`}>

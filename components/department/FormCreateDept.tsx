@@ -101,13 +101,14 @@ export default function FormCreateDept({onClose}:{onClose: () => void}) {
       console.log(resDept);
       deptAllFetch.mutate();
       toast({
-        description: "successfully add department",
+        title: `add department successfully`,
+        description: <span className="text-primary text-base">{`added department: ${formData.name}`}</span>
       })
     } catch (error) {
       toast({
         variant: "destructive",
         title: "add department error",
-        description: String(error),
+        description: <span className="text-red-600">{String(error)}</span>,
         action: <ToastAction altText="Try again">Please Try again</ToastAction>,
       })
     }

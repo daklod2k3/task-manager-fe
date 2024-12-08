@@ -1,8 +1,10 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import Loading from "../Loading";
 import {
   Select,
   SelectContent,
@@ -12,47 +14,48 @@ import {
 } from "@/components/ui/select"
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useRole, useResource } from "@/hooks/use-permission"
-import { useEffect, useState } from "react"
-import AddRole from "./AddRole"
-import { useToast } from "@/hooks/use-toast";
+import { usePermissionContext } from "@/context/permission-context"
 import { ToastAction } from "@/components/ui/toast"
-import { deletePermission, deleteRole } from "@/action/Permission"
+import AddRole from "./AddRole"
 import AlertButton from "../department/AlertButton"
-import { Trash2 } from 'lucide-react'
 import AddPermission from "./AddPermission"
 import EditPermission from "./EditPermission"
 
 
 export default function TablePermission() {
-  const {data:resourceFetch, isLoading:loadResource, mutate:mutateResource} = useResource();
-  const {data:roleFetch, isLoading:loadRole, mutate:mutateRole} = useRole();
+  const {
+    toast,
+    role,
+    delRole,
+    setRole,
+    roleFetch,
+    resourceFetch,
+    delPermission
+  } =  usePermissionContext();
   const [roleData, setRoleData] = useState<any[]>([]);
   const [selectedPermission, setSelectedPermission] = useState<any[]>([]);
-  const [role, setRole] = useState<number>(0);
-  const {toast} = useToast();
 
   useEffect(() => {
-    if(resourceFetch) {
-      const filteredPermissions = resourceFetch.map((resource) => ({
+    if(resourceFetch.data) {
+      const filteredPermissions = resourceFetch.data.map((resource) => ({
         ...resource,
         permissions: resource.permissions.filter((perm) => perm.role_id === role),
       })).filter((resource) => resource.permissions.length > 0);
-      console.log(filteredPermissions)
       setSelectedPermission(filteredPermissions)
     }
-  }, [resourceFetch,role])
+  }, [resourceFetch.data,role])
 
   useEffect(() => {
-    if(roleFetch) {
-      setRoleData(roleFetch)
+    if(roleFetch.data) {
+      console.log(roleFetch.data)
+      setRoleData(roleFetch.data)
     }
-  }, [roleFetch])
+  }, [roleFetch.data])
 
   const deleteRoleById = async (id: number) => {
     try {
-      const res = await deleteRole(id);
-      mutateRole()
+      const res = await delRole(id);
+      roleFetch.mutate()
       console.log(res)
       toast({
         description: "Deleted department successfully",
@@ -69,8 +72,8 @@ export default function TablePermission() {
 
   const deletePermissionById = async (id: number) => {
     try {
-      const res = await deletePermission(id);
-      mutateResource()
+      const res = await delPermission(id);
+      resourceFetch.mutate()
       console.log(res)
       toast({
         description: "Deleted department successfully",
@@ -92,20 +95,25 @@ export default function TablePermission() {
         <div className="flex items-center space-x-2">
           <Select onValueChange={(value) => {setRole(Number(value))}}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="admin" />
+              <SelectValue placeholder="user" />
             </SelectTrigger>
             <SelectContent>
-              {roleData.map(role => (
-                <SelectItem key={role.id} value={role.id}>{role.name}</SelectItem>
+            {roleData
+              .filter((role) => role.id !== 0)
+              .map((role) => (
+                <SelectItem key={role.id} value={role.id}>
+                  {role.name}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
           <AddRole/>
-          <AddPermission roleId={role}/>
+          <AddPermission resoCurr={selectedPermission} roleId={role}/>
           <AlertButton 
               confirmButtonLabel="Delete Role" 
               title={`Do you want to delete Role id ${role}?`}
               onAction={() => {
+                setRole(prev => prev)
                 deleteRoleById(role)
               }}
             >
@@ -116,6 +124,7 @@ export default function TablePermission() {
         </div>
       </CardHeader>
       <CardContent>
+      {resourceFetch.isLoading ? <Loading /> : 
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -129,25 +138,24 @@ export default function TablePermission() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {selectedPermission.map((permission, index) => (
+          {selectedPermission.map((permission, index) => (
               <TableRow key={index} className="border-b last:border-b-0 hover:bg-muted/10">
                 <TableCell className="px-4 py-2">{permission.name}</TableCell>
                 <TableCell className="px-4 py-2">{permission.path}</TableCell>
                 <TableCell className="px-4 py-2 text-center">
-                  <Checkbox defaultChecked={permission.permissions[0].view} disabled/>
+                  <Checkbox checked={permission.permissions[0].view} disabled/>
                 </TableCell>
                 <TableCell className="px-4 py-2 text-center">
-                  <Checkbox defaultChecked={permission.permissions[0].create} disabled/>
+                  <Checkbox checked={permission.permissions[0].create} disabled/>
                 </TableCell>
                 <TableCell className="px-4 py-2 text-center">
-                  <Checkbox defaultChecked={permission.permissions[0].update} disabled/>
+                  <Checkbox checked={permission.permissions[0].update} disabled/>
                 </TableCell>
                 <TableCell className="px-4 py-2 text-center">
-                  <Checkbox defaultChecked={permission.permissions[0].delete} disabled/>
+                  <Checkbox checked={permission.permissions[0].delete} disabled/>
                 </TableCell>
                 <TableCell className="px-4 py-2 text-center">
-                  <EditPermission 
-                    mutate={() => {mutateResource()}}
+                  <EditPermission
                     view={permission.permissions[0].view} 
                     update={permission.permissions[0].update}
                     create={permission.permissions[0].create}
@@ -168,6 +176,7 @@ export default function TablePermission() {
             ))}
           </TableBody>
         </Table>
+      }
       </CardContent>
     </Card>
   )

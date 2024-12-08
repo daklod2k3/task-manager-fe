@@ -5,13 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useState } from "react";
 import CreateDept from "./CreateDept";
+import { Building } from "lucide-react";
 
 export default function ClientDept() {
   const [searchTerm, setSearchTerm] = useState("");
 
   return (
     <div className="flex h-screen w-full flex-col p-4">
-      <h1 className="mb-10 text-4xl font-bold text-primary">
+      <h1 className="mb-10 text-4xl font-bold text-primary flex items-center">
         Department Management
       </h1>
       <div className="mb-6 flex items-center justify-between">

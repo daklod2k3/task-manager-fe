@@ -3,11 +3,16 @@ import { Tables } from "@/entity/database.types";
 import { ApiAuth, ApiRoutes, GetProps, IApiResponse } from "./Api";
 import { createClient } from "@/utils/supabase/server";
 
-export async function addDepartmentUser(departmentUser: Tables<"department_user">) {
+export async function addDepartmentUser(departmentUser: Tables<"department_user">[]) {
   try {
-    const res = await new ApiAuth(ApiRoutes.DepartmentUser).post(departmentUser);
-
-    return (await res.json()) as IApiResponse<Tables<"department_user">>;
+    const results = await Promise.all(
+      departmentUser.map(async (item) => {
+        const response = await new ApiAuth(ApiRoutes.DepartmentUser).post(item);
+        return await response.json();
+      })
+    );
+    
+    return results as IApiResponse<Tables<"department_user">>[];
   } catch (e) {
     console.log(e);
     throw Error()

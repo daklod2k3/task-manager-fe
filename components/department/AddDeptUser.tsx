@@ -4,23 +4,15 @@ import React, { useState } from "react";
 import ShowDialog from "./ShowDialog";
 import FormAddDeptUser from "./FormAddDeptUser";
 
-type DepartmentUser = {
-  id: number;
-  created_at: string;
-  department_id: number;
-  owner_type: string;
-  user_id: string;
-};
-
 type LoadOwnerProps = {
+  mutate: () => void;
   idDept:number;
   nameDept:string;
-  setDeptUser: React.Dispatch<React.SetStateAction<any[]>>;
-  departmentUsers: DepartmentUser[];
+  departmentUsers: any[];
 };
 
 
-const AddDeptUser: React.FC<LoadOwnerProps> = ({ departmentUsers,nameDept,idDept,setDeptUser }) => {
+const AddDeptUser: React.FC<LoadOwnerProps> = ({ mutate,departmentUsers,nameDept,idDept }) => {
   const [open, setOpen] = useState(false);
 
   const handleOpenChange = (isOpen: boolean) => {
@@ -35,7 +27,7 @@ const AddDeptUser: React.FC<LoadOwnerProps> = ({ departmentUsers,nameDept,idDept
       open={open}
       onOpenChange={handleOpenChange}
     >
-      <FormAddDeptUser setDeptUser={setDeptUser} idDept={idDept} nameDept={nameDept} departmentUsers={departmentUsers} onClose={() => setOpen(false)} />
+      <FormAddDeptUser mutate={mutate} idDept={idDept} nameDept={nameDept} departmentUsers={departmentUsers} onClose={() => setOpen(false)} />
     </ShowDialog>
   );
 }

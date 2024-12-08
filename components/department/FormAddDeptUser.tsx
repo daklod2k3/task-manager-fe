@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import SearchSelect from "@/components/search-select";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
 import { useDepartmentContext } from "@/context/department-context";
-import { updateDepartmentUser } from "@/action/DepartmentUser";
+import { addDepartmentUser } from "@/action/DepartmentUser";
 
 import {
   Form,
@@ -25,35 +25,25 @@ import {
 } from "@/components/ui/form"
 
 import { Tables } from "@/entity/database.types";
-
-type DepartmentUser = {
-  id: number;
-  created_at: string;
-  department_id: number;
-  owner_type: string;
-  user_id: string;
-};
-
 type LoadOwnerProps = {
   onClose: () => void;
+  mutate: () => void;
   idDept:number;
   nameDept: string;
-  departmentUsers: DepartmentUser[];
-  setDeptUser: React.Dispatch<React.SetStateAction<any[]>>;
+  departmentUsers: any[];
 };
 
 const formDeptSchema = z.object({
-  id: z.number().min(1, "Department name is required"),
-  name: z.string().min(1, "Department name is required"),
   department_users: z.array(
     z.object({
       user_id: z.string(),
       owner_type: z.string(),
+      department_id: z.number()
     })
   ).optional(),
 });
 
-const FormAddDeptUser: React.FC<LoadOwnerProps> = ({ departmentUsers,onClose,nameDept,idDept,setDeptUser }) =>{
+const FormAddDeptUser: React.FC<LoadOwnerProps> = ({ mutate,departmentUsers,onClose,nameDept,idDept }) =>{
   const { data: peopleFetch, isLoading } = usePeople();
   const [peoples, setPeoples] = useState<Tables<"profiles">[]>([]);
   const [peoplesNoOwner, setPeoplesNoOwner] = useState<Tables<"profiles">[]>([]);
@@ -66,8 +56,6 @@ const FormAddDeptUser: React.FC<LoadOwnerProps> = ({ departmentUsers,onClose,nam
   const form = useForm<FormDeptType>({
     resolver: zodResolver(formDeptSchema),
     defaultValues: {
-      id: Number(idDept),
-      name: nameDept,
       department_users: [],
     },
   });
@@ -84,7 +72,6 @@ const FormAddDeptUser: React.FC<LoadOwnerProps> = ({ departmentUsers,onClose,nam
 
   useEffect(() => {
     if(peopleFetch) {
-      setDeptUser(departmentUsers)
       setPeoples(peopleFetch);
       const userDeptNo = peopleFetch.filter(person =>
         !departmentUsers.some(deptUser => deptUser.user_id === person.id)
@@ -106,17 +93,18 @@ const FormAddDeptUser: React.FC<LoadOwnerProps> = ({ departmentUsers,onClose,nam
 
   const onSubmit = async (formData) => {
     try {
-      console.log(formData)
-      const resDept = await updateDept(formData);
+      console.log(formData.department_users)
+      const resDept = await addDepartmentUser(formData.department_users);
       console.log(resDept);
-      deptAllFetch.mutate();
+      mutate();
       toast({
-        description: "successfully add department",
+        title: "Add department user successfully",
+        description: <span className="text-primary text-base">{`Added member to ${nameDept}`}</span>,
       })
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "add department error",
+        title: "add department user error",
         description: String(error),
         action: <ToastAction altText="Try again">Please Try again</ToastAction>,
       })
@@ -183,9 +171,10 @@ const FormAddDeptUser: React.FC<LoadOwnerProps> = ({ departmentUsers,onClose,nam
                 const newMembers = deptMember.map((member) => ({
                   user_id: member.id,
                   owner_type: "member",
+                  department_id: Number(idDept),
               }));
-              setDeptUser([...departmentUsers, ...newMembers]);
-              const updatedUsers = [...departmentUsers, ...newMembers];
+              // setDeptUser([...departmentUsers, ...newMembers]);
+              const updatedUsers = [ ...newMembers];
 
               form.setValue("department_users", updatedUsers);
               onClose();
