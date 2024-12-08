@@ -1,5 +1,5 @@
 "use client";
-import { useUser } from "@/hooks/use-user";
+import useUser from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
 import {
   Bell,
@@ -134,7 +134,7 @@ export function ExpandableAvatar() {
   const [isExpanded, setIsExpanded] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const avatarRef = useRef<HTMLDivElement>(null);
-  const { data: user } = useUser();
+  const { data: user } = useUser({});
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);

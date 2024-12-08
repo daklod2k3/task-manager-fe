@@ -1,3 +1,4 @@
+"use client";
 import { ApiRoutes } from "@/action/Api";
 import { Tables } from "@/entity/database.types";
 import { useEffect } from "react";
@@ -5,13 +6,20 @@ import useSWR from "swr";
 import { fetcher, useApiProps } from "./client-api";
 import { useToast } from "./use-toast";
 
-export default function useUser({ load = true, ...props }: useApiProps) {
+export default function useDirectMessage<T = Tables<"user_message">[]>({
+  load = true,
+  mode = "user",
+  ...props
+}: useApiProps) {
   const { toast } = useToast();
 
   const { data, error, isLoading, mutate } = useSWR(
     load
       ? {
-          url: "/api" + ApiRoutes.User,
+          url:
+            "/api" +
+            (mode == "user" ? "/auth/user" : "") +
+            ApiRoutes.DirectMessage,
           arguments: props,
         }
       : null,
@@ -30,5 +38,5 @@ export default function useUser({ load = true, ...props }: useApiProps) {
       });
   }, [error]);
 
-  return { data: data as Tables<"profiles">, error, isLoading, mutate };
+  return { data: data as T, error, isLoading, mutate };
 }

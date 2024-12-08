@@ -97,8 +97,6 @@ export type Database = {
           created_by: string;
           id: number;
           name: string;
-          department_id: number | null;
-          department?: Tables<"departments">;
         };
         Insert: {
           created_at?: string;
@@ -127,18 +125,21 @@ export type Database = {
           created_at: string;
           department_id: number | null;
           id: number;
+          owner_type: Database["public"]["Enums"]["DepartmentOwnerType"];
           user_id: string | null;
         };
         Insert: {
           created_at?: string;
           department_id?: number | null;
           id?: number;
+          owner_type?: Database["public"]["Enums"]["DepartmentOwnerType"];
           user_id?: string | null;
         };
         Update: {
           created_at?: string;
           department_id?: number | null;
           id?: number;
+          owner_type?: Database["public"]["Enums"]["DepartmentOwnerType"];
           user_id?: string | null;
         };
         Relationships: [
@@ -243,12 +244,7 @@ export type Database = {
           bio: string | null;
           id: string;
           name: string;
-          role_name?: string;
-          role_id: string;
-          role?: {
-            id: string;
-            name: string;
-          };
+          role_id: number;
         };
         Insert: {
           avt?: string | null;
@@ -263,6 +259,45 @@ export type Database = {
           name?: string;
         };
         Relationships: [];
+      };
+      task_comment: {
+        Row: {
+          comment: string;
+          created_at: string;
+          created_by: string | null;
+          id: number;
+          task_id: number | null;
+        };
+        Insert: {
+          comment: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: number;
+          task_id?: number | null;
+        };
+        Update: {
+          comment?: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: number;
+          task_id?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "task_comment_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "task_comment_task_id_fkey";
+            columns: ["task_id"];
+            isOneToOne: false;
+            referencedRelation: "tasks";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       task_department: {
         Row: {
@@ -380,15 +415,11 @@ export type Database = {
           created_at: string;
           created_by: string;
           description: string | null;
-          due_date: Date | null;
+          due_date: string | null;
           id: number;
           priority: Database["public"]["Enums"]["TaskPriority"];
           status: Database["public"]["Enums"]["TaskStatus"];
-          assigned_to_user: number;
-          assigned_to_department: number;
-          created_by_navigation?: Tables<"profiles">;
           title: string;
-          file_id: number;
         };
         Insert: {
           created_at?: string;
@@ -399,7 +430,6 @@ export type Database = {
           priority?: Database["public"]["Enums"]["TaskPriority"];
           status?: Database["public"]["Enums"]["TaskStatus"];
           title: string;
-          file_id: number;
         };
         Update: {
           created_at?: string;
@@ -409,7 +439,6 @@ export type Database = {
           id?: number;
           priority?: Database["public"]["Enums"]["TaskPriority"];
           status?: Database["public"]["Enums"]["TaskStatus"];
-          file_id?: number;
           title?: string;
         };
         Relationships: [
@@ -418,45 +447,6 @@ export type Database = {
             columns: ["created_by"];
             isOneToOne: false;
             referencedRelation: "profiles";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      task_comment: {
-        Row: {
-          comment: string;
-          created_at: string;
-          created_by: string | null;
-          id: number;
-          task_id: number | null;
-        };
-        Insert: {
-          comment: string;
-          created_at?: string;
-          created_by?: string | null;
-          id?: number;
-          task_id?: number | null;
-        };
-        Update: {
-          comment?: string;
-          created_at?: string;
-          created_by?: string | null;
-          id?: number;
-          task_id?: number | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "task_comment_created_by_fkey";
-            columns: ["created_by"];
-            isOneToOne: false;
-            referencedRelation: "profiles";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "task_comment_task_id_fkey";
-            columns: ["task_id"];
-            isOneToOne: false;
-            referencedRelation: "tasks";
             referencedColumns: ["id"];
           },
         ];
@@ -470,9 +460,8 @@ export type Database = {
           id: number;
           to_id: string;
           updated_at: string | null;
-          to: Tables<"profiles">;
           from: Tables<"profiles">;
-          send_to: Tables<"profiles">;
+          to: Tables<"profiles">;
         };
         Insert: {
           content: string;
@@ -524,15 +513,23 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
-      TaskPriority: "High" | "Medium" | "Low";
+      DepartmentOwnerType: "owner" | "user";
+      TaskPriority: "High" | "Medium" | "Low" | "high" | "medium" | "low";
       TaskStatus:
         | "To_do"
-        | "In_progress"
-        | "In_preview"
-        | "In_complete"
-        | "Qa"
+        | "In_Progress"
+        | "In_Preview"
+        | "In_Complete"
+        | "QA"
         | "Done"
-        | "Archived";
+        | "Archived"
+        | "to_do"
+        | "in_progress"
+        | "in_preview"
+        | "in_complete"
+        | "qa"
+        | "done"
+        | "archived";
     };
     CompositeTypes: {
       [_ in never]: never;

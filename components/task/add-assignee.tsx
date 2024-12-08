@@ -4,7 +4,7 @@ import { TaskUsers } from "@/entity/Entity";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
 import { useToast } from "@/hooks/use-toast";
 import { X } from "lucide-react";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useState } from "react";
 import MyAvatar from "../Avatar";
 import SearchSelect from "../search-select";
 import { Badge } from "../ui/badge";
@@ -15,11 +15,11 @@ interface Props {
 }
 
 export default function AddAssignee({ task_id, task_user }: Props) {
-  const { data: peoples, isLoading: peopleLoading } = usePeople();
+  const { data: peoples, isLoading: peopleLoading } = usePeople({});
   const { taskFetch: useTask } = useTaskContext();
   const { mutate: mutateTask } = useTask({
     load: Boolean(task_id),
-    id: task_id,
+    id: task_id + "",
   });
   const [select, setSelect] = useState(task_user || []);
   const [loading, setLoading] = useState(false);

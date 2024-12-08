@@ -1,5 +1,5 @@
 import { Tables } from "@/entity/database.types";
-import { useUser } from "@/hooks/use-user";
+import useUser from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { Loader2 } from "lucide-react";
@@ -21,32 +21,35 @@ export default function MyAvatar({
   ...props
 }: Props) {
   const sizeClass = size ? `size-${size}` : undefined;
-  const { data: localUser, isLoading } = useUser();
+  const { data: localUser, isLoading } = useUser({});
 
-  const data = localUser || user;
+  const data = user || localUser;
 
   return (
     <div className="flex items-center gap-2">
-      <Avatar
-        {...props}
-        className={cn(
-          sizeClass,
-          className,
-          // "relative z-10"
-        )}
-      >
-        {data && (
-          <AvatarImage
-            src={
-              "/image/avatar/" +
-              (data ? data.avt || "avatar.avif" : "null-user.png")
-            }
-          />
-        )}
-        {isLoading && <Loader2 className="animate-spin" />}
+      {isLoading ? (
+        <Loader2 className="animate-spin" />
+      ) : (
+        <Avatar
+          {...props}
+          className={cn(
+            sizeClass,
+            className,
+            // "relative z-10"
+          )}
+        >
+          {data && (
+            <AvatarImage
+              src={
+                "/image/avatar/" +
+                (data ? data.avt || "avatar.avif" : "null-user.png")
+              }
+            />
+          )}
 
-        <AvatarFallback>{data?.name}</AvatarFallback>
-      </Avatar>
+          <AvatarFallback>{data?.name}</AvatarFallback>
+        </Avatar>
+      )}
       {includeInfo && (
         <div className="grid gap-1 font-semibold text-primary">
           {data?.name}
