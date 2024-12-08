@@ -101,7 +101,7 @@ export class ApiAuth {
     return res;
   }
 
-  async delete(id: number) {
+  async delete(id: any) {
     const res = fetch(this.route + `/${id}`, {
       headers: {
         Authorization: `Bearer ${await this.token}`,

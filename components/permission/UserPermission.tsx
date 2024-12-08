@@ -16,13 +16,19 @@ import { KeyRound, Trash2,Pencil } from 'lucide-react'
 import { usePeople } from "@/hooks/use-people"
 import { useEffect, useState } from "react"
 import { Tables } from "@/entity/database.types"
+import { useToast } from "@/hooks/use-toast";
 import MyAvatar from "../Avatar"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import AddResource from "./AddResource"
+import Link from "next/link"
+import AddUser from "./AddUser"
+import AlertButton from "../department/AlertButton"
+import { deleteUser } from "@/action/User"
 
 export default function UserTable() {
-  const {data:peopleFetch, isLoading} = usePeople();
+  const {data:peopleFetch, isLoading,mutate,} = usePeople({});
   const [peoples, setPeoples] = useState<Tables<"profiles">[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     if(peopleFetch) {
@@ -30,6 +36,23 @@ export default function UserTable() {
       setPeoples(peopleFetch);
     }
   }, [peopleFetch]);
+
+  const deleteUserById = async (id: string) => {
+    try {
+      const res = await deleteUser(id);
+      mutate()
+      console.log(res)
+      toast({
+        description: "Deleted department successfully",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Delete department error",
+        description: String(error),
+      });
+    }
+  };
 
   return (
     // <div className="w-full p-4">
@@ -102,7 +125,7 @@ export default function UserTable() {
         <h1 className="text-2xl font-bold text-primary flex items-center">All Users 
           <Badge variant="secondary" className="ml-2 rounded-full">{peoples.length}</Badge>
         </h1>
-        <AddResource/>
+        <AddUser/>
       </div>
       <ScrollArea className="max-h-[80vh] h-[800px] rounded-md border">
         <Table>
@@ -142,12 +165,13 @@ export default function UserTable() {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    {/* <Button size="icon">
-                      <KeyRound className="w-4 h-4" />
-                    </Button> */}
-                    <Button size="icon">
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <AlertButton 
+                      title="Delete"
+                      onAction={() => {deleteUserById(user.id)}}
+                      ><Button size="icon">
+                        <Trash2 className="w-4 h-4"/>
+                        </Button>
+                        </AlertButton>
                     <Button size="icon">
                       <Pencil className="w-4 h-4"/>
                     </Button>

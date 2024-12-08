@@ -46,7 +46,7 @@ const formDeptSchema = z.object({
 });
 
 export default function FormCreateDept({onClose}:{onClose: () => void}) {
-  const { data: peopleFetch, isLoading } = usePeople();
+  const { data: peopleFetch, isLoading } = usePeople({});
   const [peoples, setPeoples] = useState<Tables<"profiles">[]>([]);
   const [peoplesNoOwner, setPeoplesNoOwner] = useState<Tables<"profiles">[]>([]);
   const [peoplesHasOwner, setPeoplesHasOwner] = useState<Tables<"profiles">[]>([]);

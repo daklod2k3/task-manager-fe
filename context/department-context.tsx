@@ -33,7 +33,7 @@ interface DepartmentProviderProps {
 
 export function DepartmentProvider({ children }: DepartmentProviderProps) {
   const deptAllFetch = useDepartment({
-    includes: "DepartmentUsers,TaskDepartments",
+    includes: "DepartmentUsers.User,TaskDepartments.Task",
   });
   const deptId = useDepartment;
   const deleteDept = deleteDepartment;

@@ -44,7 +44,7 @@ const formDeptSchema = z.object({
 });
 
 const FormAddDeptUser: React.FC<LoadOwnerProps> = ({ mutate,departmentUsers,onClose,nameDept,idDept }) =>{
-  const { data: peopleFetch, isLoading } = usePeople();
+  const { data: peopleFetch, isLoading } = usePeople({});
   const [peoples, setPeoples] = useState<Tables<"profiles">[]>([]);
   const [peoplesNoOwner, setPeoplesNoOwner] = useState<Tables<"profiles">[]>([]);
 
