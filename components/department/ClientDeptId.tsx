@@ -16,7 +16,7 @@ import AddDeptUser from "./AddDeptUser";
 import LoadTask from "./LoadTask";
 import Loading from "../Loading";
 
-export default function ClientDeptId({ id }: { id: number }) {
+export default function ClientDeptId({ id }: { id: string }) {
   const router = useRouter();
   const [department, setDepartment] = useState<any>({});
   const [newName, setNewName] = useState<string>("");
@@ -24,16 +24,16 @@ export default function ClientDeptId({ id }: { id: number }) {
   const [isEditingName, setIsEditingName] = useState(false);
   const { data: departmentUserData, isLoading,mutate } = useDepartment({
     id,
-    includes: "DepartmentUsers,TaskDepartments",
+    includes: "DepartmentUsers.User,TaskDepartments.Task",
   });
   const {toast, updateNameDept } = useDepartmentContext();
 
   useEffect(() => {
     const fetchData = async () => {
       if (departmentUserData) {
-        console.log(departmentUserData[0].department_users)
-        setDepartment(departmentUserData[0])
-        setNewName(departmentUserData[0].name);
+        console.log(departmentUserData)
+        setDepartment(departmentUserData)
+        setNewName(departmentUserData.name);
       }
     };
     fetchData();
@@ -54,7 +54,7 @@ export default function ClientDeptId({ id }: { id: number }) {
           value: newName,
         },
       ];
-      await updateNameDept(id, data);
+      await updateNameDept(Number(id), data);
       mutate();
       toast({
         description: "successfully add department",
@@ -125,7 +125,7 @@ export default function ClientDeptId({ id }: { id: number }) {
                   </ul>
                 </ScrollArea>
                 <AddDeptUser
-                  idDept={id}
+                  idDept={Number(id)}
                   mutate={mutate}
                   nameDept={department.name || ""}
                   departmentUsers={department.department_users || []}

@@ -25,15 +25,14 @@ import EditPermission from "./EditPermission"
 export default function TablePermission() {
   const {
     toast,
-    role,
     delRole,
-    setRole,
     roleFetch,
     resourceFetch,
     delPermission
   } =  usePermissionContext();
   const [roleData, setRoleData] = useState<any[]>([]);
   const [selectedPermission, setSelectedPermission] = useState<any[]>([]);
+  const [role, setRole] = useState<number>();
 
   useEffect(() => {
     if(resourceFetch.data) {
@@ -49,6 +48,7 @@ export default function TablePermission() {
     if(roleFetch.data) {
       console.log(roleFetch.data)
       setRoleData(roleFetch.data)
+      setRole(roleFetch.data[0].id)
     }
   }, [roleFetch.data])
 
@@ -95,7 +95,7 @@ export default function TablePermission() {
         <div className="flex items-center space-x-2">
           <Select onValueChange={(value) => {setRole(Number(value))}}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="user" />
+              <SelectValue placeholder={roleData[0]?.name || "loading..."} />
             </SelectTrigger>
             <SelectContent>
             {roleData
@@ -108,13 +108,13 @@ export default function TablePermission() {
             </SelectContent>
           </Select>
           <AddRole/>
-          <AddPermission resoCurr={selectedPermission} roleId={role}/>
+          <AddPermission resoCurr={selectedPermission} roleId={role || 1}/>
           <AlertButton 
               confirmButtonLabel="Delete Role" 
               title={`Do you want to delete Role id ${role}?`}
               onAction={() => {
                 setRole(prev => prev)
-                deleteRoleById(role)
+                deleteRoleById(role || 1)
               }}
             >
               <Button>

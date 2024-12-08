@@ -25,8 +25,6 @@ interface IPermissionContext {
   updatePerm: typeof updatePermission;
   updateReso: typeof updateResource;
   toast: ReturnType<typeof useToast>["toast"];
-  role: number;
-  setRole: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export const PermissionContext = createContext<IPermissionContext | undefined>(
@@ -53,7 +51,6 @@ export function PermissionProvider({ children }: PermissionProviderProps) {
   const addRol = addRole;
   const updatePerm = updatePermission;
   const updateReso = updateResource;
-  const [role, setRole] = useState<number>(1);
 
   const value = {
     resourceFetch,
@@ -67,8 +64,6 @@ export function PermissionProvider({ children }: PermissionProviderProps) {
     updatePerm,
     updateReso,
     toast,
-    role,
-    setRole,
   };
 
   return (

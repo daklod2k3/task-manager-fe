@@ -64,7 +64,7 @@ export function DepartmentList({ searchTerm }: { searchTerm: string }) {
                   <div key={dept.id} className="group">
                     <div className="rounded-xl border-l-4 border-l-blue-500 bg-white p-6 shadow transition-all duration-200 hover:border-green-500 hover:shadow-md">
                       <div className="mb-4 flex items-center justify-between">
-                        <h3 className="text-xl font-semibold text-pink-700 group-hover:text-pink-800">
+                        <h3 className="capitalize text-xl font-semibold text-pink-700 group-hover:text-pink-800">
                           {dept.name}
                         </h3>
                         <div className="flex space-x-3 opacity-0 transition-opacity group-hover:opacity-100">
