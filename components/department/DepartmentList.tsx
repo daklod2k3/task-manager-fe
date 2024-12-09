@@ -8,8 +8,8 @@ import { Briefcase, Pencil, Trash2, Users } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import Loading from "../Loading";
-import { ToastAction } from "../ui/toast";
 import { Progress } from "@/components/ui/progress";
+import { DescriptionCustom } from "./CustomToast";
 
 export function DepartmentList({ searchTerm }: { searchTerm: string }) {
   const { deptAllFetch, toast, deleteDept } = useDepartmentContext();
@@ -33,16 +33,15 @@ export function DepartmentList({ searchTerm }: { searchTerm: string }) {
       const res = await deleteDept(id);
       console.log(res);
       toast({  
-        title: `Delete department successfully`,
-        description: <span className="text-primary text-base">{`Deleted department: ${name}`}</span>,
+        title: `Success`,  
+        description: <DescriptionCustom>{`Deleted department: ${name}`}</DescriptionCustom>
       });
       deptAllFetch.mutate();
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Delete department error",
-        description: <span className="text-red-600">{`error: String(error)`}</span>,
-        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
+        title: "Delete Error",
+        description: String(error),
       });
     }
   };

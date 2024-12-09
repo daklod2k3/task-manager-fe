@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import ShowDialog from "./ShowDialog";
 import FormAddDeptUser from "./FormAddDeptUser";
+import { Button } from "../ui/button";
+import { Plus } from "lucide-react";
 
 type LoadOwnerProps = {
   mutate: () => void;
@@ -22,8 +24,9 @@ const AddDeptUser: React.FC<LoadOwnerProps> = ({ mutate,departmentUsers,nameDept
   return (
     <ShowDialog
       title="Add Member For Department"
-      triggerLabel="Add Member"
-      className="w-full"
+      triggerLabel={
+        <Button className="w-full"><Plus className="w-4 h-4"/>Add User</Button>
+      }
       open={open}
       onOpenChange={handleOpenChange}
     >

@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import ShowDialog from "@/components/department/ShowDialog";
 import FormAddRole from "./FormAddRole";
+import { Button } from "../ui/button";
+import { Plus } from "lucide-react";
 
 export default function AddRole() {
   const [open, setOpen] = useState(false);
@@ -14,7 +16,7 @@ export default function AddRole() {
   return (
     <ShowDialog
       title="Add a new role"
-      triggerLabel="Add Role"
+      triggerLabel={<Button><Plus className="w-4 h-4"/>Add Role</Button>}
       open={open}
       onOpenChange={handleOpenChange}
     >

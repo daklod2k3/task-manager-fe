@@ -20,6 +20,7 @@ import AddRole from "./AddRole"
 import AlertButton from "../department/AlertButton"
 import AddPermission from "./AddPermission"
 import EditPermission from "./EditPermission"
+import { Trash2 } from "lucide-react"
 
 
 export default function TablePermission() {
@@ -91,8 +92,8 @@ export default function TablePermission() {
   return (
     <Card className="w-full border-0">
       <CardHeader className="space-y-1 pb-4">
-        <CardTitle className="text-2xl mb-2">Role Management</CardTitle>
-        <div className="flex items-center space-x-2">
+        <CardTitle className="text-2xl font-bold text-primary mb-2">Role Management</CardTitle>
+        <div className="flex w-full justify-between space-x-2">
           <Select onValueChange={(value) => {setRole(Number(value))}}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder={roleData[0]?.name || "loading..."} />
@@ -107,20 +108,22 @@ export default function TablePermission() {
               ))}
             </SelectContent>
           </Select>
-          <AddRole/>
-          <AddPermission resoCurr={selectedPermission} roleId={role || 1}/>
-          <AlertButton 
-              confirmButtonLabel="Delete Role" 
-              title={`Do you want to delete Role id ${role}?`}
-              onAction={() => {
-                setRole(prev => prev)
-                deleteRoleById(role || 1)
-              }}
-            >
-              <Button>
-                Delete Role
-              </Button>
-            </AlertButton>
+          <div className="flex gap-2">
+            <AddRole/>
+            <AddPermission resoCurr={selectedPermission} roleId={role || 1}/>
+            <AlertButton 
+                confirmButtonLabel="Delete Role" 
+                title={`Do you want to delete Role id ${role}?`}
+                onAction={() => {
+                  setRole(prev => prev)
+                  deleteRoleById(role || 1)
+                }}
+              >
+                <Button>
+                  Delete Role
+                </Button>
+              </AlertButton>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -167,8 +170,8 @@ export default function TablePermission() {
                   title={`Do you want to delete Permission id ${permission.permissions[0].id}?`}
                   onAction={() => {deletePermissionById(permission.permissions[0].id)}}
                 >
-                  <Button className="ml-2">
-                    Delete
+                  <Button className="ml-2" size="icon">
+                    <Trash2 className="w-4 h-4"/>
                   </Button>
                 </AlertButton>
                 </TableCell>

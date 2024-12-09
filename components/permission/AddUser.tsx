@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import ShowDialog from "@/components/department/ShowDialog";
 import { FormAddUser } from "./FormAddUser";
+import { Plus } from "lucide-react";
+import { Button } from "../ui/button";
 
 export default function AddResource() {
   const [open, setOpen] = useState(false);
@@ -14,7 +16,7 @@ export default function AddResource() {
   return (
     <ShowDialog
       title=""
-      triggerLabel="Add User"
+      triggerLabel={<Button><Plus className="w-4 h-4"/>Add User</Button>}
       open={open}
       onOpenChange={handleOpenChange}
     >

@@ -19,16 +19,18 @@ import { Tables } from "@/entity/database.types"
 import { useToast } from "@/hooks/use-toast";
 import MyAvatar from "../Avatar"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import AddResource from "./AddResource"
 import Link from "next/link"
 import AddUser from "./AddUser"
 import AlertButton from "../department/AlertButton"
 import { deleteUser } from "@/action/User"
+import EditPermissionUser from "./EditPermissionUser"
+import { usePermissionContext } from "@/context/permission-context"
 
 export default function UserTable() {
   const {data:peopleFetch, isLoading,mutate,} = usePeople({});
   const [peoples, setPeoples] = useState<Tables<"profiles">[]>([]);
-  const { toast } = useToast();
+  const {toast,roleFetch} =  usePermissionContext();
+  const [roleData, setRoleData] = useState<any[]>([])
 
   useEffect(() => {
     if(peopleFetch) {
@@ -36,6 +38,13 @@ export default function UserTable() {
       setPeoples(peopleFetch);
     }
   }, [peopleFetch]);
+
+  useEffect(() => {
+    if(roleFetch.data) {
+      console.log(roleFetch.data)
+      setRoleData(roleFetch.data);
+    }
+  }, [roleFetch.data]);
 
   const deleteUserById = async (id: string) => {
     try {
@@ -157,7 +166,7 @@ export default function UserTable() {
                     variant={user.role_id === "1" ? 'secondary' : 'outline'}
                     className="font-normal"
                   >
-                    {user.role_id == "1" ? "User" : "Admin"}
+                    <span className="capitalize">{roleFetch.isLoading ? "loading..." : roleData.find((role) => role.id === user.role_id)?.name}</span>
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -172,9 +181,7 @@ export default function UserTable() {
                         <Trash2 className="w-4 h-4"/>
                         </Button>
                         </AlertButton>
-                    <Button size="icon">
-                      <Pencil className="w-4 h-4"/>
-                    </Button>
+                        <EditPermissionUser avt={user.avt || ""} bio={user.bio || ""} name={user.name} role_id={Number(user.role_id)} id={user.id}/>
                   </div>
                 </TableCell>
               </TableRow>

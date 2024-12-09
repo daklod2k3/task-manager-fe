@@ -11,10 +11,10 @@ import { ArrowLeft, Briefcase, Building, Pencil, Plus, Users } from "lucide-reac
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ToastAction } from "../ui/toast";
 import AddDeptUser from "./AddDeptUser";
 import LoadTask from "./LoadTask";
 import Loading from "../Loading";
+import { DescriptionCustom } from "./CustomToast";
 
 export default function ClientDeptId({ id }: { id: string }) {
   const router = useRouter();
@@ -57,14 +57,14 @@ export default function ClientDeptId({ id }: { id: string }) {
       await updateNameDept(Number(id), data);
       mutate();
       toast({
-        description: "successfully add department",
+        title: "Success",
+        description: <DescriptionCustom>{"updated department name"}</DescriptionCustom>
       });
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "add department error",
+        title: "Update Error",
         description: String(error),
-        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
       });
     }
   };
@@ -145,7 +145,7 @@ export default function ClientDeptId({ id }: { id: string }) {
                 </ScrollArea>
                 <Link href={`/department/${id}/task`}>
                   <Button className="mt-4 w-full bg-green-500 hover:bg-green-600">
-                    <Plus className="mr-2 h-4 w-4" /> Add Task
+                    <Plus className="h-4 w-4" /> Add Task
                   </Button>
                 </Link>
               </CardContent>

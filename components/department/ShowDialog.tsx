@@ -2,22 +2,20 @@
 
 import React, { ReactNode } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 
 interface ShowDialogProps {
   title: string;
-  className?: string;
-  triggerLabel: string;
+  triggerLabel: ReactNode;
   children: ReactNode;
   open: boolean;
   onOpenChange: (isOpen: boolean) => void;
 }
 
-const ShowDialog: React.FC<ShowDialogProps> = ({ title,className,triggerLabel, children, open, onOpenChange }) => {
+const ShowDialog: React.FC<ShowDialogProps> = ({ title,triggerLabel, children, open, onOpenChange }) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button className={className}>{triggerLabel}</Button>
+        {triggerLabel}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

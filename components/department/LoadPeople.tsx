@@ -3,12 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button"
 import { Trash2 } from 'lucide-react'
-import { ToastAction } from '../ui/toast'
 import { updateOwner,deleteDepartmentUser } from "@/action/DepartmentUser";
 import { useDepartmentContext } from "@/context/department-context";
 import MyAvatar from '@/components/Avatar';
 import AlertButton from "./AlertButton";
 import SelectPosition from "./SelectPosition";
+import { DescriptionCustom } from "./CustomToast";
 
 type LoadOwnerProps = {
   mutate: () => void;
@@ -18,10 +18,6 @@ type LoadOwnerProps = {
 
 const LoadPeople: React.FC<LoadOwnerProps> = ({ mutate,departmentUsers,isLoading }) => {
   const {toast} = useDepartmentContext();
-  const [userOwner, setUserOwner] = useState<any>(null);
-  const [userData, setUserData] = useState<any[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedValue, setSelectedValue] = useState<string>();
 
   const HandleOwner = async (id:number, name:string) => {
     try {
@@ -30,16 +26,15 @@ const LoadPeople: React.FC<LoadOwnerProps> = ({ mutate,departmentUsers,isLoading
       console.log(res)
       mutate();
       toast({
-        title: `Edit type successfully`,
-        description: <span className="text-primary text-base">{`change ${id} type to ${name}`}</span>,
+        title: `Success`,
+        description: <DescriptionCustom>{`change ${id} type to ${name}`}</DescriptionCustom>,
       })
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "add department error",
+        title: "Edit Error",
         description: String(error),
-        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
-      })
+      });
     }
   }
 
@@ -48,16 +43,15 @@ const LoadPeople: React.FC<LoadOwnerProps> = ({ mutate,departmentUsers,isLoading
       const res = await deleteDepartmentUser(id);
       mutate();
       toast({
-        title:`Delete member ${name} successfully`,
-        description: <span className="text-primary text-base">{JSON.stringify(res)}</span>,
+        title: `Success`,
+        description: <DescriptionCustom>{`Deleted member: ${name}`}</DescriptionCustom>,
       })
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Delete error",
+        title: "Delete Error",
         description: String(error),
-        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
-      })
+      });
     }
   }
 

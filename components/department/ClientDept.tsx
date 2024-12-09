@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useState } from "react";
 import CreateDept from "./CreateDept";
-import { Building } from "lucide-react";
 
 export default function ClientDept() {
   const [searchTerm, setSearchTerm] = useState("");

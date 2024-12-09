@@ -8,7 +8,6 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ToastAction } from "@/components/ui/toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import SearchSelect from "@/components/search-select";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
@@ -34,6 +33,7 @@ import {
 } from "@/components/ui/select"
 
 import { Tables } from "@/entity/database.types";
+import { DescriptionCustom } from "./CustomToast";
 
 const formDeptSchema = z.object({
   name: z.string().min(1, "Department name is required"),
@@ -100,17 +100,17 @@ export default function FormCreateDept({onClose}:{onClose: () => void}) {
       const resDept = await createDept(formData);
       console.log(resDept);
       deptAllFetch.mutate();
+      onClose();
       toast({
-        title: `add department successfully`,
-        description: <span className="text-primary text-base">{`added department: ${formData.name}`}</span>
+        title: `Success`,
+        description: <DescriptionCustom>{`added department: ${formData.name}`}</DescriptionCustom>,
       })
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "add department error",
-        description: <span className="text-red-600">{String(error)}</span>,
-        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
-      })
+        title: "Add Error",
+        description: String(error),
+      });
     }
     form.reset()
   }
@@ -229,7 +229,6 @@ export default function FormCreateDept({onClose}:{onClose: () => void}) {
               const updatedUsers = [...currentUsers, ...newMembers];
 
               form.setValue("department_users", updatedUsers);
-              onClose();
             }}>Submit</Button>
           </div>
       </form>

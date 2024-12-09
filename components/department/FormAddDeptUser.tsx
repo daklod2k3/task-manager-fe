@@ -5,10 +5,8 @@ import { z } from "zod";
 import { X } from "lucide-react";
 import MyAvatar from "../Avatar";
 import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ToastAction } from "@/components/ui/toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import SearchSelect from "@/components/search-select";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
@@ -25,6 +23,7 @@ import {
 } from "@/components/ui/form"
 
 import { Tables } from "@/entity/database.types";
+import { DescriptionCustom } from "./CustomToast";
 type LoadOwnerProps = {
   onClose: () => void;
   mutate: () => void;
@@ -98,16 +97,15 @@ const FormAddDeptUser: React.FC<LoadOwnerProps> = ({ mutate,departmentUsers,onCl
       console.log(resDept);
       mutate();
       toast({
-        title: "Add department user successfully",
-        description: <span className="text-primary text-base">{`Added member to ${nameDept}`}</span>,
+        title: "Success",
+        description:<DescriptionCustom>{`Added member to ${nameDept}`}</DescriptionCustom>,
       })
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "add department user error",
+        title: "Add Error",
         description: String(error),
-        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
-      })
+      });
     }
     form.reset()
   }
