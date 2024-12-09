@@ -213,7 +213,7 @@ export default function ChatPage({
                     <FormControl>
                       <Input
                         {...field}
-                        disabled={!Boolean(user?.id)}
+                        disabled={sendLoading}
                         className="bg-white"
                         placeholder="Type a message..."
                       />
