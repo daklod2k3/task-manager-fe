@@ -15,7 +15,7 @@ export async function addDepartmentUser(departmentUser: Tables<"department_user"
     return results as IApiResponse<Tables<"department_user">>[];
   } catch (e) {
     console.log(e);
-    throw Error()
+    throw new Error((e as Error).message);
   }
 }
 
@@ -26,7 +26,7 @@ export async function deleteDepartmentUser(departmentUserId: number) {
     return (await res.json()) as IApiResponse<Tables<"department_user">>;
   } catch (e) {
     console.log(e);
-    throw Error()
+    throw new Error((e as Error).message);
   }
 }
 
@@ -52,7 +52,7 @@ export async function updateOwner(id: number, value: string) {
     return (await res.json()) as IApiResponse<Tables<"department_user">>;
   } catch (e) {
     console.log(e);
-    throw Error()
+    throw new Error((e as Error).message);
   }
 }
 

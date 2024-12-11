@@ -4,9 +4,9 @@ import { useState,useEffect } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { ToastAction } from "@/components/ui/toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { usePermissionContext } from "@/context/permission-context"
+import {DescriptionCustom} from "@/components/department/CustomToast"
 
 import {
   Form,
@@ -70,15 +70,15 @@ export default function FormEditUser({onClose,userId,name,bio,avt,role_id}:{onCl
       mutate();
       onClose();
       toast({
-        description: "successfully add department",
-      })
+        title: "Success",
+        description: <DescriptionCustom>{"Edited User"}</DescriptionCustom>
+      });
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "add department error",
+        title: "Edit Error",
         description: String(error),
-        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
-      })
+      });
     }
     form.reset()
   }

@@ -6,6 +6,7 @@ import {
   updateName,
 } from "@/action/Department";
 import { useDepartment } from "@/hooks/use-department";
+
 import { useToast } from "@/hooks/use-toast";
 import { createContext, ReactNode, useContext, useState } from "react";
 
@@ -35,6 +36,7 @@ export function DepartmentProvider({ children }: DepartmentProviderProps) {
   const deptAllFetch = useDepartment({
     includes: "DepartmentUsers.User,TaskDepartments.Task",
   });
+
   const deptId = useDepartment;
   const deleteDept = deleteDepartment;
   const createDept = createDepartment;

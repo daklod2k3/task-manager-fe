@@ -15,7 +15,7 @@ import {
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { usePermissionContext } from "@/context/permission-context"
-import { ToastAction } from "@/components/ui/toast"
+import {DescriptionCustom} from "@/components/department/CustomToast"
 import AddRole from "./AddRole"
 import AlertButton from "../department/AlertButton"
 import AddPermission from "./AddPermission"
@@ -59,14 +59,14 @@ export default function TablePermission() {
       roleFetch.mutate()
       console.log(res)
       toast({
-        description: "Deleted department successfully",
+        title: "Success",
+        description: <DescriptionCustom>{"Deleted Role"}</DescriptionCustom>
       });
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Delete department error",
+        title: "Delete Error",
         description: String(error),
-        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
       });
     }
   };
@@ -77,14 +77,14 @@ export default function TablePermission() {
       resourceFetch.mutate()
       console.log(res)
       toast({
-        description: "Deleted department successfully",
+        title: "Success",
+        description: <DescriptionCustom>{"Deleted Permission"}</DescriptionCustom>
       });
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Delete department error",
+        title: "Delete Error",
         description: String(error),
-        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
       });
     }
   };

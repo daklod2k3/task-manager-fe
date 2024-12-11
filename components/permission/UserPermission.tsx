@@ -16,7 +16,7 @@ import { KeyRound, Trash2,Pencil } from 'lucide-react'
 import { usePeople } from "@/hooks/use-people"
 import { useEffect, useState } from "react"
 import { Tables } from "@/entity/database.types"
-import { useToast } from "@/hooks/use-toast";
+import {DescriptionCustom} from "@/components/department/CustomToast"
 import MyAvatar from "../Avatar"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Link from "next/link"
@@ -52,12 +52,13 @@ export default function UserTable() {
       mutate()
       console.log(res)
       toast({
-        description: "Deleted department successfully",
+        title: "Success",
+        description: <DescriptionCustom>{"Deleted User"}</DescriptionCustom>
       });
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Delete department error",
+        title: "Delete Error",
         description: String(error),
       });
     }
@@ -180,8 +181,8 @@ export default function UserTable() {
                       ><Button size="icon">
                         <Trash2 className="w-4 h-4"/>
                         </Button>
-                        </AlertButton>
-                        <EditPermissionUser avt={user.avt || ""} bio={user.bio || ""} name={user.name} role_id={Number(user.role_id)} id={user.id}/>
+                    </AlertButton>
+                    <EditPermissionUser avt={user.avt || ""} bio={user.bio || ""} name={user.name} role_id={Number(user.role_id)} id={user.id}/>
                   </div>
                 </TableCell>
               </TableRow>

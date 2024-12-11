@@ -79,7 +79,7 @@ const LoginSchema = z.object({
   }),
 });
 
-export function FormAddUser({ isLogin = true }) {
+export function FormAddUser({onClose,isLogin = true}:{onClose: () => void,isLogin:boolean}) {
   const {
     register,
     handleSubmit,
@@ -114,6 +114,7 @@ export function FormAddUser({ isLogin = true }) {
       onClick={() => setIsShow(false)}
     />
   );
+  
 
   const [loading, setLoading] = useState(false);
 
@@ -121,14 +122,12 @@ export function FormAddUser({ isLogin = true }) {
 
   const formSubmit = async (data: any) => {
     setLoading(true);
-    // if ()
     const result = await CreateAcc(data);
+    onClose();
     if (!result) {
       return;
     }
-    // redirect("/permission");
     console.log(result);
-
     toast({
       title: "Login failed",
       description: result?.error || "An error occurred",

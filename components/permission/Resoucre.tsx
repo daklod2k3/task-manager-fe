@@ -3,12 +3,12 @@
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useEffect, useState } from "react"
-import { ToastAction } from "@/components/ui/toast"
 import { usePermissionContext } from "@/context/permission-context";
 import { ScrollArea } from "@/components/ui/scroll-area"
 import AddResource from "./AddResource";
 import EditResource from "./EditResource";
 import AlertButton from "../department/AlertButton"
+import {DescriptionCustom} from "@/components/department/CustomToast"
 
 export default function Resource() {
   const {resourceFetch,toast,delResource} =  usePermissionContext();
@@ -26,14 +26,14 @@ export default function Resource() {
       console.log(res)
       resourceFetch.mutate();
       toast({
-        description: "Deleted department successfully",
+        title: "Success",
+        description: <DescriptionCustom>{"Deleted Resource"}</DescriptionCustom>
       });
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Delete department error",
+        title: "Delete Error",
         description: String(error),
-        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
       });
     }
   };

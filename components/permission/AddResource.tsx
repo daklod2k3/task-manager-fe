@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import ShowDialog from "@/components/department/ShowDialog";
 import FormAddResource from "./FormAddResource";
+import { Button } from "../ui/button";
 
 export default function AddResource() {
   const [open, setOpen] = useState(false);
@@ -14,7 +15,7 @@ export default function AddResource() {
   return (
     <ShowDialog
       title="Add a new resource"
-      triggerLabel="Add Resource"
+      triggerLabel={<Button>add resoucre</Button>}
       open={open}
       onOpenChange={handleOpenChange}
     >

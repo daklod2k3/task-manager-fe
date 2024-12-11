@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import ShowDialog from "@/components/department/ShowDialog";
 import FormEditResource from "./FormEditResource";
+import { Button } from "../ui/button";
 
 export default function EditResource({id,name,path}:{id:number,name:string,path:string}) {
   const [open, setOpen] = useState(false);
@@ -14,7 +15,7 @@ export default function EditResource({id,name,path}:{id:number,name:string,path:
   return (
     <ShowDialog
       title="Edit resource"
-      triggerLabel="Edit"
+      triggerLabel={<Button>Edit</Button>}
       open={open}
       onOpenChange={handleOpenChange}
     >

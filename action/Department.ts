@@ -8,8 +8,7 @@ export async function createDepartment(department: Tables<"departments">) {
 
     return (await res.json()) as IApiResponse<Tables<"departments">>;
   } catch (e) {
-    console.log(e);
-    throw Error();
+    throw new Error((e as Error).message);
   }
 }
 
@@ -19,8 +18,7 @@ export async function deleteDepartment(departmentId: number) {
 
     return (await res.json()) as IApiResponse<Tables<"departments">>;
   } catch (e) {
-    console.log(e);
-    throw Error();
+    throw new Error((e as Error).message);
   }
 }
 
@@ -29,7 +27,7 @@ export async function updateDepartment(department: Tables<"departments">) {
     const res = await new ApiAuth(ApiRoutes.Department).put(department);
     return await res.json();
   } catch (e) {
-    console.log(e);
+    throw new Error((e as Error).message);
   }
 }
 
@@ -38,8 +36,7 @@ export async function updateName(id: number, data: object) {
     const res = await new ApiAuth(ApiRoutes.Department).patch(id, data);
     return (await res.json()) as IApiResponse<Tables<"departments">>;
   } catch (e) {
-    console.log(e);
-    throw Error();
+    throw new Error((e as Error).message);
   }
 }
 

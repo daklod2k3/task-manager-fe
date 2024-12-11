@@ -5,9 +5,9 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ToastAction } from "@/components/ui/toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { usePermissionContext } from "@/context/permission-context"
+import {DescriptionCustom} from "@/components/department/CustomToast"
 
 import {
   Form,
@@ -41,15 +41,15 @@ export default function FormAddRole({onClose}:{onClose: () => void}) {
       roleFetch.mutate()
       console.log(res);
       toast({
-        description: "successfully add department",
-      })
+        title: "Success",
+        description: <DescriptionCustom>{"Added Role"}</DescriptionCustom>
+      });
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "add department error",
+        title: "Add Error",
         description: String(error),
-        action: <ToastAction altText="Try again">Please Try again</ToastAction>,
-      })
+      });
     }
     form.reset()
   }

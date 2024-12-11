@@ -20,7 +20,7 @@ export default function AddResource() {
       open={open}
       onOpenChange={handleOpenChange}
     >
-      <FormAddUser isLogin={false} />
+      <FormAddUser onClose={() => setOpen(false)} isLogin={false} />
     </ShowDialog>
   );
 }

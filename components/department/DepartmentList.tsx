@@ -16,6 +16,7 @@ export function DepartmentList({ searchTerm }: { searchTerm: string }) {
   const [depa, setDepa] = useState<any[]>([]);
 
   useEffect(() => {
+    
     if (deptAllFetch.data) {
       console.log(deptAllFetch.data)
       setDepa(deptAllFetch.data);
@@ -106,10 +107,10 @@ export function DepartmentList({ searchTerm }: { searchTerm: string }) {
                           <span>{dept.task_departments.length} tasks</span>
                         </div>
                         <div className="flex items-center font-medium text-gray-800">
-                        <span>{dept.complete_task}% Complete</span>
+                        <span>{dept.task_departments.length == 0 ? 100: dept.complete_task}% Complete</span>
                         </div>
                       </div>
-                      <Progress value={dept.complete_task} className="h-2" />
+                      <Progress value={dept.task_departments.length == 0 ? 100:dept.complete_task} className="h-2" />
                     </div>
                   </div>
                 ))}
