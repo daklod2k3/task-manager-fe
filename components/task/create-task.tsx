@@ -50,7 +50,7 @@ export const createTaskSchema = z.object({
   title: z.string(),
   description: z.string().optional(),
   priority: z.enum(["High", "Medium", "Low"]).default("Medium"),
-  due_date: z.date().optional(),
+  due_date: z.date().nullable().optional(),
   task_users: z
     .array(
       z.object({
@@ -58,12 +58,26 @@ export const createTaskSchema = z.object({
       }),
     )
     .optional(),
+  task_departments: z.array(z.object({ department_id: z.string() })).optional(),
 });
 
-export default function CreateTaskDialog({ children }) {
+interface Props {
+  children: React.ReactNode;
+  department_id?: string;
+}
+
+export default function CreateTaskDialog({ children, department_id }: Props) {
   const form = useForm({
     resolver: zodResolver(createTaskSchema),
     mode: "all",
+    defaultValues: {
+      title: "",
+      description: "",
+      priority: "Medium",
+      due_date: null,
+      task_users: [],
+      task_departments: [department_id && { department_id }],
+    },
   });
 
   const [open, setOpen] = useState(false);
@@ -197,7 +211,7 @@ export default function CreateTaskDialog({ children }) {
                   <FormLabel>Priority</FormLabel>
                   <FormControl>
                     <Select
-                      defaultValue="Medium"
+                      // defaultValue="Medium"
                       {...field}
                       onValueChange={(value) => {
                         field.onChange(value);
@@ -263,7 +277,7 @@ export default function CreateTaskDialog({ children }) {
                     >
                       <Calendar
                         mode="single"
-                        selected={field.value}
+                        selected={field.value || undefined}
                         onSelect={field.onChange}
                         disabled={(date) =>
                           date < new Date() || date < new Date("1900-01-01")

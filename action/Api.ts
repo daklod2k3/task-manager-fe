@@ -34,6 +34,7 @@ export interface GetProps {
   id?: string;
   search?: string;
   includes?: string;
+  filter?: string;
 }
 export class ApiAuth {
   public token;
@@ -151,8 +152,8 @@ export class Filter<T = any> {
 }
 
 export class RootFilter {
-  filters: Filter[];
-  logic?: FilterLogic;
+  public filters: Filter[];
+  public logic?: FilterLogic;
   constructor({ Filters, Logic = FilterLogic.And }) {
     this.filters = Filters;
     this.logic = Logic;

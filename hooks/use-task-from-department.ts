@@ -1,5 +1,4 @@
-import { ApiRoutes } from "@/action/Api";
-import { Tables } from "@/entity/database.types";
+import { ApiRoutes, Filter, RootFilter } from "@/action/Api";
 import { useEffect } from "react";
 import useSWR from "swr";
 import { fetcher, useApiProps } from "./client-api";
@@ -10,14 +9,16 @@ export default function useTaskFromDepartment({
   ...props
 }: useApiProps & { department_id?: number }) {
   const { toast } = useToast();
+  const search = new URLSearchParams(props.search);
+  search.append("department_id", String(props.department_id));
 
   const { data, error, isLoading, mutate } = useSWR(
     load
       ? {
-          url: "/api" + ApiRoutes.Department,
+          url: "/api" + ApiRoutes.Department + "/task",
           arguments: {
             ...props,
-            includes: "TaskDepartments",
+            id: props.department_id,
           },
         }
       : null,

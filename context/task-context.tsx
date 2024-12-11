@@ -8,10 +8,14 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface ITaskContext {
-  taskFetch: typeof useTask;
+  taskFetch:
+    | typeof useTask
+    | typeof useTaskFromDepartment
+    | typeof useTaskFromUser;
   taskDetail: ReturnType<typeof useState<TaskEntity>>;
   taskFilter: ReturnType<typeof useState<TaskFilter>>;
   setDetail: (id?: number) => void;
+  department_id?: number;
 }
 
 export const TaskContext = createContext<ITaskContext | undefined>(undefined);
@@ -61,6 +65,7 @@ export function TaskProvider({
     // setOpen: setOpenTask,
     setDetail,
     taskFilter,
+    department_id,
   };
   return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>;
 }

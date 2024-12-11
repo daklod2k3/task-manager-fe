@@ -112,6 +112,7 @@ const Kanban = () => {
   const {
     taskFetch: useTask,
     taskFilter: [filter],
+    department_id,
   } = useTaskContext();
   const [columns, setColumns] = useState<ReturnType<typeof dataToColumn> | []>(
     [],
@@ -124,7 +125,7 @@ const Kanban = () => {
     isLoading: taskLoading,
     mutate,
     error,
-  } = useTask({ search: search.toString() });
+  } = useTask({ filter: search.toString(), department_id });
 
   const [loading, setLoading] = useState(false);
 

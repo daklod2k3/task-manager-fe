@@ -120,7 +120,8 @@ export default function ChatPage({
     content: z.string(),
   });
 
-  const { data: user } = useUser({});
+  // const { data: user } = useUser({});
+  const { mutate: mutateList } = useDirectMessage({});
 
   const { toast } = useToast();
   const [sendLoading, setSendLoading] = useState(false);
@@ -199,6 +200,7 @@ export default function ChatPage({
       });
     }
     form.reset();
+    mutateList();
     await mutate();
     setSendLoading(false);
   };
@@ -235,7 +237,7 @@ export default function ChatPage({
                     <FormControl>
                       <Input
                         {...field}
-                        disabled={!Boolean(user?.id)}
+                        disabled={sendLoading}
                         className="bg-white"
                         placeholder="Type a message..."
                       />
