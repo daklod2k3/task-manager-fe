@@ -4,6 +4,7 @@ import { Filter, FilterOperators, RootFilter } from "@/action/Api";
 import BuildBreadcrumb from "@/components/build-breadcrumb";
 import HoverInfo from "@/components/HoverInfo";
 import Loading from "@/components/Loading";
+import PageHeader from "@/components/page-header";
 import SearchSelect from "@/components/search-select";
 import SearchInput from "@/components/SearchInput";
 import CreateTaskDialog from "@/components/task/create-task";
@@ -23,6 +24,7 @@ import {
 } from "@/components/ui/form";
 import { useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
+import { useDepartment } from "@/hooks/use-department";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -69,6 +71,12 @@ export default function ClientTask({ department_id }: Props) {
   } = useTaskContext();
 
   const { mutate } = useTask({ load: true });
+  const { data: department } = useDepartment({
+    load: Boolean(department_id),
+    id: department_id,
+  });
+
+  console.log(department);
 
   const timeoutRef = useRef<NodeJS.Timeout>();
 
@@ -177,15 +185,17 @@ export default function ClientTask({ department_id }: Props) {
 
   return (
     <div className="flex max-h-full min-h-0 min-w-0 flex-col gap-5 p-4 pb-0 text-foreground">
-      <BuildBreadcrumb />
-      {!department_id ? (
-        <h1 className="text-lg font-bold">Your task</h1>
+      <BuildBreadcrumb>
+        {department_id && department && department.name + " Task"}
+      </BuildBreadcrumb>
+      {/* {!department_id ? (
+        <PageHeader>Your task</PageHeader>
       ) : (
         <div className="flex items-center gap-2 border-l-2 border-blue-500 px-4 py-2">
           <Building />
           <h1 className="text-lg font-bold">DEPARTMENT TASK</h1>
         </div>
-      )}
+      )} */}
       <div className="flex w-full items-center gap-3">
         <SearchInput
           className="bg-white"
@@ -198,7 +208,7 @@ export default function ClientTask({ department_id }: Props) {
           items={peopleToSearch(peoples ?? [])}
         /> */}
         {/* <UserSelect /> */}
-        <CreateTaskDialog>
+        <CreateTaskDialog department_id={department_id}>
           <Button>
             <Plus className="mr-2" size={16} />
             Create task

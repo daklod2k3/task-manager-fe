@@ -9,10 +9,6 @@ export default function ReportPage() {
   return (
     <div className="container mx-auto p-4">
       <BuildBreadcrumb />
-      <h1 className="mb-6 mt-2 border-l-2 border-primary pl-2 text-lg font-bold">
-        Report
-      </h1>
-
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>

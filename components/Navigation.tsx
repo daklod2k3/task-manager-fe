@@ -97,7 +97,7 @@ export function Navigation({}) {
         Icon={Building}
         base_path="/department"
         current_path={path}
-        title="Manager"
+        title="Teams"
       />
       <NavigationButton
         base_path="/chat"

@@ -8,8 +8,13 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { usePathname } from "next/navigation";
+import PageHeader from "./page-header";
 
-export default function BuildBreadcrumb() {
+interface Props {
+  children?: React.ReactNode;
+}
+
+export default function BuildBreadcrumb({ children }: Props) {
   const pathname = usePathname();
   const pathList = pathname
     .split("/")
@@ -34,6 +39,7 @@ export default function BuildBreadcrumb() {
           </>
         ))}
       </BreadcrumbList>
+      <PageHeader>{children || pathList[pathList.length - 1]}</PageHeader>
     </Breadcrumb>
   );
 }
