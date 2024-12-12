@@ -28,5 +28,6 @@ export async function fetcher(fetcherProps: fetcherProps) {
   // console.log(res);
   if (res.status === 403 || res.status === 401)
     throw new Error("Permission denied");
+  if (res.status === 400) throw new Error("Bad request");
   return res.json().then((data) => data.data);
 }

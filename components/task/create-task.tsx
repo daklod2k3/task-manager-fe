@@ -1,4 +1,4 @@
-"client";
+"use client";
 import { ApiRoutes } from "@/action/Api";
 import { createTask } from "@/action/Task";
 import {
@@ -18,7 +18,7 @@ import { format } from "date-fns";
 import { Loader2, X } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { mutate } from "swr";
+import { useSWRConfig } from "swr";
 import { z } from "zod";
 import MyAvatar from "../Avatar";
 import SearchSelect, { PeopleSearchItem } from "../search-select";
@@ -58,15 +58,22 @@ export const createTaskSchema = z.object({
       }),
     )
     .optional(),
-  task_departments: z.array(z.object({ department_id: z.string() })).optional(),
+  task_departments: z
+    .array(z.object({ department_id: z.number() }).optional())
+    .optional(),
 });
 
 interface Props {
   children: React.ReactNode;
-  department_id?: string;
 }
 
-export default function CreateTaskDialog({ children, department_id }: Props) {
+export default function CreateTaskDialog({ children }: Props) {
+  const {
+    taskDetail: [, setDetail],
+    taskFetch: useTask,
+    department_id,
+  } = useTaskContext();
+
   const form = useForm({
     resolver: zodResolver(createTaskSchema),
     mode: "all",
@@ -76,18 +83,16 @@ export default function CreateTaskDialog({ children, department_id }: Props) {
       priority: "Medium",
       due_date: null,
       task_users: [],
-      task_departments: [department_id && { department_id }],
+      task_departments: department_id ? [{ department_id }] : [],
     },
   });
+  console.log(form.formState.errors);
 
   const [open, setOpen] = useState(false);
 
   const { toast } = useToast();
-  const {
-    taskDetail: [, setDetail],
-    taskFetch: useTask,
-  } = useTaskContext();
-  const { mutate } = useTask({});
+
+  const { mutate } = useTask({ load: false });
 
   const { data: peoples, isLoading: peopleLoading } = usePeople({});
   const [assigneeSelect, setAssigneeSelect] = useState<Tables<"profiles">[]>(
@@ -95,9 +100,9 @@ export default function CreateTaskDialog({ children, department_id }: Props) {
   );
 
   const formSubmit = async (formData) => {
-    // console.log(formData);
+    console.log(formData);
     const result = await createTask(formData);
-    // console.log(result);
+    console.log(result);
     if (!result || result?.error || !result?.data) {
       toast({
         title: "Task create failed",
@@ -106,7 +111,8 @@ export default function CreateTaskDialog({ children, department_id }: Props) {
       });
       return;
     }
-    mutate();
+    console.log(await mutate());
+    //  mutate();
     toast({
       title: "Task created",
       description: `${result?.data.title} created`,

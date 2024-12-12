@@ -14,6 +14,7 @@ export function TaskDialog() {
     taskFetch: useTask,
     taskDetail: [detail, setDetail],
     setDetail: setOpenDetail,
+    department_id,
   } = useTaskContext();
   const [open, setOpen] = useState(false);
 
@@ -25,6 +26,7 @@ export function TaskDialog() {
     load: Boolean(detail?.id),
     id: String(detail?.id),
     includes: "CreatedByNavigation",
+    department_id,
   });
   const { mutate } = useTask({ load: true });
 

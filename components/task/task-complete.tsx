@@ -38,9 +38,11 @@ export function TaskRequirePreview({ task_id }: Props) {
     },
   });
 
-  const { taskFetch: useTask } = useTaskContext();
+  const { taskFetch: useTask, department_id } = useTaskContext();
 
-  const { mutate } = useTask({ id: String(task_id) });
+  const { mutate } = useTask({
+    department_id: department_id,
+  });
 
   const [open, setOpen] = useState(false);
 
@@ -134,20 +136,22 @@ interface PreviewFileProps {
 export function PreviewFile({ file_id, task_id }: PreviewFileProps) {
   const [open, setOpen] = useState(false);
   const { data: file, error } = useFile(open ? file_id : undefined);
-  const { taskFetch: useTask } = useTaskContext();
-  const { mutate } = useTask({ id: task_id + "" });
+  const { taskFetch: useTask, department_id } = useTaskContext();
+  const { mutate } = useTask({
+    department_id: department_id,
+  });
   const { toast } = useToast();
 
   const onSubmit = () => {
     markCompleteTask(task_id)
-      .then((res) => {
+      .then(async (res) => {
         console.log(res);
         toast({
           title: "Action success",
           description: "Task completed",
         });
+        await mutate();
         setOpen(false);
-        mutate();
       })
       .catch((e) => {
         console.log(e);

@@ -125,7 +125,10 @@ const Kanban = () => {
     isLoading: taskLoading,
     mutate,
     error,
-  } = useTask({ filter: search.toString(), department_id });
+  } = useTask({
+    // filter: search.toString(),
+    department_id,
+  });
 
   const [loading, setLoading] = useState(false);
 
@@ -133,11 +136,14 @@ const Kanban = () => {
   console.log(taskList);
 
   useEffect(() => {
+    console.log("mutate");
+
     setColumns(dataToColumn(taskList || []));
   }, [taskList]);
 
   useEffect(() => {
     setLoading((l) => l && taskLoading);
+    // if (!taskLoading) setColumns(dataToColumn(taskList || []));
   }, [taskLoading]);
 
   useEffect(() => {

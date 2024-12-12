@@ -1,24 +1,24 @@
 import { ApiRoutes, Filter, RootFilter } from "@/action/Api";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { fetcher, useApiProps } from "./client-api";
 import { useToast } from "./use-toast";
 
 export default function useTaskFromDepartment({
   load = true,
+  department_id,
   ...props
 }: useApiProps & { department_id?: number }) {
   const { toast } = useToast();
-  const search = new URLSearchParams(props.search);
-  search.append("department_id", String(props.department_id));
+  const [search, setSearch] = useState(new URLSearchParams());
 
   const { data, error, isLoading, mutate } = useSWR(
-    load
+    load && department_id
       ? {
           url: "/api" + ApiRoutes.Department + "/task",
           arguments: {
             ...props,
-            id: props.department_id,
+            search,
           },
         }
       : null,
@@ -27,6 +27,14 @@ export default function useTaskFromDepartment({
       revalidateOnMount: true,
     },
   );
+
+  useEffect(() => {
+    const search = new URLSearchParams(props.search);
+    search.append("department_id", String(department_id));
+    setSearch(search);
+  }, [department_id, props.search]);
+
+  // useEffect({{}})
 
   useEffect(() => {
     if (error)
@@ -38,5 +46,5 @@ export default function useTaskFromDepartment({
   }, [error]);
   console.log(data);
 
-  return { data: data && data.task_departments, error, isLoading, mutate };
+  return { data: data, error, isLoading, mutate };
 }

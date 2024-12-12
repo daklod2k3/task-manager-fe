@@ -70,7 +70,7 @@ export default function ClientTask({ department_id }: Props) {
     taskFetch: useTask,
   } = useTaskContext();
 
-  const { mutate } = useTask({ load: true });
+  const { mutate } = useTask({ load: false });
   const { data: department } = useDepartment({
     load: Boolean(department_id),
     id: department_id,
@@ -208,7 +208,7 @@ export default function ClientTask({ department_id }: Props) {
           items={peopleToSearch(peoples ?? [])}
         /> */}
         {/* <UserSelect /> */}
-        <CreateTaskDialog department_id={department_id}>
+        <CreateTaskDialog>
           <Button>
             <Plus className="mr-2" size={16} />
             Create task
