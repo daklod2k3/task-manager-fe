@@ -127,9 +127,14 @@ export function TaskRequirePreview({ task_id }: Props) {
 interface PreviewFileProps {
   file_id: number;
   task_id: number;
+  submit?: boolean;
 }
 
-export function PreviewFile({ file_id, task_id }: PreviewFileProps) {
+export function PreviewFile({
+  file_id,
+  task_id,
+  submit = false,
+}: PreviewFileProps) {
   const [open, setOpen] = useState(false);
   const { data: file, error } = useFile(open ? file_id : undefined);
   const { taskFetch: useTask, department_id } = useTaskContext();
@@ -225,9 +230,11 @@ export function PreviewFile({ file_id, task_id }: PreviewFileProps) {
           </div>
         </ScrollArea>
         <DialogFooter className="mt-auto">
-          <Button onClick={onSubmit} className="bg-green-500">
-            Complete task
-          </Button>
+          {submit && (
+            <Button onClick={onSubmit} className="bg-green-500">
+              Complete task
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

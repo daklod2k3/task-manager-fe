@@ -559,7 +559,11 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                       {item.status != "In_preview" ? (
                         <TaskRequirePreview task_id={item.id} />
                       ) : (
-                        <PreviewFile task_id={item.id} file_id={item.file_id} />
+                        <PreviewFile
+                          submit
+                          task_id={item.id}
+                          file_id={item.file_id}
+                        />
                       )}
 
                       {/* <Button variant="ghost" className="w-full justify-between">
@@ -568,6 +572,9 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
                 </Button> */}
                     </div>
                   </div>
+                )}
+                {item.status == "Done" && (
+                  <PreviewFile task_id={item.id} file_id={item.file_id} />
                 )}
 
                 <div className="space-y-4">

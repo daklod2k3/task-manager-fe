@@ -126,8 +126,8 @@ export enum FilterOperators {
 }
 
 export enum FilterLogic {
-  And,
-  Or,
+  And = "And",
+  Or = "Or",
 }
 export class Filter<T = any> {
   public field: keyof T;

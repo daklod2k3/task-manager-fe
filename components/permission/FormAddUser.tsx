@@ -1,9 +1,9 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,13 +13,14 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { lazy, useEffect, useState } from "react";
 import { z } from "zod";
 
-import { login, signup,CreateAcc } from "@/action/Auth";
+import { CreateAcc } from "@/action/User";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckIcon } from "@radix-ui/react-icons";
 import { createBrowserClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import { mutate } from "swr";
 import { Card } from "../ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
@@ -79,7 +80,13 @@ const LoginSchema = z.object({
   }),
 });
 
-export function FormAddUser({onClose,isLogin = true}:{onClose: () => void,isLogin:boolean}) {
+export function FormAddUser({
+  onClose,
+  isLogin = true,
+}: {
+  onClose: () => void;
+  isLogin: boolean;
+}) {
   const {
     register,
     handleSubmit,
@@ -114,7 +121,6 @@ export function FormAddUser({onClose,isLogin = true}:{onClose: () => void,isLogi
       onClick={() => setIsShow(false)}
     />
   );
-  
 
   const [loading, setLoading] = useState(false);
 
@@ -127,6 +133,16 @@ export function FormAddUser({onClose,isLogin = true}:{onClose: () => void,isLogi
     if (!result) {
       return;
     }
+    mutate(
+      (key) => {
+        console.log(key);
+        return String(key?.url).includes("user");
+      },
+      undefined,
+      {
+        revalidate: true,
+      },
+    );
     console.log(result);
     toast({
       title: "Login failed",
@@ -159,9 +175,7 @@ export function FormAddUser({onClose,isLogin = true}:{onClose: () => void,isLogi
         noValidate
       >
         <div className="grid gap-2 text-center">
-          <p className="text-2xl font-bold text-primary">
-            {"Tạo Tài Khoản"}
-          </p>
+          <p className="text-2xl font-bold text-primary">{"Tạo Tài Khoản"}</p>
         </div>
         <div className="grid gap-4">
           {isLogin ? (

@@ -9,6 +9,7 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
+import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { Command as CommandPrimitive } from "cmdk";
 
 import { Tables } from "@/entity/database.types";
@@ -125,6 +126,17 @@ export default function SearchSelect<T>({
     return;
   };
 
+  const Portal = ({
+    children,
+    modal,
+  }: {
+    children: React.ReactNode;
+    modal: boolean;
+  }) => {
+    if (modal) return children;
+    else return <PopoverPrimitive.Portal>{children}</PopoverPrimitive.Portal>;
+  };
+
   return (
     <div className="flex items-center">
       <Popover open={open} modal={modal} onOpenChange={setOpen}>
@@ -154,78 +166,84 @@ export default function SearchSelect<T>({
           )}
           {/* <Search className="absolute ml-2 h-4 w-4" />
               <CommandPrimitive.Input
-                disabled={disable}
-                asChild
-                value={searchValue}
-                onValueChange={setSearchValue}
-                onKeyDown={(e) => setOpen(e.key !== "Escape")}
-                onMouseDown={() => setOpen((open) => !!searchValue || !open)}
-                onFocus={() => setOpen(true)}
-                // onBlur={onInputBlur}
+              disabled={disable}
+              asChild
+              value={searchValue}
+              onValueChange={setSearchValue}
+              onKeyDown={(e) => setOpen(e.key !== "Escape")}
+              onMouseDown={() => setOpen((open) => !!searchValue || !open)}
+              onFocus={() => setOpen(true)}
+              // onBlur={onInputBlur}
               >
-                <Input
-                  className={cn("bg-white/50 pl-7", inputClassName)}
-                  placeholder={placeholder}
-                  disabled={isLoading}
-                />
+              <Input
+              className={cn("bg-white/50 pl-7", inputClassName)}
+              placeholder={placeholder}
+              disabled={isLoading}
+              />
               </CommandPrimitive.Input> */}
           {/* </div> */}
         </PopoverTrigger>
         {/* {!open && <CommandList aria-hidden="true" className="hidden" />} */}
-        <PopoverContent
-          asChild
-          onInteractOutside={(e) => {
-            if (
-              e.target instanceof Element &&
-              e.target.hasAttribute("cmdk-input")
-            ) {
-              e.preventDefault();
-            }
-          }}
-          className="max-h-52 min-h-0 w-[--radix-popover-trigger-width] p-0"
-        >
-          <Command shouldFilter={false}>
-            <CommandInput
-              disabled={disable}
-              // asChild
-              value={searchValue}
-              onValueChange={setSearchValue}
-              onKeyDown={(e) => setOpen(e.key !== "Escape")}
-              // onBlur={onInputBlur}
-            >
-              {/* <Input
+        <Portal modal={modal}>
+          <PopoverContent
+            asChild
+            onInteractOutside={(e) => {
+              if (
+                e.target instanceof Element &&
+                e.target.hasAttribute("cmdk-input")
+              ) {
+                e.preventDefault();
+              }
+            }}
+            className="max-h-52 min-h-0 w-[--radix-popover-trigger-width] p-0"
+          >
+            <Command shouldFilter={false}>
+              <CommandInput
+                disabled={disable}
+                // asChild
+                value={searchValue}
+                onValueChange={setSearchValue}
+                onKeyDown={(e) => setOpen(e.key !== "Escape")}
+                // onBlur={onInputBlur}
+              >
+                {/* <Input
                 className={cn("bg-white/50 pl-7", inputClassName)}
                 placeholder={placeholder}
                 disabled={isLoading}
-              /> */}
-            </CommandInput>
-            <CommandList asChild>
-              {isLoading && (
-                <CommandPrimitive.Loading>
-                  <div className="p-1">
-                    <Skeleton className="h-6 w-full" />
-                  </div>
-                </CommandPrimitive.Loading>
-              )}
-              {filteredItems.length > 0 && !isLoading ? (
-                filteredItems.map((item) => (
-                  <CommandItem
-                    className="cursor-pointer"
-                    key={item.search}
-                    onSelect={() => {
-                      // console.log("click");
-                      onSelected(item.value);
-                    }}
-                  >
-                    {ItemRender ? <ItemRender item={item.value} /> : item.label}
-                  </CommandItem>
-                ))
-              ) : (
-                <CommandEmpty>No items found</CommandEmpty>
-              )}
-            </CommandList>
-          </Command>
-        </PopoverContent>
+                /> */}
+              </CommandInput>
+              <CommandList asChild>
+                {isLoading && (
+                  <CommandPrimitive.Loading>
+                    <div className="p-1">
+                      <Skeleton className="h-6 w-full" />
+                    </div>
+                  </CommandPrimitive.Loading>
+                )}
+                {filteredItems.length > 0 && !isLoading ? (
+                  filteredItems.map((item) => (
+                    <CommandItem
+                      className="cursor-pointer"
+                      key={item.search}
+                      onSelect={() => {
+                        // console.log("click");
+                        onSelected(item.value);
+                      }}
+                    >
+                      {ItemRender ? (
+                        <ItemRender item={item.value} />
+                      ) : (
+                        item.label
+                      )}
+                    </CommandItem>
+                  ))
+                ) : (
+                  <CommandEmpty>No items found</CommandEmpty>
+                )}
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Portal>
       </Popover>
     </div>
   );

@@ -22,12 +22,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useTaskContext } from "@/context/task-context";
+import { mutateTaskList, useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
 import { useDepartment } from "@/hooks/use-department";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { PopoverPortal } from "@radix-ui/react-popover";
 import { Building, Plus, PlusCircle } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -88,8 +89,10 @@ export default function ClientTask({ department_id }: Props) {
         value: value,
       },
     });
-    mutate();
+    mutateTaskList();
   };
+
+  const { data: peoples, isLoading: peopleLoading } = usePeople({});
 
   // const onUserFilter = () => {};
 
@@ -110,6 +113,22 @@ export default function ClientTask({ department_id }: Props) {
     },
     [],
   );
+
+  const onAssignSelect = (item: string) => {
+    setFilter((prev) => {
+      const assignFilter = new Filter({
+        Field: "task_user",
+        Operator: FilterOperators.eq,
+        Value: item,
+      });
+      if (prev) prev.peopleFilter = assignFilter;
+      else
+        prev = {
+          peopleFilter: assignFilter,
+        };
+      return prev;
+    });
+  };
   // const UserSelect = () => {
   //   const { data: items, isLoading } = usePeople();
   //   if (isLoading || !items) return;
@@ -202,11 +221,17 @@ export default function ClientTask({ department_id }: Props) {
           placeholder="Search task"
           onChange={(e) => searchBounce(e.currentTarget.value, searchTaskName)}
         />
-        {/* <SearchSelect
-          ItemRender={PeopleSearchItem}
-          modal
-          items={peopleToSearch(peoples ?? [])}
-        /> */}
+        <SearchSelect
+          isLoading={peopleLoading}
+          placeholder="Select assignee"
+          variant="people"
+          // modal={}
+          onSelectedValueChange={(x: any) => {
+            // console.log("click");
+            onAssignSelect(x);
+          }}
+          items={peopleToSearch(peoples || [])}
+        />
         {/* <UserSelect /> */}
         <CreateTaskDialog>
           <Button>

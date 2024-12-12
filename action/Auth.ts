@@ -48,35 +48,6 @@ export async function signup(form: any) {
   redirect("/");
 }
 
-export async function CreateAcc(form: any) {
-
-  const supabase = createClient();
-  const { error } = await supabase.auth.signUp({
-    ...form,
-    options: {
-      emailRedirectTo: null,
-      data: {
-        name: form.name,
-      },
-    },
-  });
-
-  if (error) {
-    console.log(error.message);
-
-    return { error: error.message };
-  }
-  
-  const res = await supabase.auth.signOut();
-
-  const { error: signInError } = await supabase.auth.signInWithPassword({
-    email: "ernestine_little@yahoo.com",
-    password: "123123",
-  });
-  
-  redirect("/permission?cate=User");
-}
-
 // export async function login(form: any) {
 //   // console.log(form);
 

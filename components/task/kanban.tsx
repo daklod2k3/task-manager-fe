@@ -2,7 +2,7 @@
 import { Filter } from "@/action/Api";
 import { updateStatus, updateTask } from "@/action/Task";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useTaskContext } from "@/context/task-context";
+import { mutateTaskList, useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -126,7 +126,7 @@ const Kanban = () => {
     mutate,
     error,
   } = useTask({
-    // filter: search.toString(),
+    search: search.toString(),
     department_id,
   });
 
@@ -151,6 +151,7 @@ const Kanban = () => {
       search.set("filter", JSON.stringify({ filters: [filter?.filter] }));
     else search.delete("filter");
     setSearch(search);
+    mutateTaskList();
     // console.log("mutate");
   }, [filter, search, mutate]);
 

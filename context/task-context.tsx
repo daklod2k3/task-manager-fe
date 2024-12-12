@@ -58,7 +58,7 @@ export function TaskProvider({
     replace(`${pathname}?${params.toString()}`);
   };
 
-  console.log(taskFilter[0]?.filter);
+  console.log(taskFilter);
 
   const value = {
     taskFetch,
