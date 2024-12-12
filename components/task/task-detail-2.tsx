@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { useTaskContext } from "@/context/task-context";
+import { mutateTaskList, useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
 import { TaskEntity } from "@/entity/Entity";
 import { useToast } from "@/hooks/use-toast";
@@ -41,6 +41,7 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { mutate } from "swr";
 import { boolean, z } from "zod";
 import AlertButton from "../alert-button";
 import MyAvatar from "../Avatar";
@@ -107,11 +108,6 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
   // Data fetching
   const { toast } = useToast();
   const { setDetail, taskFetch: useTask } = useTaskContext();
-  const { mutate: mutateDetail } = useTask({
-    id: String(item.id),
-    load: item.id ? true : false,
-  });
-
   // const
 
   // Component state
@@ -126,7 +122,7 @@ export default function TaskDetail2({ item }: { item: TaskEntity }) {
     formData.task_users = [];
     setSaveLoading(true);
     const res = await updateTask(formData as Tables<"tasks">);
-    await mutateDetail();
+    await mutateTaskList();
     setSaveLoading(false);
     if (res.error) {
       toast({

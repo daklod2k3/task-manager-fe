@@ -1,3 +1,4 @@
+import BuildBreadcrumb from "@/components/build-breadcrumb";
 import { GanttChart } from "@/components/grantt-chart";
 import { JiraGanttChart } from "@/components/jira-gantt-chart";
 import { StatsCard } from "@/components/stat-card";
@@ -10,9 +11,11 @@ export default function Home() {
     <div className="grid min-h-screen font-[family-name:var(--font-geist-sans)]">
       <main className="row-start-2 flex min-h-0 flex-col gap-8 overflow-y-auto overflow-x-hidden sm:items-start">
         <div className="container mx-auto px-6 py-8">
-          <h3 className="text-3xl font-medium text-secondary-foreground">
-            Dashboard
-          </h3>
+          <BuildBreadcrumb>
+            <span className="text-3xl font-medium text-secondary-foreground">
+              Dashboard
+            </span>
+          </BuildBreadcrumb>
           <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             <StatsCard
               title="Completed Tasks"

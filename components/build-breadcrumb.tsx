@@ -30,7 +30,7 @@ export default function BuildBreadcrumb({ children }: Props) {
         </BreadcrumbItem>
         {pathList.map((item) => (
           <>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator key={item} />
             <BreadcrumbItem key={item}>
               <BreadcrumbLink href={"/" + item.toLowerCase()}>
                 {item}

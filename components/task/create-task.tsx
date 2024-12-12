@@ -7,7 +7,7 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useTaskContext } from "@/context/task-context";
+import { mutateTaskList, useTaskContext } from "@/context/task-context";
 import { Tables } from "@/entity/database.types";
 import { peopleToSearch, usePeople } from "@/hooks/use-people";
 import { useToast } from "@/hooks/use-toast";
@@ -92,7 +92,7 @@ export default function CreateTaskDialog({ children }: Props) {
 
   const { toast } = useToast();
 
-  const { mutate } = useTask({ load: false });
+  const { mutate } = useSWRConfig();
 
   const { data: peoples, isLoading: peopleLoading } = usePeople({});
   const [assigneeSelect, setAssigneeSelect] = useState<Tables<"profiles">[]>(
@@ -111,8 +111,8 @@ export default function CreateTaskDialog({ children }: Props) {
       });
       return;
     }
-    console.log(await mutate());
-    //  mutate();
+    // console.log(await mutate());
+    mutateTaskList();
     toast({
       title: "Task created",
       description: `${result?.data.title} created`,

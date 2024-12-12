@@ -9,7 +9,7 @@ export default function ReportPage() {
   return (
     <div className="container mx-auto p-4">
       <BuildBreadcrumb />
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="mt-6 grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Task Status</CardTitle>

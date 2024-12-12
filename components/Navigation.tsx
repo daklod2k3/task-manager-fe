@@ -12,6 +12,7 @@ import {
   CreditCard,
   Home,
   Icon,
+  Key,
   Keyboard,
   LifeBuoy,
   LogOut,
@@ -72,6 +73,9 @@ const NavigationButton = ({
 
 export function Navigation({}) {
   const path = usePathname();
+  const { data: user } = useUser({ includes: "Role" });
+  console.log(user);
+
   return (
     <div className="flex flex-col items-center justify-start gap-3 px-3 py-2 text-primary *:text-xs">
       <Image
@@ -117,12 +121,14 @@ export function Navigation({}) {
         current_path={path}
         title="Report"
       />
-      <NavigationButton
-        Icon={NotepadText}
-        base_path="/permission"
-        current_path={path}
-        title="Permission"
-      />
+      {user && user.role_name == "Admin" && (
+        <NavigationButton
+          Icon={Key}
+          base_path="/permission"
+          current_path={path}
+          title="Admin"
+        />
+      )}
       <div className="mb-3 mt-auto">
         <ExpandableAvatar />
       </div>

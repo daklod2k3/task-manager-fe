@@ -1,5 +1,5 @@
 import { markCompleteTask, markPreviewTask } from "@/action/Task";
-import { useTaskContext } from "@/context/task-context";
+import { mutateTaskList, useTaskContext } from "@/context/task-context";
 import { useTask } from "@/hooks/use-task";
 import { useToast } from "@/hooks/use-toast";
 import { useFile } from "@/hooks/useFile";
@@ -39,10 +39,6 @@ export function TaskRequirePreview({ task_id }: Props) {
   });
 
   const { taskFetch: useTask, department_id } = useTaskContext();
-
-  const { mutate } = useTask({
-    department_id: department_id,
-  });
 
   const [open, setOpen] = useState(false);
 
@@ -86,7 +82,7 @@ export function TaskRequirePreview({ task_id }: Props) {
           description: "Asked preview to complete",
         });
         setOpen(false);
-        mutate();
+        mutateTaskList();
       })
       .catch((e) => {
         console.log(e);
@@ -137,9 +133,7 @@ export function PreviewFile({ file_id, task_id }: PreviewFileProps) {
   const [open, setOpen] = useState(false);
   const { data: file, error } = useFile(open ? file_id : undefined);
   const { taskFetch: useTask, department_id } = useTaskContext();
-  const { mutate } = useTask({
-    department_id: department_id,
-  });
+
   const { toast } = useToast();
 
   const onSubmit = () => {
@@ -150,7 +144,7 @@ export function PreviewFile({ file_id, task_id }: PreviewFileProps) {
           title: "Action success",
           description: "Task completed",
         });
-        await mutate();
+        await mutateTaskList();
         setOpen(false);
       })
       .catch((e) => {

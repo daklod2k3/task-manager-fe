@@ -6,6 +6,7 @@ import useTaskFromDepartment from "@/hooks/use-task-from-department";
 import useTaskFromUser from "@/hooks/use-task-from-user";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { mutate } from "swr";
 
 interface ITaskContext {
   taskFetch:
@@ -74,4 +75,15 @@ export function useTaskContext() {
   const context = useContext(TaskContext);
   if (!context) throw new Error("You must wrap with Task Provider");
   return context;
+}
+
+export async function mutateTaskList() {
+  return await mutate(
+    (key) => {
+      console.log(key);
+      return String(key?.url).includes("task");
+    },
+    undefined,
+    { revalidate: true },
+  );
 }

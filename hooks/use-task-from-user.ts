@@ -1,5 +1,5 @@
 import { ApiRoutes } from "@/action/Api";
-import { Tables } from "@/database.types";
+import { Tables } from "@/entity/database.types";
 import { useEffect } from "react";
 import useSWR from "swr";
 import { fetcher, useApiProps } from "./client-api";

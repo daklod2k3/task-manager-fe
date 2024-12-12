@@ -4,6 +4,7 @@ import { DepartmentList } from "@/components/department/DepartmentList";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useState } from "react";
+import BuildBreadcrumb from "../build-breadcrumb";
 import CreateDept from "./CreateDept";
 
 export default function ClientDept() {
@@ -11,10 +12,8 @@ export default function ClientDept() {
 
   return (
     <div className="flex h-screen w-full flex-col p-4">
-      <h1 className="mb-10 text-2xl font-bold text-primary flex items-center">
-        Department Management
-      </h1>
-      <div className="mb-6 flex items-center justify-between">
+      <BuildBreadcrumb />
+      <div className="mb-6 mt-6 flex items-center justify-between">
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 transform text-gray-500" />
           <Input
